@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1058732825681",
+    "project_id": "thechair-ed8af",
+    "storage_bucket": "thechair-ed8af.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1058732825681:android:a4b36706206bf84e1b6c70",
+        "android_client_info": {
+          "package_name": "com.example.thechair"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAoEvyMK4t_f1gfmcwUkGIFRMwN8PbDCvk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
