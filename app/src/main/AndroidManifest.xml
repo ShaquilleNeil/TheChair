@@ -15,10 +15,10 @@
             android:name=".SignUp"
             android:exported="false" />
         <activity
-            android:name=".CustomerProfile"
+            android:name=".CustomerHome"
             android:exported="false" />
         <activity
-            android:name=".ServiceProviderProfile"
+            android:name=".ServiceProviderHome"
             android:exported="false" />
         <activity
             android:name=".Home"

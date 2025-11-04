@@ -21,6 +21,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class LogIn extends AppCompatActivity {
 
@@ -69,46 +70,49 @@ public class LogIn extends AppCompatActivity {
 
     }
 
-    private void loginUser(){
+    private void loginUser() {
         String email = editTextEmailLogin.getText().toString().trim();
         String password = editTextPasswordLogin.getText().toString().trim();
 
-        if(TextUtils.isEmpty(email) || TextUtils.isEmpty(password)){
+        if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password)) {
             Toast.makeText(this, "Please fill all the fields", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        mAuth.signInWithEmailAndPassword(email,password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                if (task.isSuccessful())  {
-                    //get user to check if it's their first time logging in
-                    FirebaseUser user = mAuth.getCurrentUser();
+        mAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, task -> {
+                    if (task.isSuccessful()) {
+                        FirebaseUser user = mAuth.getCurrentUser();
+                        FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-                    if(user != null){
-                        long creationTimestamp = user.getMetadata().getCreationTimestamp();
-                        long lastSignInTimestamp = user.getMetadata().getLastSignInTimestamp();
-
-                        //checking if the user is new
-//                        if(creationTimestamp == lastSignInTimestamp){
-//                            Toast.makeText(LogIn.this, "Welcome", Toast.LENGTH_SHORT).show();
-//
-//
-//                        }else{
-//                            Toast.makeText(LogIn.this, "Welcome", Toast.LENGTH_SHORT).show();
-//                            startActivity(new Intent(LogIn.this, Home.class));
-//
-//                        }
-                        finish();
-
-
+                        if (user != null) {
+                            db.collection("Users").document(user.getUid())
+                                    .get()
+                                    .addOnSuccessListener(documentSnapshot -> {
+                                        if (documentSnapshot.exists()) {
+                                            String role = documentSnapshot.getString("role");
+                                            if ("customer".equals(role)) {
+                                                startActivity(new Intent(LogIn.this, CustomerHome.class));
+                                                finish();
+                                            } else if ("professional".equals(role)) {
+                                                startActivity(new Intent(LogIn.this, ServiceProviderHome.class));
+                                                finish();
+                                            } else {
+                                                Toast.makeText(LogIn.this, "Unknown role", Toast.LENGTH_SHORT).show();
+                                            }
+                                        } else {
+                                            Toast.makeText(LogIn.this, "User data not found", Toast.LENGTH_SHORT).show();
+                                        }
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        Toast.makeText(LogIn.this, "Failed to get user role", Toast.LENGTH_SHORT).show();
+                                        e.printStackTrace();
+                                    });
+                        }
+                    } else {
+                        Toast.makeText(LogIn.this, "Authentication failed", Toast.LENGTH_SHORT).show();
                     }
-
-
-                }else {
-                    Toast.makeText(LogIn.this, "Something went wrong",Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
+                });
     }
+
 }

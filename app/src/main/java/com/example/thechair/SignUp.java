@@ -15,21 +15,14 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 
 public class SignUp extends AppCompatActivity {
     EditText editTextName, editTextEmail, editTextPassword, editTextConfirmPassword, editTextAddress1, editTextAddress2, editTextCity, editTextProvince, editTextPostalCode, editTextPhoneNumber;
@@ -87,7 +80,6 @@ public class SignUp extends AppCompatActivity {
            @Override
            public void onClick(View v) {
                registerUser();
-               saveUser();
            }
        });
 
@@ -138,6 +130,7 @@ public class SignUp extends AppCompatActivity {
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful())  {
                     Toast.makeText(SignUp.this, "Registration successful", Toast.LENGTH_SHORT).show();
+                    saveUser();
 //                    startActivity(new Intent(SignUp.this, LogIn.class));
                     finish();
                 }else {
@@ -174,33 +167,39 @@ public class SignUp extends AppCompatActivity {
         if (postalCode.isEmpty()) { Toast.makeText(this, "Please enter postal code", Toast.LENGTH_SHORT).show(); return; }
         if (phoneNumber.isEmpty()) { Toast.makeText(this, "Please enter phone number", Toast.LENGTH_SHORT).show(); return; }
 
-        // Firestore instance
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        String id = db.collection("Users").document().getId();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
 
-        // Create Address and Geo objects
-        appUsers.Address address = new appUsers.Address(address1, address2, city, province, "Canada", postalCode);
-        appUsers.Geo geo = new appUsers.Geo(0.0, 0.0); // can update later with actual coordinates
 
-        // Create appUsers object
-        appUsers user = new appUsers(id, name, email, role, address, geo);
+        if (currentUser != null) {
+            String uid = currentUser.getUid(); // Use the UID as document ID
 
-        // Save to Firestore
-        db.collection("Users").document(id)
-                .set(user)
-                .addOnSuccessListener(aVoid -> {
-                    Toast.makeText(SignUp.this, "User registered successfully", Toast.LENGTH_SHORT).show();
-                    if (role.equals("professional")) {
-                        startActivity(new Intent(SignUp.this, ServiceProviderProfile.class));
-                    } else {
-                        startActivity(new Intent(SignUp.this, CustomerProfile.class));
-                    }
-//                    startActivity(new Intent(SignUp.this, LogIn.class));
-                    finish();
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(SignUp.this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                });
+            // Firestore instance
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+            // Create Address and Geo objects
+            appUsers.Address address = new appUsers.Address(address1, address2, city, province, "Canada", postalCode);
+            appUsers.Geo geo = new appUsers.Geo(0.0, 0.0);
+
+            // Create user object
+            appUsers user = new appUsers(uid, name, email, role, address, geo);
+
+            // Save to Firestore
+            db.collection("Users").document(uid)
+                    .set(user)
+                    .addOnSuccessListener(aVoid -> {
+                        Toast.makeText(SignUp.this, "User registered successfully", Toast.LENGTH_SHORT).show();
+                        if ("professional".equals(role)) {
+                            startActivity(new Intent(SignUp.this, ServiceProviderHome.class));
+                        } else {
+                            startActivity(new Intent(SignUp.this, CustomerHome.class));
+                        }
+                        finish();
+                    })
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(SignUp.this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    });
+        }
+
     }
 
 
