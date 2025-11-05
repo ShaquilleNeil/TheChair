@@ -1,18 +1,34 @@
 package com.example.thechair;
 
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.quality.MediaQualityManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -25,8 +41,12 @@ public class HomeFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 
     private FirebaseFirestore db;
-    private TextView username;
+    private TextView username, tvprovidername;
+    private ImageView profileimage;
     private FirebaseAuth mAuth;
+    private RecyclerView recyclerView;
+    private ProfessionalsAdapter adapter;
+    private List<appUsers> professionals = new ArrayList<>();
 
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -73,12 +93,40 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
+        recyclerView = view.findViewById(R.id.serviceProvidersRecyclerView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+
+        adapter = new ProfessionalsAdapter(getContext(), professionals);
+        recyclerView.setAdapter(adapter);
+
+
+
         username = view.findViewById(R.id.username);
+        profileimage = view.findViewById(R.id.profileImage);
+
+
 
         db = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
 
+
+
         loadUser();
+        loadProfessionals();
+
+
+        profileimage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ProfileFragment profileFragment = new ProfileFragment();
+                getParentFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.appMainView, profileFragment)
+                        .addToBackStack(null) // optional, allows back navigation
+                        .commit();
+            }
+        });
+
 
         // Inflate the layout for this fragment
         return view;
@@ -86,26 +134,107 @@ public class HomeFragment extends Fragment {
 
 
     private void loadUser() {
-        FirebaseUser user = mAuth.getCurrentUser();
+        UserManager userManager = UserManager.getInstance();
+        appUsers cachedUser = userManager.getUser();
 
-        if (user != null) {
-            String userId = user.getUid();
+        if (cachedUser != null) {
+            username.setText(cachedUser.getName());
 
-            db.collection("Users").document(userId)
+            // Show cached image immediately if available
+            Bitmap cachedBitmap = userManager.getProfileBitmap();
+            if (cachedBitmap != null) {
+                profileimage.setImageBitmap(cachedBitmap);
+            } else {
+                profileimage.setImageResource(R.drawable.banner);
+            }
+        }
+
+        // Fetch latest from Firebase
+        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (firebaseUser != null) {
+            String userId = firebaseUser.getUid();
+            FirebaseFirestore.getInstance().collection("Users").document(userId)
                     .get()
                     .addOnSuccessListener(documentSnapshot -> {
                         if (documentSnapshot.exists()) {
-                            String name = documentSnapshot.getString("name");
-                            username.setText(name);
-                        } else {
-                            username.setText("User not found");
+                            appUsers firebaseUserData = documentSnapshot.toObject(appUsers.class);
+                            if (firebaseUserData != null) {
+                                username.setText(firebaseUserData.getName());
+
+                                String profilePic = firebaseUserData.getProfilepic();
+                                if (profilePic != null) {
+                                    new ImageLoaderTask(profilePic, profileimage, userManager).execute();
+                                } else {
+                                    profileimage.setImageResource(R.drawable.banner);
+                                }
+
+                                userManager.setUser(firebaseUserData);
+                            }
                         }
-                    })
-                    .addOnFailureListener(e -> {
-                        Toast.makeText(getContext(), "Error loading user data", Toast.LENGTH_SHORT).show();
                     });
-        } else {
-            username.setText("Not logged in");
         }
     }
+
+
+
+    private void loadProfessionals() {
+        db.collection("Users").whereEqualTo("role", "professional").get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    professionals.clear(); // clear old data before adding new
+
+                    if (!queryDocumentSnapshots.isEmpty()) {
+                        for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                            appUsers user = document.toObject(appUsers.class);
+                            professionals.add(user);
+                        }
+                        adapter.notifyDataSetChanged(); // refresh RecyclerView
+                    } else {
+                        Log.d("TAG", "No professionals found");
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("TAG", "Error loading professionals", e);
+                    Toast.makeText(getContext(), "Error loading professionals", Toast.LENGTH_SHORT).show();
+                });
+    }
+
+    private static class ImageLoaderTask extends AsyncTask<String, Void, Bitmap> {
+        private final String url;
+        private final ImageView imageView;
+        private final UserManager userManager;
+
+        public ImageLoaderTask(String url, ImageView imageView, UserManager userManager) {
+            this.url = url;
+            this.imageView = imageView;
+            this.userManager = userManager;
+        }
+
+        @Override
+        protected Bitmap doInBackground(String... strings) {
+            try {
+                URL urlConnection = new URL(url);
+                HttpURLConnection connection = (HttpURLConnection) urlConnection.openConnection();
+                connection.setDoInput(true);
+                connection.connect();
+                InputStream input = connection.getInputStream();
+                return BitmapFactory.decodeStream(input);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap bitmap) {
+            if (bitmap != null) {
+                imageView.setImageBitmap(bitmap);
+                userManager.setProfileBitmap(bitmap); // cache the bitmap
+            } else {
+                imageView.setImageResource(R.drawable.banner);
+            }
+        }
+    }
+
+
+
 }

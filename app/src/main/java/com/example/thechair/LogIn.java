@@ -52,6 +52,9 @@ public class LogIn extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
 
 
+
+
+
         textViewSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -11,10 +11,10 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scrollbars="vertical"
         android:fadeScrollbars="false"
+        android:scrollbarSize="12dp"
         android:scrollbarStyle="outsideOverlay"
-        android:scrollbarSize="12dp">
+        android:scrollbars="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -25,178 +25,40 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
                 android:text="Name"
-                android:textSize="16sp"
                 android:textColor="#000000"
-                android:layout_marginTop="8dp"/>
+                android:textSize="16sp" />
 
             <EditText
                 android:id="@+id/editTextName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:background="@android:drawable/edit_text"
                 android:hint="Enter your name"
                 android:inputType="textPersonName"
-                android:padding="10dp"
-                android:background="@android:drawable/edit_text"
-                android:layout_marginBottom="12dp"/>
+                android:padding="10dp" />
 
             <!-- Email Field -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Email"
-                android:textSize="16sp"
-                android:textColor="#000000"/>
+                android:textColor="#000000"
+                android:textSize="16sp" />
 
             <EditText
                 android:id="@+id/editTextEmail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:background="@android:drawable/edit_text"
                 android:hint="Enter your email"
                 android:inputType="textEmailAddress"
-                android:padding="10dp"
-                android:background="@android:drawable/edit_text"
-                android:layout_marginBottom="12dp"/>
+                android:padding="10dp" />
 
-            <!-- Address Line 1 -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Address Line 1"
-                android:textSize="16sp"
-                android:textColor="#000000"
-                android:layout_marginTop="8dp"/>
 
-            <EditText
-                android:id="@+id/editTextAddress1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Enter address line 1"
-                android:inputType="textPostalAddress"
-                android:padding="10dp"
-                android:background="@android:drawable/edit_text"
-                android:layout_marginBottom="12dp"/>
-
-            <!-- Address Line 2 (Optional) -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Address Line 2 (Optional)"
-                android:textSize="16sp"
-                android:textColor="#000000"/>
-
-            <EditText
-                android:id="@+id/editTextAddress2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Enter address line 2"
-                android:inputType="textPostalAddress"
-                android:padding="10dp"
-                android:background="@android:drawable/edit_text"
-                android:layout_marginBottom="12dp"/>
-
-            <!-- City -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="City"
-                android:textSize="16sp"
-                android:textColor="#000000"/>
-
-            <EditText
-                android:id="@+id/editTextCity"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Enter city"
-                android:inputType="text"
-                android:padding="10dp"
-                android:background="@android:drawable/edit_text"
-                android:layout_marginBottom="12dp"/>
-
-            <!-- Province -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Province"
-                android:textSize="16sp"
-                android:textColor="#000000"/>
-
-            <EditText
-                android:id="@+id/editTextProvince"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Enter province"
-                android:inputType="text"
-                android:padding="10dp"
-                android:background="@android:drawable/edit_text"
-                android:layout_marginBottom="12dp"/>
-
-            <!-- Postal Code -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Postal Code"
-                android:textSize="16sp"
-                android:textColor="#000000"/>
-
-            <EditText
-                android:id="@+id/editTextPostalCode"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Enter postal code"
-                android:inputType="textPostalAddress"
-                android:padding="10dp"
-                android:background="@android:drawable/edit_text"
-                android:layout_marginBottom="12dp"/>
-
-            <!-- Phone Number -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Phone Number"
-                android:textSize="16sp"
-                android:textColor="#000000"/>
-
-            <EditText
-                android:id="@+id/editTextPhoneNumber"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Enter phone number"
-                android:inputType="phone"
-                android:padding="10dp"
-                android:background="@android:drawable/edit_text"
-                android:layout_marginBottom="16dp"/>
-
-            <!-- User Type -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="User Type"
-                android:textSize="16sp"
-                android:textColor="#000000"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="4dp"/>
-
-            <RadioGroup
-                android:id="@+id/radioGroupUserType"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <RadioButton
-                    android:id="@+id/radioCustomer"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Customer"
-                    android:layout_marginEnd="16dp"/>
-
-                <RadioButton
-                    android:id="@+id/radioServiceProvider"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Service Provider"/>
-
-            </RadioGroup>
 
 
             <!-- Password Field -->
@@ -204,57 +66,50 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Password"
-                android:textSize="16sp"
-                android:textColor="#000000"/>
+                android:textColor="#000000"
+                android:textSize="16sp" />
 
             <EditText
                 android:id="@+id/editTextPassword"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:background="@android:drawable/edit_text"
                 android:hint="Enter your password"
                 android:inputType="textPassword"
-                android:padding="10dp"
-                android:background="@android:drawable/edit_text"
-                android:layout_marginBottom="12dp"/>
+                android:padding="10dp" />
 
             <!-- Confirm Password Field -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Confirm Password"
-                android:textSize="16sp"
-                android:textColor="#000000"/>
+                android:textColor="#000000"
+                android:textSize="16sp" />
 
             <EditText
                 android:id="@+id/editTextConfirmPassword"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:background="@android:drawable/edit_text"
                 android:hint="Confirm your password"
                 android:inputType="textPassword"
-                android:padding="10dp"
-                android:background="@android:drawable/edit_text"
-                android:layout_marginBottom="16dp"/>
+                android:padding="10dp" />
 
-            <!-- Terms Checkbox -->
-            <CheckBox
-                android:id="@+id/checkBoxTerms"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="I agree to the Terms of Service and Privacy Policy"
-                android:textColor="#000000"
-                android:layout_marginBottom="20dp"/>
 
             <!-- Sign Up Button -->
             <Button
-                android:id="@+id/buttonSignUp"
+                android:id="@+id/buttonnext"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Sign Up"
-                android:textAllCaps="false"
+                android:layout_marginBottom="16dp"
                 android:backgroundTint="#2196F3"
-                android:textColor="#FFFFFF"
                 android:padding="10dp"
-                android:layout_marginBottom="16dp"/>
+                android:text="Next"
+                android:textAllCaps="false"
+                android:textColor="#FFFFFF" />
+
 
             <!-- Already Have an Account -->
             <LinearLayout
@@ -265,22 +120,22 @@
                     android:id="@+id/textViewLoginquestion"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
                     android:text="Already have an account? "
                     android:textColor="#000000"
-                    android:textSize="14sp"
-                    android:layout_marginTop="8dp"/>
+                    android:textSize="14sp" />
 
                 <TextView
                     android:id="@+id/textViewLogin"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Login"
-                    android:textStyle="bold"
-                    android:textColor="#2196F3"
-                    android:textSize="14sp"
                     android:layout_marginTop="8dp"
                     android:clickable="true"
-                    android:focusable="true"/>
+                    android:focusable="true"
+                    android:text="Login"
+                    android:textColor="#2196F3"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
             </LinearLayout>
 
         </LinearLayout>

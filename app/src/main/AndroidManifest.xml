@@ -12,6 +12,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TheChair">
         <activity
+            android:name=".SignUpstg3"
+            android:exported="false" />
+        <activity
+            android:name=".SignUpstg2"
+            android:exported="false" />
+        <activity
             android:name=".SignUp"
             android:exported="false" />
         <activity

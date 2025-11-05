@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+
+
+    android:id="@+id/serviceProvidersLayout"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:gravity="center_vertical">
+
+    <!-- Example Service Provider Card -->
+    <LinearLayout
+        android:layout_width="133dp"
+        android:layout_height="164dp"
+        android:orientation="vertical"
+        android:background="@drawable/rounded_rectangle"
+        android:gravity="center"
+        android:layout_marginEnd="12dp">
+
+        <ImageView
+            android:id="@+id/ivprovider"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/circle_background"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_provider" />
+
+        <TextView
+            android:id="@+id/tvprovidername"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textAlignment="center"/>
+    </LinearLayout>
+
+    <!-- Add more provider cards here -->
+</LinearLayout>

@@ -1,10 +1,11 @@
 package com.example.thechair;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class appUsers {
+public class appUsers implements Serializable {
 
     private String id;
     private String name;
@@ -18,14 +19,18 @@ public class appUsers {
     private List<String> tags;         // service tags
 
     private Address address;           // nested address map
-    private Geo geo;                   // nested geo map
+    private Geo geo;
+    //phone number
+    private String phoneNumber;
+
+    // nested geo map
 
     // Default constructor needed for Firestore
     public appUsers() {}
 
     // Full constructor (services/portfolio/tags can be empty at signup)
     public appUsers(String id, String name, String email, String role,
-                    Address address, Geo geo) {
+                    Address address, Geo geo, String phoneNumber) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -38,6 +43,7 @@ public class appUsers {
         this.tags = new ArrayList<>();
         this.address = address;
         this.geo = geo;
+        this.phoneNumber = phoneNumber;
     }
 
     // Getters and setters
@@ -77,8 +83,13 @@ public class appUsers {
     public Geo getGeo() { return geo; }
     public void setGeo(Geo geo) { this.geo = geo; }
 
+    public String getPhoneNumber() { return phoneNumber; }
+
+    public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
+
+
     // Nested classes
-    public static class Address {
+    public static class Address implements Serializable {
         private String street;
         private String room;
         private String city;
@@ -116,7 +127,7 @@ public class appUsers {
         public void setPostalCode(String postalCode) { this.postalCode = postalCode; }
     }
 
-    public static class Geo {
+    public static class Geo implements Serializable {
         private double lat;
         private double lng;
 
@@ -134,7 +145,7 @@ public class appUsers {
         public void setLng(double lng) { this.lng = lng; }
     }
 
-    public static class Service {
+    public static class Service implements Serializable {
         private String name;
         private double price;
         private int duration;

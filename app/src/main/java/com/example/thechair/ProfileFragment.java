@@ -1,5 +1,8 @@
 package com.example.thechair;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -7,6 +10,16 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -23,6 +36,10 @@ public class ProfileFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    private TextView name, email, phone,profileaddress;
+    private ImageView profileimage;
+
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -59,6 +76,137 @@ public class ProfileFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_profile, container, false);
+        View view = inflater.inflate(R.layout.fragment_profile, container, false);
+
+        name = view.findViewById(R.id.profileName);
+        email = view.findViewById(R.id.profileEmail);
+        phone = view.findViewById(R.id.profilePhone);
+        profileimage = view.findViewById(R.id.profileImage);
+        profileaddress = view.findViewById(R.id.profileAddress);
+
+
+
+
+
+        loadUser();
+        return view;
+    }
+
+
+    private void loadUser() {
+        UserManager userManager = UserManager.getInstance();
+        appUsers cachedUser = userManager.getUser();
+
+        if (cachedUser != null) {
+            name.setText(cachedUser.getName());
+            email.setText(cachedUser.getEmail());
+            phone.setText(cachedUser.getPhoneNumber());
+
+            // Build full address
+            appUsers.Address address = cachedUser.getAddress();
+            if (address != null) {
+                StringBuilder fullAddress = new StringBuilder();
+                if (address.getStreet() != null && !address.getStreet().isEmpty()) fullAddress.append(address.getStreet());
+                if (address.getRoom() != null && !address.getRoom().isEmpty()) fullAddress.append(", ").append(address.getRoom());
+                if (address.getCity() != null && !address.getCity().isEmpty()) fullAddress.append(", ").append(address.getCity());
+                if (address.getProvince() != null && !address.getProvince().isEmpty()) fullAddress.append(", ").append(address.getProvince());
+                if (address.getCountry() != null && !address.getCountry().isEmpty()) fullAddress.append(", ").append(address.getCountry());
+                if (address.getPostalCode() != null && !address.getPostalCode().isEmpty()) fullAddress.append(", ").append(address.getPostalCode());
+
+                profileaddress.setText(fullAddress.toString());
+            } else {
+                profileaddress.setText("Address not provided");
+            }
+
+            // Show cached image immediately if available
+            Bitmap cachedBitmap = userManager.getProfileBitmap();
+            if (cachedBitmap != null) {
+                profileimage.setImageBitmap(cachedBitmap);
+            } else {
+                profileimage.setImageResource(R.drawable.banner);
+            }
+        }
+
+        // Fetch latest from Firebase
+        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (firebaseUser != null) {
+            String userId = firebaseUser.getUid();
+            FirebaseFirestore.getInstance().collection("Users").document(userId)
+                    .get()
+                    .addOnSuccessListener(documentSnapshot -> {
+                        if (documentSnapshot.exists()) {
+                            appUsers firebaseUserData = documentSnapshot.toObject(appUsers.class);
+                            if (firebaseUserData != null) {
+                                name.setText(firebaseUserData.getName());
+                                email.setText(firebaseUserData.getEmail());
+                                phone.setText(firebaseUserData.getPhoneNumber());
+
+                                // Update address again with latest data
+                                appUsers.Address address = firebaseUserData.getAddress();
+                                if (address != null) {
+                                    StringBuilder fullAddress = new StringBuilder();
+                                    if (address.getStreet() != null && !address.getStreet().isEmpty()) fullAddress.append(address.getStreet());
+                                    if (address.getRoom() != null && !address.getRoom().isEmpty()) fullAddress.append(", ").append(address.getRoom());
+                                    if (address.getCity() != null && !address.getCity().isEmpty()) fullAddress.append(", ").append(address.getCity());
+                                    if (address.getProvince() != null && !address.getProvince().isEmpty()) fullAddress.append(", ").append(address.getProvince());
+                                    if (address.getCountry() != null && !address.getCountry().isEmpty()) fullAddress.append(", ").append(address.getCountry());
+                                    if (address.getPostalCode() != null && !address.getPostalCode().isEmpty()) fullAddress.append(", ").append(address.getPostalCode());
+
+                                    profileaddress.setText(fullAddress.toString());
+                                } else {
+                                    profileaddress.setText("Address not provided");
+                                }
+
+                                String profilePic = firebaseUserData.getProfilepic();
+                                if (profilePic != null) {
+                                    new ProfileFragment.ImageLoaderTask(profilePic, profileimage, userManager).execute();
+                                } else {
+                                    profileimage.setImageResource(R.drawable.banner);
+                                }
+
+                                userManager.setUser(firebaseUserData);
+                            }
+                        }
+                    });
+        }
+    }
+
+
+
+    private static class ImageLoaderTask extends AsyncTask<String, Void, Bitmap> {
+        private final String url;
+        private final ImageView imageView;
+        private final UserManager userManager;
+
+        public ImageLoaderTask(String url, ImageView imageView, UserManager userManager) {
+            this.url = url;
+            this.imageView = imageView;
+            this.userManager = userManager;
+        }
+
+        @Override
+        protected Bitmap doInBackground(String... strings) {
+            try {
+                URL urlConnection = new URL(url);
+                HttpURLConnection connection = (HttpURLConnection) urlConnection.openConnection();
+                connection.setDoInput(true);
+                connection.connect();
+                InputStream input = connection.getInputStream();
+                return BitmapFactory.decodeStream(input);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap bitmap) {
+            if (bitmap != null) {
+                imageView.setImageBitmap(bitmap);
+                userManager.setProfileBitmap(bitmap); // cache the bitmap
+            } else {
+                imageView.setImageResource(R.drawable.banner);
+            }
+        }
     }
 }

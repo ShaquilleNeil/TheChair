@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:layout_marginTop="20dp"
+    android:padding="28dp"
+    android:background="#FFFFFF">
+
+    <ImageView
+        android:id="@+id/imageViewprofile"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:background="@color/white"/>
+
+
+    <Button
+        android:id="@+id/buttonuploadimage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Upload image"
+        android:backgroundTint="#2196F3"/>
+    <!-- User Type -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="4dp"
+        android:text="User Type"
+        android:textColor="#000000"
+        android:textSize="16sp" />
+
+    <RadioGroup
+        android:id="@+id/radioGroupUserType"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/radioCustomer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:text="Customer" />
+
+        <RadioButton
+            android:id="@+id/radioServiceProvider"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Service Provider" />
+
+    </RadioGroup>
+
+    <!-- Terms Checkbox -->
+    <CheckBox
+        android:id="@+id/checkBoxTerms"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:text="I agree to the Terms of Service and Privacy Policy"
+        android:textColor="#000000" />
+
+
+    <Button
+        android:id="@+id/buttonSignUp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="#2196F3"
+        android:padding="10dp"
+        android:text="Sign Up"
+        android:textAllCaps="false"
+        android:textColor="#FFFFFF" />
+
+
+
+
+
+</LinearLayout>

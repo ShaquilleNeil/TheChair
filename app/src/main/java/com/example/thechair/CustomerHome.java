@@ -7,6 +7,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.bottomnavigation.LabelVisibilityMode;
+import com.google.android.material.navigation.NavigationBarView;
 
 public class CustomerHome extends AppCompatActivity {
 
@@ -22,6 +24,7 @@ public class CustomerHome extends AppCompatActivity {
 
         //create listener for bottom navigation
         BottomNavigationView bottomNav = findViewById(R.id.bottomNavView);
+        bottomNav.setLabelVisibilityMode(NavigationBarView.LABEL_VISIBILITY_LABELED);
         bottomNav.setOnItemSelectedListener(item ->{
             Fragment fragment = null;
             int id = item.getItemId();
