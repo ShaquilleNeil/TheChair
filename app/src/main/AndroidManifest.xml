@@ -12,25 +12,28 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TheChair">
         <activity
-            android:name=".SignUpstg3"
+            android:name=".Customer.CustomerEditProfile"
             android:exported="false" />
         <activity
-            android:name=".SignUpstg2"
+            android:name=".AuthFlow.SignUpstg3"
             android:exported="false" />
         <activity
-            android:name=".SignUp"
+            android:name=".AuthFlow.SignUpstg2"
             android:exported="false" />
         <activity
-            android:name=".CustomerHome"
+            android:name=".AuthFlow.SignUp"
             android:exported="false" />
         <activity
-            android:name=".ServiceProviderHome"
+            android:name=".Customer.CustomerHome"
             android:exported="false" />
         <activity
-            android:name=".Home"
+            android:name=".Professional.ServiceProviderHome"
             android:exported="false" />
         <activity
-            android:name=".LogIn"
+            android:name=".Customer.Home"
+            android:exported="false" />
+        <activity
+            android:name=".AuthFlow.LogIn"
             android:exported="false" />
         <activity
             android:name=".MainActivity"

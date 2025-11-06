@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".HomeFragment"
+    tools:context=".Customer.HomeFragment"
     android:fitsSystemWindows="true"
     android:padding="10dp"
     android:background="@color/black">
@@ -15,7 +15,7 @@
         android:layout_height="match_parent"
         android:padding="5dp"
         android:fillViewport="true"
-        tools:context=".HomeFragment"
+        tools:context=".Customer.HomeFragment"
         android:background="@color/black">
 
         <LinearLayout

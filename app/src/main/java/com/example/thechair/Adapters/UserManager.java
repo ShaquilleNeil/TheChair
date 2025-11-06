@@ -1,4 +1,4 @@
-package com.example.thechair;
+package com.example.thechair.Adapters;
 
 import android.graphics.Bitmap;
 

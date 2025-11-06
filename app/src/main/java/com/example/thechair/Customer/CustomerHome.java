@@ -1,4 +1,4 @@
-package com.example.thechair;
+package com.example.thechair.Customer;
 
 import android.os.Bundle;
 
@@ -6,8 +6,8 @@ import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+import com.example.thechair.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.bottomnavigation.LabelVisibilityMode;
 import com.google.android.material.navigation.NavigationBarView;
 
 public class CustomerHome extends AppCompatActivity {
@@ -16,7 +16,7 @@ public class CustomerHome extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_customer_profile);
+        setContentView(R.layout.customer_profile_activity);
 
         //loading the fragment
         getSupportFragmentManager().beginTransaction().replace(R.id.appMainView, new HomeFragment()).commit();

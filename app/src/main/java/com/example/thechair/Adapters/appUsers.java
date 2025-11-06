@@ -1,9 +1,8 @@
-package com.example.thechair;
+package com.example.thechair.Adapters;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class appUsers implements Serializable {
 

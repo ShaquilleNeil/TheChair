@@ -1,53 +1,40 @@
-package com.example.thechair;
+package com.example.thechair.Customer;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.quality.MediaQualityManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.example.thechair.R;
+import com.example.thechair.Adapters.UserManager;
+import com.example.thechair.Adapters.appUsers;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link HomeFragment#newInstance} factory method to
+ * Use the {@link ProfileFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class HomeFragment extends Fragment {
+public class ProfileFragment extends Fragment {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-
-    private FirebaseFirestore db;
-    private TextView username, tvprovidername;
-    private ImageView profileimage;
-    private FirebaseAuth mAuth;
-    private RecyclerView recyclerView;
-    private ProfessionalsAdapter adapter;
-    private List<appUsers> professionals = new ArrayList<>();
-
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
@@ -55,7 +42,12 @@ public class HomeFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    public HomeFragment() {
+    private TextView name, email, phone,profileaddress;
+    private ImageView profileimage;
+
+    private Button editprofile;
+
+    public ProfileFragment() {
         // Required empty public constructor
     }
 
@@ -65,11 +57,11 @@ public class HomeFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment HomeFragment.
+     * @return A new instance of fragment ProfileFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static HomeFragment newInstance(String param1, String param2) {
-        HomeFragment fragment = new HomeFragment();
+    public static ProfileFragment newInstance(String param1, String param2) {
+        ProfileFragment fragment = new ProfileFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -83,52 +75,38 @@ public class HomeFragment extends Fragment {
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
-
-
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_home, container, false);
+        // Inflate the layout for this fragment
+        View view = inflater.inflate(R.layout.fragment_profile, container, false);
 
-        recyclerView = view.findViewById(R.id.serviceProvidersRecyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
-
-        adapter = new ProfessionalsAdapter(getContext(), professionals);
-        recyclerView.setAdapter(adapter);
-
-
-
-        username = view.findViewById(R.id.username);
+        name = view.findViewById(R.id.profileName);
+        email = view.findViewById(R.id.profileEmail);
+        phone = view.findViewById(R.id.profilePhone);
         profileimage = view.findViewById(R.id.profileImage);
+        profileaddress = view.findViewById(R.id.profileAddress);
+        editprofile = view.findViewById(R.id.editProfileButton);
 
 
 
-        db = FirebaseFirestore.getInstance();
-        mAuth = FirebaseAuth.getInstance();
+
 
 
 
         loadUser();
-        loadProfessionals();
 
 
-        profileimage.setOnClickListener(new View.OnClickListener() {
+        editprofile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ProfileFragment profileFragment = new ProfileFragment();
-                getParentFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.appMainView, profileFragment)
-                        .addToBackStack(null) // optional, allows back navigation
-                        .commit();
+                Intent intent = new Intent(getActivity(), CustomerEditProfile.class);
+                startActivity(intent);
             }
         });
-
-
-        // Inflate the layout for this fragment
         return view;
     }
 
@@ -138,7 +116,25 @@ public class HomeFragment extends Fragment {
         appUsers cachedUser = userManager.getUser();
 
         if (cachedUser != null) {
-            username.setText(cachedUser.getName());
+            name.setText(cachedUser.getName());
+            email.setText(cachedUser.getEmail());
+            phone.setText(cachedUser.getPhoneNumber());
+
+            // Build full address
+            appUsers.Address address = cachedUser.getAddress();
+            if (address != null) {
+                StringBuilder fullAddress = new StringBuilder();
+                if (address.getStreet() != null && !address.getStreet().isEmpty()) fullAddress.append(address.getStreet());
+                if (address.getRoom() != null && !address.getRoom().isEmpty()) fullAddress.append(", ").append(address.getRoom());
+                if (address.getCity() != null && !address.getCity().isEmpty()) fullAddress.append(", ").append(address.getCity());
+                if (address.getProvince() != null && !address.getProvince().isEmpty()) fullAddress.append(", ").append(address.getProvince());
+                if (address.getCountry() != null && !address.getCountry().isEmpty()) fullAddress.append(", ").append(address.getCountry());
+                if (address.getPostalCode() != null && !address.getPostalCode().isEmpty()) fullAddress.append(", ").append(address.getPostalCode());
+
+                profileaddress.setText(fullAddress.toString());
+            } else {
+                profileaddress.setText("Address not provided");
+            }
 
             // Show cached image immediately if available
             Bitmap cachedBitmap = userManager.getProfileBitmap();
@@ -159,11 +155,29 @@ public class HomeFragment extends Fragment {
                         if (documentSnapshot.exists()) {
                             appUsers firebaseUserData = documentSnapshot.toObject(appUsers.class);
                             if (firebaseUserData != null) {
-                                username.setText(firebaseUserData.getName());
+                                name.setText(firebaseUserData.getName());
+                                email.setText(firebaseUserData.getEmail());
+                                phone.setText(firebaseUserData.getPhoneNumber());
+
+                                // Update address again with latest data
+                                appUsers.Address address = firebaseUserData.getAddress();
+                                if (address != null) {
+                                    StringBuilder fullAddress = new StringBuilder();
+                                    if (address.getStreet() != null && !address.getStreet().isEmpty()) fullAddress.append(address.getStreet());
+                                    if (address.getRoom() != null && !address.getRoom().isEmpty()) fullAddress.append(", ").append(address.getRoom());
+                                    if (address.getCity() != null && !address.getCity().isEmpty()) fullAddress.append(", ").append(address.getCity());
+                                    if (address.getProvince() != null && !address.getProvince().isEmpty()) fullAddress.append(", ").append(address.getProvince());
+                                    if (address.getCountry() != null && !address.getCountry().isEmpty()) fullAddress.append(", ").append(address.getCountry());
+                                    if (address.getPostalCode() != null && !address.getPostalCode().isEmpty()) fullAddress.append(", ").append(address.getPostalCode());
+
+                                    profileaddress.setText(fullAddress.toString());
+                                } else {
+                                    profileaddress.setText("Address not provided");
+                                }
 
                                 String profilePic = firebaseUserData.getProfilepic();
                                 if (profilePic != null) {
-                                    new ImageLoaderTask(profilePic, profileimage, userManager).execute();
+                                    new ProfileFragment.ImageLoaderTask(profilePic, profileimage, userManager).execute();
                                 } else {
                                     profileimage.setImageResource(R.drawable.banner);
                                 }
@@ -176,27 +190,6 @@ public class HomeFragment extends Fragment {
     }
 
 
-
-    private void loadProfessionals() {
-        db.collection("Users").whereEqualTo("role", "professional").get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    professionals.clear(); // clear old data before adding new
-
-                    if (!queryDocumentSnapshots.isEmpty()) {
-                        for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                            appUsers user = document.toObject(appUsers.class);
-                            professionals.add(user);
-                        }
-                        adapter.notifyDataSetChanged(); // refresh RecyclerView
-                    } else {
-                        Log.d("TAG", "No professionals found");
-                    }
-                })
-                .addOnFailureListener(e -> {
-                    Log.e("TAG", "Error loading professionals", e);
-                    Toast.makeText(getContext(), "Error loading professionals", Toast.LENGTH_SHORT).show();
-                });
-    }
 
     private static class ImageLoaderTask extends AsyncTask<String, Void, Bitmap> {
         private final String url;
@@ -234,7 +227,4 @@ public class HomeFragment extends Fragment {
             }
         }
     }
-
-
-
 }

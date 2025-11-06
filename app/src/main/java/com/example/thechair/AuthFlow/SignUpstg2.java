@@ -1,4 +1,4 @@
-package com.example.thechair;
+package com.example.thechair.AuthFlow;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,9 +9,9 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+
+import com.example.thechair.R;
+import com.example.thechair.Adapters.appUsers;
 
 public class SignUpstg2 extends AppCompatActivity {
 
@@ -23,7 +23,7 @@ public class SignUpstg2 extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_sign_upstg2);
+        setContentView(R.layout.authflow_sign_upstg2_activity);
 
         editTextAddress1 = findViewById(R.id.editTextAddress1);
         editTextAddress2 = findViewById(R.id.editTextAddress2);

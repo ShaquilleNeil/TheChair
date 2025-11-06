@@ -1,4 +1,4 @@
-package com.example.thechair;
+package com.example.thechair.Adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -9,6 +9,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.thechair.R;
 
 import java.util.List;
 
@@ -27,7 +29,7 @@ public class ProfessionalsAdapter extends RecyclerView.Adapter<ProfessionalsAdap
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(mContext).inflate(R.layout.prof_info, parent, false);
+        View view = LayoutInflater.from(mContext).inflate(R.layout.prof_info_adapter_item, parent, false);
 
         return new ViewHolder(view);
     }
