@@ -14,7 +14,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.example.thechair.AuthFlow.LogIn;
 import com.example.thechair.R;
 import com.example.thechair.Adapters.UserManager;
 import com.example.thechair.Adapters.appUsers;
@@ -45,7 +47,7 @@ public class ProfileFragment extends Fragment {
     private TextView name, email, phone,profileaddress;
     private ImageView profileimage;
 
-    private Button editprofile;
+    private Button editprofile, signout;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -84,12 +86,16 @@ public class ProfileFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
 
+
+
         name = view.findViewById(R.id.profileName);
         email = view.findViewById(R.id.profileEmail);
         phone = view.findViewById(R.id.profilePhone);
         profileimage = view.findViewById(R.id.profileImage);
         profileaddress = view.findViewById(R.id.profileAddress);
         editprofile = view.findViewById(R.id.editProfileButton);
+        signout = view.findViewById(R.id.btnSignOut);
+
 
 
 
@@ -100,13 +106,36 @@ public class ProfileFragment extends Fragment {
         loadUser();
 
 
-        editprofile.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        editprofile.setOnClickListener(v -> {
+            appUsers user = UserManager.getInstance().getUser();
+            if (user != null && user.getAddress() != null) {
+                appUsers.Address addr = user.getAddress();
+
                 Intent intent = new Intent(getActivity(), CustomerEditProfile.class);
+                intent.putExtra("profilepic", user.getProfilepic());
+                intent.putExtra("name", user.getName());
+                intent.putExtra("email", user.getEmail());
+                intent.putExtra("phone", user.getPhoneNumber());
+                intent.putExtra("addressLine1", addr.getStreet());
+                intent.putExtra("addressLine2", addr.getRoom());
+                intent.putExtra("city", addr.getCity());
+                intent.putExtra("province", addr.getProvince());
+                intent.putExtra("country", addr.getCountry());
+                intent.putExtra("postalCode", addr.getPostalCode());
                 startActivity(intent);
+            } else {
+                Toast.makeText(getContext(), "User address not loaded yet", Toast.LENGTH_SHORT).show();
             }
         });
+
+        signout.setOnClickListener(v -> {
+            FirebaseAuth.getInstance().signOut();
+            Intent intent = new Intent(getActivity(), LogIn.class);
+            startActivity(intent);
+            getActivity().finish();
+        });
+
+
         return view;
     }
 

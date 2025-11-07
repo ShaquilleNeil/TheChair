@@ -117,16 +117,13 @@ public class HomeFragment extends Fragment {
         loadProfessionals();
 
 
-        profileimage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ProfileFragment profileFragment = new ProfileFragment();
-                getParentFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.appMainView, profileFragment)
-                        .addToBackStack(null) // optional, allows back navigation
-                        .commit();
-            }
+        profileimage.setOnClickListener(v -> {
+            ProfileFragment profileFragment = new ProfileFragment();
+            getParentFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.appMainView, profileFragment)
+                    .addToBackStack(null) // optional, allows back navigation
+                    .commit();
         });
 
 

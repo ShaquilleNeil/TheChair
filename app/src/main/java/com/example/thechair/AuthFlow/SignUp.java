@@ -56,56 +56,50 @@ public class SignUp extends AppCompatActivity {
 
 
 
-       buttonnext.setOnClickListener(new View.OnClickListener() {
-           @Override
-           public void onClick(View v) {
-               String name = editTextName.getText().toString().trim();
-               String email = editTextEmail.getText().toString().trim();
-               String password = editTextPassword.getText().toString().trim();
-               String confirm = editTextConfirmPassword.getText().toString().trim();
+       buttonnext.setOnClickListener(v -> {
+           String name = editTextName.getText().toString().trim();
+           String email = editTextEmail.getText().toString().trim();
+           String password = editTextPassword.getText().toString().trim();
+           String confirm = editTextConfirmPassword.getText().toString().trim();
 
-               if(TextUtils.isEmpty(email) || TextUtils.isEmpty(password) || TextUtils.isEmpty(confirm)){
-                   Toast.makeText(SignUp.this, "Please fill all the fields", Toast.LENGTH_SHORT).show();
-                   return;
-               }
-
-               if(!Patterns.EMAIL_ADDRESS.matcher(email).matches()){
-                   editTextEmail.setError("Invalid Email");
-                   editTextEmail.requestFocus();
-                   return;
-               }
-
-               if(password.length() < 8){
-                   editTextPassword.setError("Password must be longer than 8 characters");
-                   editTextPassword.requestFocus();
-                   return;
-               }
-
-               if(!password.equals(confirm)){
-                   editTextConfirmPassword.setError("Passwords do not match");
-                   editTextConfirmPassword.requestFocus();
-                   return;
-               }
-
-               appUsers user = new appUsers();
-               user.setName(name);
-               user.setEmail(email);
-
-               Intent intent = new Intent(SignUp.this, SignUpstg2.class);
-               intent.putExtra("user", user);
-               intent.putExtra("password", password);
-               startActivity(intent);
+           if(TextUtils.isEmpty(email) || TextUtils.isEmpty(password) || TextUtils.isEmpty(confirm)){
+               Toast.makeText(SignUp.this, "Please fill all the fields", Toast.LENGTH_SHORT).show();
+               return;
            }
+
+           if(!Patterns.EMAIL_ADDRESS.matcher(email).matches()){
+               editTextEmail.setError("Invalid Email");
+               editTextEmail.requestFocus();
+               return;
+           }
+
+           if(password.length() < 8){
+               editTextPassword.setError("Password must be longer than 8 characters");
+               editTextPassword.requestFocus();
+               return;
+           }
+
+           if(!password.equals(confirm)){
+               editTextConfirmPassword.setError("Passwords do not match");
+               editTextConfirmPassword.requestFocus();
+               return;
+           }
+
+           appUsers user = new appUsers();
+           user.setName(name);
+           user.setEmail(email);
+
+           Intent intent = new Intent(SignUp.this, SignUpstg2.class);
+           intent.putExtra("user", user);
+           intent.putExtra("password", password);
+           startActivity(intent);
        });
 
 
-       textViewLogin.setOnClickListener(new View.OnClickListener() {
-           @Override
-           public void onClick(View v) {
-               Intent intent = new Intent(SignUp.this, LogIn.class);
-               startActivity(intent);
+       textViewLogin.setOnClickListener(v -> {
+           Intent intent = new Intent(SignUp.this, LogIn.class);
+           startActivity(intent);
 
-           }
        });
 
 

@@ -62,9 +62,7 @@ public class SignUpstg3 extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
 
-        btnupload.setOnClickListener(v -> {
-            selectImageLauncher.launch("image/*");
-        });
+        btnupload.setOnClickListener(v -> selectImageLauncher.launch("image/*"));
 
 
         btnsignup.setOnClickListener(v -> {

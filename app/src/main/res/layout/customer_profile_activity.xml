@@ -18,8 +18,9 @@
         android:id="@+id/bottomNavView"
         android:layout_width="match_parent"
         android:layout_height="78dp"
-        app:menu="@menu/bottom_nav_menu"
-        android:fitsSystemWindows="true"/>
+        android:fitsSystemWindows="true"
+        android:rotationX="3"
+        app:menu="@menu/bottom_nav_menu" />
 
 
 </LinearLayout>

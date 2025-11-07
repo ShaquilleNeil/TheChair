@@ -1,17 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    style="@android:style/Widget.DeviceDefault.ScrollView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
     android:background="@android:color/white"
+    android:padding="16dp"
     tools:context=".Customer.CustomerEditProfile">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center_horizontal">
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
 
         <!-- Profile Image with Edit Button -->
         <FrameLayout
@@ -23,65 +25,71 @@
                 android:id="@+id/editProfileImage"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:src="@drawable/banner"
-                android:scaleType="centerCrop"
                 android:background="@drawable/circle_background"
-                android:clipToOutline="true" />
+                android:clipToOutline="true"
+                android:scaleType="centerCrop"
+                android:src="@drawable/banner" />
 
             <ImageButton
                 android:id="@+id/btnChangePhoto"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:layout_gravity="bottom|end"
-                android:layout_margin="4dp"
-                android:background="@android:color/transparent"
-                android:src="@android:drawable/ic_menu_edit" />
+                android:layout_margin="6dp"
+                android:background="@drawable/circle_background"
+                android:contentDescription="Change photo"
+                android:rotationX="-4"
+                android:rotationY="-10"
+                android:src="@drawable/ic_edit_24"
+                app:tint="@color/black" />
+
         </FrameLayout>
 
         <!-- Full Name -->
         <EditText
             android:id="@+id/inputName"
+            style="@android:style/Widget.Holo.EditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
             android:hint="Full Name"
-            android:inputType="textPersonName"
-            android:layout_marginTop="16dp" />
+            android:inputType="textPersonName" />
 
         <!-- Email -->
         <EditText
             android:id="@+id/inputEmail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
             android:hint="Email"
-            android:inputType="textEmailAddress"
-            android:layout_marginTop="12dp" />
+            android:inputType="textEmailAddress" />
 
         <!-- Phone -->
         <EditText
             android:id="@+id/inputPhone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
             android:hint="Phone Number"
-            android:inputType="phone"
-            android:layout_marginTop="12dp" />
+            android:inputType="phone" />
 
         <!-- Divider -->
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="#DDDDDD"
             android:layout_marginTop="16dp"
-            android:layout_marginBottom="8dp" />
+            android:layout_marginBottom="8dp"
+            android:background="#DDDDDD" />
 
         <!-- Address Label -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
             android:text="Address"
-            android:textSize="16sp"
-            android:textStyle="bold"
             android:textColor="@android:color/black"
-            android:layout_marginBottom="8dp" />
+            android:textSize="16sp"
+            android:textStyle="bold" />
 
         <!-- Address Line 1 -->
         <EditText
@@ -96,67 +104,58 @@
             android:id="@+id/inputAddressLine2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:hint="Apartment / Room (optional)"
-            android:inputType="textPostalAddress"
-            android:layout_marginTop="8dp" />
+            android:inputType="textPostalAddress" />
 
         <!-- City -->
         <EditText
             android:id="@+id/inputCity"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:hint="City"
-            android:inputType="textCapWords"
-            android:layout_marginTop="8dp" />
+            android:inputType="textCapWords" />
 
         <!-- Province/State -->
         <EditText
             android:id="@+id/inputProvince"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:hint="Province / State"
-            android:inputType="textCapWords"
-            android:layout_marginTop="8dp" />
-
-        <!-- Country -->
-        <EditText
-            android:id="@+id/inputCountry"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Country"
-            android:inputType="textCapWords"
-            android:layout_marginTop="8dp" />
+            android:inputType="textCapWords" />
 
         <!-- Postal Code -->
         <EditText
             android:id="@+id/inputPostalCode"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:hint="Postal / ZIP Code"
-            android:inputType="textPostalAddress"
-            android:layout_marginTop="8dp" />
+            android:inputType="textPostalAddress" />
 
         <!-- Save Button -->
         <Button
             android:id="@+id/btnSaveChanges"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Save Changes"
-            android:backgroundTint="@color/black"
-            android:textColor="@android:color/white"
             android:layout_marginTop="24dp"
-            android:padding="12dp" />
+            android:backgroundTint="@color/black"
+            android:padding="12dp"
+            android:text="Save Changes"
+            android:textColor="@android:color/white" />
 
         <!-- Cancel Button -->
         <Button
             android:id="@+id/btnCancel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Cancel"
-            android:backgroundTint="#9E9E9E"
-            android:textColor="@android:color/white"
             android:layout_marginTop="12dp"
-            android:padding="12dp" />
+            android:backgroundTint="#9E9E9E"
+            android:padding="12dp"
+            android:text="Cancel"
+            android:textColor="@android:color/white" />
 
         <!-- Bottom Spacer -->
         <Space
