@@ -16,6 +16,7 @@ firebaseFirestore = "26.0.2"
 firebaseStorage = "22.0.1"
 firebaseDatabase = "22.0.1"
 materialVersion = "1.13.0"
+recyclerview = "1.4.0"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -33,6 +34,7 @@ firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore
 firebase-storage = { group = "com.google.firebase", name = "firebase-storage", version.ref = "firebaseStorage" }
 firebase-database = { group = "com.google.firebase", name = "firebase-database", version.ref = "firebaseDatabase" }
 material-v1110 = { module = "com.google.android.material:material", version.ref = "materialVersion" }
+recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "recyclerview" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

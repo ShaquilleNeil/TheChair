@@ -68,6 +68,9 @@ public class SignUpstg3 extends AppCompatActivity {
         btnsignup.setOnClickListener(v -> {
             if (checkBoxTerms.isChecked()) {
                 registerUser();
+                Intent intent = new Intent(SignUpstg3.this, LogIn.class);
+                startActivity(intent);
+                finish();
             } else {
                 Toast.makeText(SignUpstg3.this, "Please accept terms and conditions", Toast.LENGTH_SHORT).show();
             }
