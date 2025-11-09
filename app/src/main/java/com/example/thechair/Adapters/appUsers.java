@@ -166,4 +166,6 @@ public class appUsers implements Serializable {
         public int getDuration() { return duration; }
         public void setDuration(int duration) { this.duration = duration; }
     }
+
+
 }

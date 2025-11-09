@@ -1,5 +1,6 @@
 package com.example.thechair.Professional;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -7,6 +8,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -44,6 +46,7 @@ public class ProHomeFragment extends Fragment {
     private AppointmentAdapter appointmentAdapter;
     private Map<LocalDate, List<HairAppointment>> appointmentsByDate;
     private ImageView profileimage;
+    private Button btnMyServices, btnMyAvailability;
 
     @Nullable
     @Override
@@ -56,6 +59,11 @@ public class ProHomeFragment extends Fragment {
         recyclerAppointments = view.findViewById(R.id.rviewAppointments);
         username = view.findViewById(R.id.tvStylistName);
         profileimage = view.findViewById(R.id.profileImage);
+        btnMyServices = view.findViewById(R.id.btnServices);
+        btnMyAvailability = view.findViewById(R.id.btnAvailability);
+
+
+
 
         loadUser();
 
@@ -78,6 +86,20 @@ public class ProHomeFragment extends Fragment {
 
         // show today's appointments first
         showAppointmentsForDate(today);
+
+        btnMyServices.setOnClickListener( v -> {
+            // Navigate to MyServicesactivity
+            Intent intent = new Intent(getActivity(), MyServices.class);
+            startActivity(intent);
+
+
+        });
+
+        btnMyAvailability.setOnClickListener(v -> {
+            // Navigate to MyAvailabilityactivity
+            Intent intent = new Intent(getActivity(), MyAvailability.class);
+            startActivity(intent);
+        });
 
 
 

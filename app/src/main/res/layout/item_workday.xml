@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:padding="12dp"
+    android:background="@color/white"
+    android:layout_marginBottom="8dp"
+    android:elevation="2dp">
+
+    <TextView
+        android:id="@+id/txtDayName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Monday"
+        android:textColor="@color/black"
+        android:textSize="16sp" />
+
+    <Switch
+        android:id="@+id/switchAvailable"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp" />
+
+    <TextView
+        android:id="@+id/txtStartTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Start"
+        android:textColor="@color/black"
+        android:textSize="14sp"
+        android:layout_marginEnd="8dp"
+        android:padding="6dp"
+        android:background="@drawable/time_button_bg"
+        android:clickable="true"
+        android:focusable="true" />
+
+    <TextView
+        android:id="@+id/txtEndTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="End"
+        android:textColor="@color/black"
+        android:textSize="14sp"
+        android:padding="6dp"
+        android:background="@drawable/time_button_bg"
+        android:clickable="true"
+        android:focusable="true" />
+
+</LinearLayout>

@@ -15,5 +15,23 @@
     <color name="md_theme_dark_background">#121212</color>
     <color name="md_theme_dark_surface">#121212</color>
     <color name="md_theme_dark_onSurface">#E6E1E5</color>
+    <!-- Core brand colors -->
+    <color name="charcoal">#1C1C1E</color>        <!-- primary background -->
+    <color name="rose_gold">#B76E79</color>       <!-- accent / buttons / highlights -->
+    <color name="soft_rose">#D6A5AD</color>       <!-- lighter accent tone -->
+
+    <!-- Neutral tones -->
+    <color name="light_gray">#A9A9A9</color>      <!-- secondary text -->
+    <color name="dark_gray">#2C2C2E</color>       <!-- card surfaces -->
+    <color name="off_white">#F5F5F7</color>       <!-- icons on dark bg -->
+
+    <!-- Semantic states -->
+    <color name="success_green">#4CAF50</color>
+    <color name="warning_yellow">#FFC107</color>
+    <color name="error_red">#E57373</color>
+
+    <!-- Transparent overlays -->
+    <color name="transparent_black">#66000000</color>
+    <color name="transparent_white">#33FFFFFF</color>
 
 </resources>

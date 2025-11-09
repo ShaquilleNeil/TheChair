@@ -12,6 +12,15 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TheChair">
         <activity
+            android:name=".Professional.MyAvailability"
+            android:exported="false" />
+        <activity
+            android:name=".Professional.AddService"
+            android:exported="false" />
+        <activity
+            android:name=".Professional.MyServices"
+            android:exported="false" />
+        <activity
             android:name=".Customer.CustomerEditProfile"
             android:exported="false" />
         <activity

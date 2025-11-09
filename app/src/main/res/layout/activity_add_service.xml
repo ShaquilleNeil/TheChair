@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="20dp"
+    android:gravity="center_horizontal"
+    android:background="@color/white">
+
+    <!-- Title -->
+    <TextView
+        android:id="@+id/titleAddService"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Add New Service"
+        android:textColor="@color/rose_gold"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="24dp"/>
+
+    <!-- Service Name -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Service Name"
+        android:textColor="@color/light_gray"
+        android:textSize="14sp"
+        android:layout_marginBottom="4dp"/>
+
+    <EditText
+        android:id="@+id/inputServiceName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="e.g. Box Braids"
+        android:padding="10dp"
+        android:textColor="@color/black"
+        android:textColorHint="@color/light_gray" />
+
+    <!-- Price -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Price ($)"
+        android:textColor="@color/light_gray"
+        android:textSize="14sp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="4dp"/>
+
+    <EditText
+        android:id="@+id/inputServicePrice"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="e.g. 50"
+        android:padding="10dp"
+        android:inputType="numberDecimal"
+        android:textColor="@color/black"
+        android:textColorHint="@color/light_gray" />
+
+    <!-- Duration -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Duration (minutes)"
+        android:textColor="@color/light_gray"
+        android:textSize="14sp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="4dp"/>
+
+    <EditText
+        android:id="@+id/inputServiceDuration"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="e.g. 45"
+        android:padding="10dp"
+        android:inputType="number"
+        android:textColor="@color/black"
+        android:textColorHint="@color/light_gray" />
+
+    <!-- Description -->
+<!--    <TextView-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="Description"-->
+<!--        android:textColor="@color/light_gray"-->
+<!--        android:textSize="14sp"-->
+<!--        android:layout_marginTop="16dp"-->
+<!--        android:layout_marginBottom="4dp"/>-->
+
+<!--    <EditText-->
+<!--        android:id="@+id/inputServiceDescription"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="120dp"-->
+<!--        android:gravity="top"-->
+<!--        android:hint="Describe the service..."-->
+<!--        android:padding="10dp"-->
+<!--        android:inputType="textMultiLine"-->
+<!--        android:textColor="@color/white"-->
+<!--        android:textColorHint="@color/light_gray"-->
+<!--        android:background="@drawable/input_bg"/>-->
+
+    <!-- Add Button -->
+    <Button
+        android:id="@+id/btnAddService"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:padding="14dp"
+        android:text="Add Service"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        android:backgroundTint="@color/rose_gold"
+        android:fontFamily="sans-serif-medium"
+        android:layout_marginBottom="12dp"/>
+
+</LinearLayout>
