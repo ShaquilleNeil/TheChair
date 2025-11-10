@@ -101,7 +101,7 @@ public class MyAvailability extends AppCompatActivity {
     }
 
 
-    private void saveAvailability() {
+    private void saveAvailability(){
         if (availabilityList.isEmpty()) return;
 
         CollectionReference availRef = db.collection("Users")

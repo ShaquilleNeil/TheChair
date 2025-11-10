@@ -5,9 +5,7 @@ plugins {
 
 android {
     namespace = "com.example.thechair"
-    compileSdk {
-        version = release(36)
-    }
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.example.thechair"
@@ -15,7 +13,6 @@ android {
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -28,6 +25,7 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
@@ -35,6 +33,9 @@ android {
 }
 
 dependencies {
+    // BOM should come first
+    implementation(platform("com.google.firebase:firebase-bom:33.5.1"))
+
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)
@@ -46,10 +47,12 @@ dependencies {
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.storage)
     implementation(libs.firebase.database)
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+
+    implementation("com.google.firebase:firebase-functions-ktx")
     implementation(libs.recyclerview)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
-//    implementation(libs.material.v1110)
-
 }
