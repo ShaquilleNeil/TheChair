@@ -77,7 +77,7 @@ public class SearchFragment extends Fragment {
         Bundle args = new Bundle();
         args.putString("professionalId", professionalId);
 
-        com.example.thechair.Customer.PublicProfileFragment fragment = new com.example.thechair.Customer.PublicProfileFragment();
+        com.example.thechair.Professional.PublicProfileFragment fragment = new com.example.thechair.Professional.PublicProfileFragment();
         fragment.setArguments(args);
 
         FragmentTransaction transaction = requireActivity()
