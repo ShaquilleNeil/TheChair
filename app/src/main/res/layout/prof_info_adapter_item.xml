@@ -25,7 +25,8 @@
             android:layout_marginTop="12dp"
             android:background="@drawable/circle_background"
             android:scaleType="centerCrop"
-            android:src="@drawable/ic_provider" />
+            android:src="@drawable/ic_provider"
+            android:clipToOutline="true"/>
 
         <TextView
             android:id="@+id/tvprovidername"

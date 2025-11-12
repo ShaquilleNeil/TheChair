@@ -11,10 +11,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.thechair.Adapters.ServiceAdapter;
-import com.example.thechair.Adapters.Services;
 import com.example.thechair.R;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
@@ -23,13 +21,13 @@ import java.util.Map;
 
 public class MyServices extends AppCompatActivity {
 
-    RecyclerView rviewServices;
-    Button btnaddService;
-    ServiceAdapter adapter;
-    ArrayList<Services> servicesList = new ArrayList<>();
+    private RecyclerView rviewServices;
+    private Button btnAddService;
+    private ServiceAdapter adapter;
+    private ArrayList<Map<String, Object>> servicesList = new ArrayList<>();
 
-    FirebaseFirestore db;
-    FirebaseAuth auth;
+    private FirebaseFirestore db;
+    private FirebaseAuth auth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +36,7 @@ public class MyServices extends AppCompatActivity {
         setContentView(R.layout.activity_my_services);
 
         rviewServices = findViewById(R.id.rviewServices);
-        btnaddService = findViewById(R.id.btnAddService);
+        btnAddService = findViewById(R.id.btnAddService);
 
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
@@ -47,10 +45,10 @@ public class MyServices extends AppCompatActivity {
         rviewServices.setLayoutManager(new LinearLayoutManager(this));
         rviewServices.setAdapter(adapter);
 
-        // Load data once when screen opens
+        // Load once when screen opens
         loadServices();
 
-        btnaddService.setOnClickListener(v -> {
+        btnAddService.setOnClickListener(v -> {
             Intent intent = new Intent(MyServices.this, AddService.class);
             startActivity(intent);
         });
@@ -64,22 +62,20 @@ public class MyServices extends AppCompatActivity {
                 .get()
                 .addOnSuccessListener(snapshot -> {
                     if (snapshot != null && snapshot.exists()) {
-                        List<Map<String, Object>> rawServices = (List<Map<String, Object>>) snapshot.get("services");
+                        List<Map<String, Object>> rawServices =
+                                (List<Map<String, Object>>) snapshot.get("services");
+
                         servicesList.clear();
 
-                        if (rawServices != null) {
-                            for (Map<String, Object> s : rawServices) {
-                                String name = (String) s.get("name");
-                                double price = ((Number) s.get("price")).doubleValue();
-                                int duration = ((Number) s.get("duration")).intValue();
-
-                                servicesList.add(new Services(name, price, duration));
-                            }
+                        if (rawServices != null && !rawServices.isEmpty()) {
+                            servicesList.addAll(rawServices);
+                        } else {
+                            Toast.makeText(this, "No services found", Toast.LENGTH_SHORT).show();
                         }
 
                         adapter.notifyDataSetChanged();
                     } else {
-                        Toast.makeText(this, "No services found", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "User not found", Toast.LENGTH_SHORT).show();
                     }
                 })
                 .addOnFailureListener(e ->

@@ -14,6 +14,8 @@ public class appUsers implements Serializable {
     private int ratingCount;           // default 0
     private String profilepic;         // URL
     private List<String> portfolioImages; // URLs
+
+    private String profession;
     private List<Service> services;    // nested service objects
     private List<String> tags;         // service tags
 
@@ -37,6 +39,7 @@ public class appUsers implements Serializable {
         this.rating = 0.0;
         this.ratingCount = 0;
         this.profilepic = "";
+        this.profession = "";
         this.portfolioImages = new ArrayList<>();
         this.services = new ArrayList<>();
         this.tags = new ArrayList<>();
@@ -46,6 +49,16 @@ public class appUsers implements Serializable {
     }
 
     // Getters and setters
+
+
+    public String getProfession() {
+        return profession;
+    }
+
+    public void setProfession(String profession) {
+        this.profession = profession;
+    }
+
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
 

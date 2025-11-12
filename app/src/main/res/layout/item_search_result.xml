@@ -38,7 +38,7 @@
                 android:textSize="16sp" />
 
             <TextView
-                android:id="@+id/proServices"
+                android:id="@+id/proProfession"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Braids, Twists, Locs"

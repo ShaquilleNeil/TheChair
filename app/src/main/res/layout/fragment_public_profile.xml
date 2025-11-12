@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Professional.PublicProfileFragment">
+
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/white"
+        android:padding="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Profile Header -->
+            <ImageView
+                android:id="@+id/profileImage"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_gravity="center_horizontal"
+                android:background="@drawable/circle_background"
+                android:scaleType="centerCrop"
+                android:clipToOutline="true"
+                android:src="@drawable/ic_person" />
+
+            <TextView
+                android:id="@+id/proName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Jane Fade"
+                android:textColor="@android:color/black"
+                android:textStyle="bold"
+                android:textSize="22sp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="8dp" />
+
+            <TextView
+                android:id="@+id/proProfession"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Barber"
+                android:textColor="@android:color/black"
+                android:textSize="16sp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="12dp" />
+
+            <!-- Services -->
+            <TextView
+                android:text="Services"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/black"
+                android:layout_marginBottom="8dp"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/servicesRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"
+                tools:listitem="@layout/item_service" />
+
+            <!-- Gallery -->
+            <TextView
+                android:text="Portfolio"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/black"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="8dp"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/galleryRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"
+                tools:listitem="@layout/item_grid_image" />
+
+            <!-- Book Now -->
+            <Button
+                android:id="@+id/bookNowButton"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:text="Book Now"
+                android:textAllCaps="false"
+                android:backgroundTint="@color/warning_yellow"
+                android:textColor="@android:color/white"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="32dp"/>
+        </LinearLayout>
+    </ScrollView>
+
+
+</FrameLayout>

@@ -35,11 +35,11 @@ public class SearchRepository {
                 fields.put("services.name");
                 fields.put("city");
                 fields.put("tags");
+                fields.put("profession");
                 fields.put("profilepic");
                 fields.put("role");
                 json.put("fields", fields);
 
-                // ✅ 2. Create request body and request
                 RequestBody body = RequestBody.create(
                         json.toString(),
                         MediaType.parse("application/json; charset=utf-8")
@@ -50,7 +50,7 @@ public class SearchRepository {
                         .post(body)
                         .build();
 
-                // ✅ 3. Execute and parse response
+
                 try (Response response = client.newCall(request).execute()) {
                     if (!response.isSuccessful()) {
                         android.util.Log.e("SearchRepository", "❌ HTTP " + response.code());
@@ -76,6 +76,7 @@ public class SearchRepository {
                                     map.put("id", obj.optString("id"));
                                     map.put("name", obj.optString("name"));
                                     map.put("city", obj.optString("city"));
+                                    map.put("profession", obj.optString("profession"));
                                     map.put("profilepic", obj.optString("profilepic"));
                                     map.put("role", obj.optString("role"));
 
@@ -88,7 +89,7 @@ public class SearchRepository {
                                         map.put("tags", tags);
                                     }
 
-                                    // ✅ Fetch real 'services' array from Firestore
+
                                     String id = obj.optString("id");
                                     com.google.firebase.firestore.FirebaseFirestore.getInstance()
                                             .collection("Users")

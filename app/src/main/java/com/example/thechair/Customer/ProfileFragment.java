@@ -220,7 +220,7 @@ public class ProfileFragment extends Fragment {
 
 
 
-    private static class ImageLoaderTask extends AsyncTask<String, Void, Bitmap> {
+    public static class ImageLoaderTask extends AsyncTask<String, Void, Bitmap> {
         private final String url;
         private final ImageView imageView;
         private final UserManager userManager;
