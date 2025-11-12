@@ -1,4 +1,4 @@
-package com.example.thechair.Customer;
+package com.example.thechair.Professional;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
