@@ -47,8 +47,11 @@ dependencies {
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.storage)
     implementation(libs.firebase.database)
-    implementation("com.github.bumptech.glide:glide:4.16.0")
-    annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")
+    implementation("com.github.bumptech.glide:glide:5.0.5")
+    annotationProcessor("com.github.bumptech.glide:compiler:5.0.5")
+    implementation ("com.google.firebase:firebase-messaging")
+    implementation("com.kizitonwose.calendar:view:2.4.1")
+
 
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
 

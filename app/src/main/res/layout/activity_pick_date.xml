@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/brand_charcoal"
+    android:padding="24dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal">
+
+        <!-- FROSTED CARD CONTAINER -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="24dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="24dp"
+            android:background="@color/frosted_bg"
+            android:clipToOutline="true"
+            android:elevation="14dp">
+
+            <!-- Professional Image -->
+            <ImageView
+                android:id="@+id/profileImage"
+                android:layout_width="110dp"
+                android:layout_height="110dp"
+                android:layout_gravity="center_horizontal"
+                android:background="@drawable/circle_background"
+                android:scaleType="centerCrop"
+                android:clipToOutline="true"
+                android:src="@drawable/ic_person"
+                android:layout_marginBottom="20dp" />
+
+            <!-- Pro Name -->
+            <TextView
+                android:id="@+id/tvProName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Pro Name"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:textColor="@color/brand_cream"
+                android:layout_marginBottom="8dp"/>
+
+            <!-- Profession -->
+            <TextView
+                android:id="@+id/proProfession"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Barber"
+                android:textColor="@color/brand_cream_muted"
+                android:textSize="16sp"
+                android:layout_marginBottom="20dp" />
+
+            <!-- Service Name -->
+            <TextView
+                android:id="@+id/tvServiceName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Service Name"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@color/brand_cream"
+                android:layout_marginBottom="12dp"/>
+
+            <!-- Service Price -->
+            <TextView
+                android:id="@+id/tvServicePrice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Price: $40"
+                android:textSize="18sp"
+                android:textColor="@color/brand_cream"
+                android:layout_marginBottom="12dp"/>
+
+            <!-- Service Duration -->
+            <TextView
+                android:id="@+id/tvServiceDuration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Duration: 45 minutes"
+                android:textSize="18sp"
+                android:textColor="@color/brand_cream"
+                android:layout_marginBottom="22dp"/>
+
+            <!-- Divider -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/brand_cream_muted"
+                android:layout_marginBottom="20dp" />
+
+            <!-- Pick Date Button -->
+            <Button
+                android:id="@+id/btnPickDate"
+                android:layout_width="match_parent"
+                android:layout_height="54dp"
+                android:text="Pick a Date"
+                android:textColor="@color/brand_cream"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:backgroundTint="@color/brand_teal"
+                android:layout_marginBottom="16dp" />
+
+            <!-- Selected Date -->
+            <TextView
+                android:id="@+id/tvSelectedDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="No date selected"
+                android:textColor="@color/brand_cream"
+                android:textSize="16sp"
+                android:layout_marginBottom="16dp" />
+
+            <!-- RecyclerView for Time Slots -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rviewTimeSlots"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"/>
+
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

@@ -19,11 +19,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.thechair.Adapters.AppointmentAdapter;
+import com.example.thechair.Adapters.Booking;
 import com.example.thechair.Adapters.DateAdapter;
-import com.example.thechair.Adapters.HairAppointment;
+import com.example.thechair.Adapters.ImageLoaderTask;
 import com.example.thechair.Adapters.UserManager;
 import com.example.thechair.Adapters.appUsers;
-import com.example.thechair.Customer.HomeFragment;
 import com.example.thechair.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -33,9 +33,11 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class ProHomeFragment extends Fragment {
@@ -44,9 +46,11 @@ public class ProHomeFragment extends Fragment {
     private RecyclerView recyclerDates, recyclerAppointments;
     private DateAdapter dateAdapter;
     private AppointmentAdapter appointmentAdapter;
-    private Map<LocalDate, List<HairAppointment>> appointmentsByDate;
     private ImageView profileimage;
     private Button btnMyServices, btnMyAvailability;
+
+    // NEW REAL BOOKINGS MAP
+    private Map<String, List<Booking>> bookingsByDate = new HashMap<>();
 
     @Nullable
     @Override
@@ -62,17 +66,12 @@ public class ProHomeFragment extends Fragment {
         btnMyServices = view.findViewById(R.id.btnServices);
         btnMyAvailability = view.findViewById(R.id.btnAvailability);
 
-
-
-
         loadUser();
-
+        loadBookings();   // ← IMPORTANT!!!
 
         recyclerDates.setLayoutManager(
                 new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         recyclerAppointments.setLayoutManager(new LinearLayoutManager(getContext()));
-
-        setupData(); // we'll define this below
 
         // create 7-day date list
         List<LocalDate> dateList = new ArrayList<>();
@@ -81,32 +80,25 @@ public class ProHomeFragment extends Fragment {
             dateList.add(today.plusDays(i));
         }
 
-        dateAdapter = new DateAdapter(dateList, this::showAppointmentsForDate);
+        dateAdapter = new DateAdapter(dateList, date -> {
+            String label = formatDate(date);
+            showBookingsForDate(label);
+        });
+
         recyclerDates.setAdapter(dateAdapter);
 
-        // show today's appointments first
-        showAppointmentsForDate(today);
-
-        btnMyServices.setOnClickListener( v -> {
-            // Navigate to MyServicesactivity
-            Intent intent = new Intent(getActivity(), MyServices.class);
-            startActivity(intent);
-
-
+        btnMyServices.setOnClickListener(v -> {
+            startActivity(new Intent(getActivity(), MyServices.class));
         });
 
         btnMyAvailability.setOnClickListener(v -> {
-            // Navigate to MyAvailabilityactivity
-            Intent intent = new Intent(getActivity(), MyAvailability.class);
-            startActivity(intent);
+            startActivity(new Intent(getActivity(), MyAvailability.class));
         });
-
-
-
 
         return view;
     }
 
+    // -------------------- LOAD USER --------------------
 
     private void loadUser() {
         UserManager userManager = UserManager.getInstance();
@@ -114,35 +106,25 @@ public class ProHomeFragment extends Fragment {
 
         if (cachedUser != null) {
             username.setText(cachedUser.getName());
-
-            // Show cached image immediately if available
             Bitmap cachedBitmap = userManager.getProfileBitmap();
-            if (cachedBitmap != null) {
-                profileimage.setImageBitmap(cachedBitmap);
-            } else {
-                profileimage.setImageResource(R.drawable.banner);
-            }
+            profileimage.setImageBitmap(cachedBitmap != null ? cachedBitmap : null);
         }
 
-        // Fetch latest from Firebase
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         if (firebaseUser != null) {
             String userId = firebaseUser.getUid();
             FirebaseFirestore.getInstance().collection("Users").document(userId)
                     .get()
-                    .addOnSuccessListener(documentSnapshot -> {
-                        if (documentSnapshot.exists()) {
-                            appUsers firebaseUserData = documentSnapshot.toObject(appUsers.class);
+                    .addOnSuccessListener(document -> {
+                        if (document.exists()) {
+                            appUsers firebaseUserData = document.toObject(appUsers.class);
                             if (firebaseUserData != null) {
                                 username.setText(firebaseUserData.getName());
-
                                 String profilePic = firebaseUserData.getProfilepic();
-                                if (profilePic != null) {
-                                    new ProHomeFragment.ImageLoaderTask(profilePic, profileimage, userManager).execute();
-                                } else {
-                                    profileimage.setImageResource(R.drawable.banner);
-                                }
 
+                                if (profilePic != null) {
+                                    new ImageLoaderTask(profilePic, profileimage, userManager).execute();
+                                }
                                 userManager.setUser(firebaseUserData);
                             }
                         }
@@ -150,64 +132,81 @@ public class ProHomeFragment extends Fragment {
         }
     }
 
-    private void setupData() {
-        appointmentsByDate = new HashMap<>();
+//    public static class ImageLoaderTask extends AsyncTask<String, Void, Bitmap> {
+//        private final String url;
+//        private final ImageView imageView;
+//        private final UserManager userManager;
+//
+//        public ImageLoaderTask(String url, ImageView imageView, UserManager userManager) {
+//            this.url = url;
+//            this.imageView = imageView;
+//            this.userManager = userManager;
+//        }
+//
+//        @Override
+//        protected Bitmap doInBackground(String... strings) {
+//            try {
+//                URL urlConnection = new URL(url);
+//                HttpURLConnection connection = (HttpURLConnection) urlConnection.openConnection();
+//                connection.setDoInput(true);
+//                connection.connect();
+//                InputStream input = connection.getInputStream();
+//                return BitmapFactory.decodeStream(input);
+//            } catch (Exception e) { e.printStackTrace(); }
+//            return null;
+//        }
+//
+//        @Override
+//        protected void onPostExecute(Bitmap bitmap) {
+//            if (bitmap != null) {
+//                imageView.setImageBitmap(bitmap);
+//                userManager.setProfileBitmap(bitmap);
+//            }
+//        }
+//    }
 
-        LocalDate today = LocalDate.now();
-        LocalDate tomorrow = today.plusDays(1);
+    // -------------------- LOAD BOOKINGS --------------------
 
-        appointmentsByDate.put(today, List.of(
-                new HairAppointment("Alison", "Haircut", "10:00 AM", "First-time client"),
-                new HairAppointment("David", "Hair coloring", "1:30 PM", "Bring reference photo")
-        ));
+    private void loadBookings() {
+        String proId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
-        appointmentsByDate.put(tomorrow, List.of(
-                new HairAppointment("Sarah", "Dread retwist", "9:00 AM", "Returning client"),
-                new HairAppointment("Maya", "Silk press", "3:30 PM", "Long hair")
-        ));
+        FirebaseFirestore.getInstance()
+                .collection("Users")
+                .document(proId)
+                .collection("bookings")
+                .get()
+                .addOnSuccessListener(query -> {
+                    bookingsByDate.clear();
+
+                    for (var doc : query.getDocuments()) {
+                        Booking booking = doc.toObject(Booking.class);
+                        if (booking == null) continue;
+
+                        String dateKey = booking.selectedDate;  // "Monday, Nov 17"
+
+                        bookingsByDate
+                                .computeIfAbsent(dateKey, k -> new ArrayList<>())
+                                .add(booking);
+                    }
+
+                    LocalDate today = LocalDate.now();
+                    showBookingsForDate(formatDate(today));
+                });
     }
 
+    // -------------------- SHOW BOOKINGS FOR A SELECTED DATE --------------------
 
-    private static class ImageLoaderTask extends AsyncTask<String, Void, Bitmap> {
-        private final String url;
-        private final ImageView imageView;
-        private final UserManager userManager;
-
-        public ImageLoaderTask(String url, ImageView imageView, UserManager userManager) {
-            this.url = url;
-            this.imageView = imageView;
-            this.userManager = userManager;
-        }
-
-        @Override
-        protected Bitmap doInBackground(String... strings) {
-            try {
-                URL urlConnection = new URL(url);
-                HttpURLConnection connection = (HttpURLConnection) urlConnection.openConnection();
-                connection.setDoInput(true);
-                connection.connect();
-                InputStream input = connection.getInputStream();
-                return BitmapFactory.decodeStream(input);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Bitmap bitmap) {
-            if (bitmap != null) {
-                imageView.setImageBitmap(bitmap);
-                userManager.setProfileBitmap(bitmap); // cache the bitmap
-            } else {
-                imageView.setImageResource(R.drawable.banner);
-            }
-        }
-    }
-
-    private void showAppointmentsForDate(LocalDate date) {
-        List<HairAppointment> list = appointmentsByDate.getOrDefault(date, new ArrayList<>());
+    private void showBookingsForDate(String dateLabel) {
+        List<Booking> list = bookingsByDate.getOrDefault(dateLabel, new ArrayList<>());
         appointmentAdapter = new AppointmentAdapter(list);
         recyclerAppointments.setAdapter(appointmentAdapter);
+    }
+
+    // -------------------- FORMAT DATE --------------------
+
+    private String formatDate(LocalDate date) {
+        DateTimeFormatter formatter =
+                DateTimeFormatter.ofPattern("EEEE, MMM d", Locale.ENGLISH);
+        return date.format(formatter);
     }
 }

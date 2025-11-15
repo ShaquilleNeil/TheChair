@@ -1,83 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Customer.HomeFragment"
-    android:fitsSystemWindows="true"
-    android:padding="10dp"
-    android:background="@color/black">
-
+    android:background="@color/white"
+    android:fitsSystemWindows="false">
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="5dp"
         android:fillViewport="true"
-        tools:context=".Customer.HomeFragment"
-        android:background="@color/black">
+        android:padding="0dp">
 
         <LinearLayout
+            android:id="@+id/contentContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:padding="20dp">
 
-            <!-- Top Profile Section -->
+            <!-- PROFILE HEADER -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:paddingBottom="12dp">
+                android:paddingBottom="16dp">
 
                 <ImageView
                     android:id="@+id/profileImage"
-                    android:layout_width="64dp"
-                    android:layout_height="64dp"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:background="@drawable/circle_mask"
+                    android:clipToOutline="true"
                     android:scaleType="centerCrop"
-                    android:background="@drawable/circle_background"
-                    android:clipToOutline="true" />
+                    android:src="@drawable/ic_person" />
 
                 <TextView
                     android:id="@+id/username"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="John Doe"
-                    android:textSize="18sp"
+                    android:textSize="20sp"
                     android:textStyle="bold"
-                    android:textColor="@android:color/white"
-                    android:layout_marginStart="16dp"/>
-
+                    android:textColor="@color/brand_charcoal_dark"
+                    android:layout_marginStart="16dp" />
             </LinearLayout>
 
-            <!-- Banner -->
-
-            <!-- Categories Heading -->
+            <!-- BANNER -->
             <ImageView
                 android:id="@+id/banner"
                 android:layout_width="match_parent"
-                android:layout_height="140dp"
-                android:layout_marginBottom="16dp"
+                android:layout_height="160dp"
+                android:layout_marginBottom="20dp"
                 android:background="@drawable/rounded_rectangle"
                 android:clipToOutline="true"
                 android:scaleType="centerCrop"
                 android:src="@drawable/banner" />
 
+            <!-- CATEGORIES TITLE -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginBottom="8dp">
+                android:layout_marginBottom="12dp"
+                android:gravity="center_vertical">
 
                 <TextView
                     android:id="@+id/categoriesHeading"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:text="Categories"
-                    android:textSize="20sp"
+                    android:textSize="22sp"
                     android:textStyle="bold"
-                    android:textColor="@android:color/white"
-                    android:layout_weight="1"/>
+                    android:textColor="@color/brand_charcoal_dark" />
 
                 <TextView
                     android:id="@+id/seeAll"
@@ -85,143 +84,141 @@
                     android:layout_height="wrap_content"
                     android:text="See All"
                     android:textSize="14sp"
-                    android:textColor="@android:color/white"/>
+                    android:textColor="@color/brand_teal" />
             </LinearLayout>
 
-            <!-- Categories Images -->
+            <!-- CATEGORIES ROW -->
             <LinearLayout
                 android:id="@+id/categoriesLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
                 android:gravity="center_vertical"
-                android:layout_marginBottom="16dp">
+                android:layout_marginBottom="20dp"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp">
 
                 <!-- Haircut -->
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:gravity="center_horizontal"
-                    android:layout_marginEnd="16dp"
-                    android:layout_weight="1">
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical">
 
                     <ImageView
-                        android:layout_width="60dp"
-                        android:layout_height="60dp"
-                        android:background="@drawable/circle_background"
-                        android:src="@drawable/haircut"
+                        android:layout_width="58dp"
+                        android:layout_height="58dp"
+                        android:background="@drawable/circle_mask"
+                        android:clipToOutline="true"
                         android:scaleType="centerCrop"
-                        android:clipToOutline="true"/>
+                        android:src="@drawable/haircut" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Haircut"
-                        android:textColor="@android:color/white"
-                        android:layout_marginTop="4dp" />
+                        android:textColor="@color/brand_charcoal_dark"
+                        android:textSize="13sp"
+                        android:layout_marginTop="6dp" />
                 </LinearLayout>
 
                 <!-- Locs -->
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:gravity="center_horizontal"
-                    android:layout_marginEnd="16dp"
-                    android:layout_weight="1">
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical">
 
                     <ImageView
-                        android:layout_width="60dp"
-                        android:layout_height="60dp"
-                        android:background="@drawable/circle_background"
+                        android:layout_width="58dp"
+                        android:layout_height="58dp"
+                        android:background="@drawable/circle_mask"
+                        android:clipToOutline="true"
                         android:scaleType="centerCrop"
-                        android:src="@drawable/locs"
-                        android:clipToOutline="true"/>
+                        android:src="@drawable/locs" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Locs"
-                        android:textColor="@android:color/white"
-                        android:layout_marginTop="4dp"/>
+                        android:textColor="@color/brand_charcoal_dark"
+                        android:textSize="13sp"
+                        android:layout_marginTop="6dp" />
                 </LinearLayout>
 
                 <!-- Weaves -->
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:gravity="center_horizontal"
-                    android:layout_marginEnd="16dp"
-                    android:layout_weight="1">
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical">
 
                     <ImageView
-                        android:layout_width="60dp"
-                        android:layout_height="60dp"
-                        android:background="@drawable/circle_background"
-                        android:scaleType="centerCrop"/>
+                        android:layout_width="58dp"
+                        android:layout_height="58dp"
+                        android:background="@drawable/circle_mask"
+                        android:clipToOutline="true"
+                        android:scaleType="centerCrop"
+                       />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Weaves"
-                        android:textColor="@android:color/white"
-                        android:layout_marginTop="4dp"/>
+                        android:textColor="@color/brand_charcoal_dark"
+                        android:textSize="13sp"
+                        android:layout_marginTop="6dp" />
                 </LinearLayout>
 
                 <!-- Braiding -->
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:gravity="center_horizontal"
-                    android:layout_marginEnd="16dp"
-                    android:layout_weight="1">
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical">
 
                     <ImageView
-                        android:layout_width="60dp"
-                        android:layout_height="60dp"
-                        android:background="@drawable/circle_background"
+                        android:layout_width="58dp"
+                        android:layout_height="58dp"
+                        android:background="@drawable/circle_mask"
+                        android:clipToOutline="true"
                         android:scaleType="centerCrop"
-                        android:src="@drawable/braids"
-                        android:clipToOutline="true"/>
+                        android:src="@drawable/braids" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Braiding"
-                        android:textColor="@android:color/white"
-                        android:layout_marginTop="4dp"/>
+                        android:textColor="@color/brand_charcoal_dark"
+                        android:textSize="13sp"
+                        android:layout_marginTop="6dp" />
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- Picks of the Day Heading -->
-
+            <!-- PICKS OF THE DAY -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="5 picks of the day"
+                android:text="5 Picks of the Day"
+                android:textColor="@color/brand_charcoal_dark"
                 android:textSize="22sp"
                 android:textStyle="bold"
-                android:textColor="@android:color/white"
-                android:layout_marginBottom="8dp"/>
+                android:layout_marginBottom="16dp" />
 
-            <!-- Horizontal RecyclerView for service providers -->
+            <!-- HORIZONTAL RECYCLER -->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/serviceProvidersRecyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:clipToPadding="false"
                 android:paddingStart="8dp"
-                android:paddingEnd="8dp"/>
+                android:paddingEnd="8dp" />
 
         </LinearLayout>
 
     </ScrollView>
-
-
-
 </FrameLayout>

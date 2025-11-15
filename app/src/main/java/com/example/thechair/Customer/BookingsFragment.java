@@ -1,66 +1,216 @@
 package com.example.thechair.Customer;
 
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.thechair.Adapters.Booking;
+import com.example.thechair.Adapters.BookingAdapter;
 import com.example.thechair.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link BookingsFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+
 public class BookingsFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private RecyclerView rvToday, rvUpcoming, rvPast;
+    private BookingAdapter todayAdapter, upcomingAdapter, pastAdapter;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private ArrayList<Booking> todayList = new ArrayList<>();
+    private ArrayList<Booking> upcomingList = new ArrayList<>();
+    private ArrayList<Booking> pastList = new ArrayList<>();
 
-    public BookingsFragment() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment BookingsFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static BookingsFragment newInstance(String param1, String param2) {
-        BookingsFragment fragment = new BookingsFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
+    public BookingsFragment() {}
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+
+        View view = inflater.inflate(R.layout.fragment_bookings, container, false);
+
+        // Step 1: Initialize RecyclerViews
+        rvToday = view.findViewById(R.id.rvToday);
+        rvUpcoming = view.findViewById(R.id.rvUpcoming);
+        rvPast = view.findViewById(R.id.rvPast);
+
+        rvToday.setLayoutManager(new LinearLayoutManager(getContext()));
+        rvUpcoming.setLayoutManager(new LinearLayoutManager(getContext()));
+        rvPast.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        // Step 2: Attach adapters
+        todayAdapter = new BookingAdapter(getContext(), todayList);
+        upcomingAdapter = new BookingAdapter(getContext(), upcomingList);
+        pastAdapter = new BookingAdapter(getContext(), pastList);
+
+        rvToday.setAdapter(todayAdapter);
+        rvUpcoming.setAdapter(upcomingAdapter);
+        rvPast.setAdapter(pastAdapter);
+
+        loadBookings();
+
+
+        // Step 3: Setup collapsible headers
+        setupCollapsible(view);
+
+        return view;
+    }
+
+    private void setupCollapsible(View view) {
+
+        LinearLayout sectionToday = view.findViewById(R.id.sectionToday);
+        ImageView ivTodayArrow = view.findViewById(R.id.ivTodayArrow);
+
+        sectionToday.setOnClickListener(v -> {
+            toggle(rvToday, ivTodayArrow);
+        });
+
+        LinearLayout sectionUpcoming = view.findViewById(R.id.sectionUpcoming);
+        ImageView ivUpcomingArrow = view.findViewById(R.id.ivUpcomingArrow);
+
+        sectionUpcoming.setOnClickListener(v -> {
+            toggle(rvUpcoming, ivUpcomingArrow);
+        });
+
+        LinearLayout sectionPast = view.findViewById(R.id.sectionPast);
+        ImageView ivPastArrow = view.findViewById(R.id.ivPastArrow);
+
+        sectionPast.setOnClickListener(v -> {
+            toggle(rvPast, ivPastArrow);
+        });
+    }
+
+    private void toggle(RecyclerView recyclerView, ImageView arrow) {
+        if (recyclerView.getVisibility() == View.VISIBLE) {
+            recyclerView.setVisibility(View.GONE);
+            arrow.setRotation(180);
+        } else {
+            recyclerView.setVisibility(View.VISIBLE);
+            arrow.setRotation(0);
         }
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_bookings, container, false);
+    private void sortBookings(List<Booking> allBookings) {
+
+        todayList.clear();
+        upcomingList.clear();
+        pastList.clear();
+
+        LocalDate today = LocalDate.now();
+
+        for (Booking b : allBookings) {
+
+            try {
+                LocalDate bookingDate = LocalDate.parse(b.getSelectedDate()); // yyyy-MM-dd format
+
+                if (bookingDate.isEqual(today)) {
+                    todayList.add(b);
+                } else if (bookingDate.isAfter(today)) {
+                    upcomingList.add(b);
+                } else {
+                    pastList.add(b);
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        // Optional: sort inside groups
+        upcomingList.sort((a, c) ->
+                LocalDate.parse(a.getSelectedDate()).compareTo(LocalDate.parse(c.getSelectedDate()))
+        );
+
+        pastList.sort((a, c) ->
+                LocalDate.parse(c.getSelectedDate()).compareTo(LocalDate.parse(a.getSelectedDate()))
+        );
+
+        // Notify adapters
+        todayAdapter.notifyDataSetChanged();
+        upcomingAdapter.notifyDataSetChanged();
+        pastAdapter.notifyDataSetChanged();
     }
+
+
+    private void loadBookings() {
+
+        String customerID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        todayList.clear();
+        upcomingList.clear();
+        pastList.clear();
+
+        db.collection("Users")
+                .document(customerID)
+                .collection("bookings")
+                .orderBy("timestamp")
+                .get()
+                .addOnSuccessListener(query -> {
+
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+
+                    String todayStr = sdf.format(new Date());
+                    Date todayDate = null;
+
+                    try {
+                        todayDate = sdf.parse(todayStr);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    for (var doc : query.getDocuments()) {
+
+                        Booking booking = doc.toObject(Booking.class);
+
+                        // -----------------------------
+                        // Parse booking date safely
+                        // -----------------------------
+                        Date bookingDate = null;
+                        try {
+                            bookingDate = sdf.parse(booking.getSelectedDate());
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            continue; // skip bad entry
+                        }
+
+                        // -----------------------------
+                        // Categorize
+                        // -----------------------------
+                        if (bookingDate.equals(todayDate)) {
+                            todayList.add(booking);
+                        } else if (bookingDate.after(todayDate)) {
+                            upcomingList.add(booking);
+                        } else {
+                            pastList.add(booking);
+                        }
+                    }
+
+                    todayAdapter.notifyDataSetChanged();
+                    upcomingAdapter.notifyDataSetChanged();
+                    pastAdapter.notifyDataSetChanged();
+
+                })
+                .addOnFailureListener(e -> {
+                    // handle error
+                });
+    }
+
+
+
 }

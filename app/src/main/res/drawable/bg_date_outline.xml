@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+
+    <!-- Transparent center -->
+    <solid android:color="@android:color/transparent"/>
+
+    <!-- Soft premium outline -->
+    <stroke
+        android:width="2dp"
+        android:color="#40FFFFFF"/>   <!-- 25% white glow -->
+
+    <!-- No corners needed for circle -->
+</shape>

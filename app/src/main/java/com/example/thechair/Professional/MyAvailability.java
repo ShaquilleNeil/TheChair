@@ -1,137 +1,246 @@
 package com.example.thechair.Professional;
 
+import android.app.TimePickerDialog;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
-import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.thechair.Adapters.Availability;
-import com.example.thechair.Adapters.AvailabilityAdapter;
-import com.example.thechair.Adapters.UserManager;
 import com.example.thechair.R;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.WriteBatch;
+import com.google.firebase.firestore.SetOptions;
+import com.kizitonwose.calendar.core.CalendarDay;
+import com.kizitonwose.calendar.core.DayPosition;
+import com.kizitonwose.calendar.view.CalendarView;
+import com.kizitonwose.calendar.view.MonthDayBinder;
+import com.kizitonwose.calendar.view.ViewContainer;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Locale;
 
 public class MyAvailability extends AppCompatActivity {
 
-    private RecyclerView recyclerAvailability;
-    private Button btnSaveAvailability;
+    private CalendarView calendarView;
+    private TextView tvStartTime, tvEndTime;
     private FirebaseFirestore db;
-    private AvailabilityAdapter adapter;
-    private List<Availability> availabilityList = new ArrayList<>();
-    private String userId;
+    private String proId;
+
+    private String startTime = null;
+    private String endTime = null;
+
+    private final List<LocalDate> selectedDates = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_availability);
 
-        recyclerAvailability = findViewById(R.id.recyclerAvailability);
-        btnSaveAvailability = findViewById(R.id.btnSaveAvailability);
-
         db = FirebaseFirestore.getInstance();
-        userId = UserManager.getInstance().getUser().getId();
+        proId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
-        recyclerAvailability.setLayoutManager(new LinearLayoutManager(this));
+        calendarView = findViewById(R.id.calendarView);
+        tvStartTime = findViewById(R.id.tvStartTime);
+        tvEndTime = findViewById(R.id.tvEndTime);
 
-        loadAvailability();
+        setupCalendar();
+        loadExistingAvailability();
 
-        btnSaveAvailability.setOnClickListener(v -> saveAvailability());
+        setupTimePickers();
+
+        findViewById(R.id.btnSaveAvailability).setOnClickListener(v -> saveAvailability());
     }
 
+    /** -------------------- CALENDAR SETUP -------------------- **/
+    private void setupCalendar() {
+        YearMonth currentMonth = null;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            currentMonth = YearMonth.now();
+        }
 
-    private void loadAvailability() {
-        CollectionReference availRef = db.collection("users")
-                .document(userId)
-                .collection("availability");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            calendarView.setup(
+                    currentMonth.minusMonths(12),
+                    currentMonth.plusMonths(12),
+                    DayOfWeek.MONDAY
+            );
+        }
 
-        availRef.get().addOnSuccessListener(task -> {
-            availabilityList.clear();
+        calendarView.scrollToMonth(currentMonth);
 
-            if (task != null && !task.isEmpty()) {
-                for (DocumentSnapshot doc : task.getDocuments()) {
-                    Availability day = doc.toObject(Availability.class);
-                    if (day != null) availabilityList.add(day);
+        calendarView.setDayBinder(new MyDayBinder());
+    }
+
+    /** -------------------- DAY BINDER -------------------- **/
+    private class MyDayBinder implements MonthDayBinder<DayViewContainer> {
+
+        @Override
+        public DayViewContainer create(android.view.View view) {
+            return new DayViewContainer(view);
+        }
+
+        @Override
+        public void bind(DayViewContainer container, CalendarDay day) {
+            container.bind(day);
+        }
+    }
+
+    private class DayViewContainer extends ViewContainer {
+
+        TextView dayText;
+        CalendarDay day;
+
+        DayViewContainer(android.view.View view) {
+            super(view);
+            dayText = view.findViewById(R.id.dayText);
+
+            view.setOnClickListener(v -> {
+                if (day == null || day.getPosition() != DayPosition.MonthDate)
+                    return;
+
+                LocalDate date = day.getDate();
+
+                if (selectedDates.contains(date)) {
+                    loadTimesForDate(date);
+                    selectedDates.remove(date);
+                } else {
+                    selectedDates.add(date);
                 }
-                ensureAllDaysPresent();
+
+                calendarView.notifyDateChanged(date);
+
+            });
+        }
+
+        void bind(CalendarDay day) {
+            this.day = day;
+
+            LocalDate date = day.getDate();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                dayText.setText(String.valueOf(date.getDayOfMonth()));
+            }
+
+            if (selectedDates.contains(date)) {
+                dayText.setBackgroundColor(Color.BLACK);
+                dayText.setTextColor(Color.WHITE);
             } else {
-                setDefaultAvailability();
-            }
-
-            adapter = new AvailabilityAdapter(this, availabilityList);
-            recyclerAvailability.setAdapter(adapter);
-        }).addOnFailureListener(e ->
-                Toast.makeText(this, "Failed to load availability: " + e.getMessage(), Toast.LENGTH_SHORT).show());
-    }
-
-
-    private void ensureAllDaysPresent() {
-        Map<String, Availability> map = new HashMap<>();
-        for (Availability a : availabilityList) {
-            map.put(a.getDay().toLowerCase(), a);
-        }
-
-        String[] allDays = {"monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"};
-        for (String d : allDays) {
-            if (!map.containsKey(d)) {
-                availabilityList.add(new Availability(d, false, "--", "--"));
+                dayText.setBackgroundColor(Color.TRANSPARENT);
+                dayText.setTextColor(Color.BLACK);
             }
         }
-
-        // Sort in Monday→Sunday order
-        availabilityList.sort((a, b) -> dayIndex(a.getDay()) - dayIndex(b.getDay()));
     }
 
+    /** -------------------- TIME PICKERS -------------------- **/
+    private void setupTimePickers() {
 
-    private void setDefaultAvailability() {
-        String[] days = {"monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"};
-        for (String day : days) {
-            availabilityList.add(new Availability(day, false, "--", "--"));
+        tvStartTime.setOnClickListener(v -> {
+            TimePickerDialog dialog = new TimePickerDialog(
+                    this,
+                    (view, hour, minute) -> {
+                        startTime = String.format(Locale.getDefault(), "%02d:%02d", hour, minute);
+                        tvStartTime.setText(startTime);
+                    },
+                    9, 0, true
+            );
+            dialog.show();
+        });
+
+        tvEndTime.setOnClickListener(v -> {
+            TimePickerDialog dialog = new TimePickerDialog(
+                    this,
+                    (view, hour, minute) -> {
+                        endTime = String.format(Locale.getDefault(), "%02d:%02d", hour, minute);
+                        tvEndTime.setText(endTime);
+                    },
+                    17, 0, true
+            );
+            dialog.show();
+        });
+    }
+
+    /** -------------------- SAVE AVAILABILITY -------------------- **/
+    private void saveAvailability() {
+
+        if (selectedDates.isEmpty()) {
+            Toast.makeText(this, "Select at least one date", Toast.LENGTH_SHORT).show();
+            return;
         }
-    }
 
-
-    private void saveAvailability(){
-        if (availabilityList.isEmpty()) return;
-
-        CollectionReference availRef = db.collection("Users")
-                .document(userId)
-                .collection("availability");
-
-        WriteBatch batch = db.batch();
-
-        for (Availability day : availabilityList) {
-            batch.set(availRef.document(day.getDay().toLowerCase()), day);
+        if (startTime == null || endTime == null) {
+            Toast.makeText(this, "Select start and end time", Toast.LENGTH_SHORT).show();
+            return;
         }
 
-        batch.commit()
-                .addOnSuccessListener(aVoid ->
-                        Toast.makeText(this, "Availability saved successfully", Toast.LENGTH_SHORT).show())
-                .addOnFailureListener(e ->
-                        Toast.makeText(this, "Error saving availability: " + e.getMessage(), Toast.LENGTH_SHORT).show());
-    }
+        for (LocalDate date : selectedDates) {
+            String key = date.toString(); // YYYY-MM-DD
 
+            HashMap<String, Object> data = new HashMap<>();
+            data.put("date", key);
+            data.put("startTime", startTime);
+            data.put("endTime", endTime);
 
-    private int dayIndex(String day) {
-        switch (day.toLowerCase()) {
-            case "monday": return 1;
-            case "tuesday": return 2;
-            case "wednesday": return 3;
-            case "thursday": return 4;
-            case "friday": return 5;
-            case "saturday": return 6;
-            case "sunday": return 7;
-            default: return 99;
+            db.collection("Users")
+                    .document(proId)
+                    .collection("availability")
+                    .document(key)
+                    .set(data, SetOptions.merge());
+
         }
+
+        Toast.makeText(this, "Availability saved", Toast.LENGTH_SHORT).show();
+        finish();
     }
+
+    private void loadExistingAvailability() {
+
+        db.collection("Users")  // or "Users" depending on your structure
+                .document(proId)
+                .collection("availability")
+                .get()
+                .addOnSuccessListener(query -> {
+
+                    selectedDates.clear();
+
+                    for (var doc : query.getDocuments()) {
+                        String dateStr = doc.getString("date");
+                        if (dateStr != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                            LocalDate d = LocalDate.parse(dateStr);
+                            selectedDates.add(d);
+                        }
+                    }
+
+                    // refresh the entire calendar so selected dates highlight
+                    calendarView.notifyCalendarChanged();
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Failed to load availability", Toast.LENGTH_SHORT).show();
+                });
+    }
+
+    private void loadTimesForDate(LocalDate date) {
+        db.collection("Users")
+                .document(proId)
+                .collection("availability")
+                .document(date.toString())
+                .get()
+                .addOnSuccessListener(doc -> {
+                    if (doc.exists()) {
+                        startTime = doc.getString("startTime");
+                        endTime = doc.getString("endTime");
+
+                        if (startTime != null) tvStartTime.setText(startTime);
+                        if (endTime != null) tvEndTime.setText(endTime);
+                    }
+                });
+    }
+
+
 }

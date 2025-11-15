@@ -1,19 +1,19 @@
-<?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="10dp"
-    app:cardCornerRadius="16dp"
     app:cardElevation="4dp"
-    app:cardBackgroundColor="@color/charcoal">
+    app:cardCornerRadius="16dp"
+    app:cardBackgroundColor="@android:color/transparent">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="18dp"
+        android:background="@drawable/card_outline">
 
         <!-- Service Name -->
         <TextView
@@ -23,25 +23,21 @@
             android:text="Box Braids"
             android:textSize="18sp"
             android:textStyle="bold"
-            android:textColor="@color/white" />
+            android:textColor="@color/brand_cream" />
 
-        <!-- Description -->
-
-        <!-- Price & Duration Row -->
+        <!-- Price & Duration -->
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:gravity="start"
-            android:layout_marginTop="8dp"
-            >
+            android:layout_marginTop="10dp">
 
             <TextView
                 android:id="@+id/servicePrice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="$50"
-                android:textColor="@color/rose_gold"
+                android:textColor="@color/brand_teal"
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
@@ -50,7 +46,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="50 mins"
-                android:textColor="@color/light_gray"
+                android:textColor="@color/brand_cream_muted"
                 android:textSize="14sp" />
         </LinearLayout>
 

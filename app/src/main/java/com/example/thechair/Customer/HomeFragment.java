@@ -1,5 +1,6 @@
 package com.example.thechair.Customer;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -18,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.thechair.Adapters.ProfessionalsAdapter;
+import com.example.thechair.Professional.PublicProfileFragment;
 import com.example.thechair.R;
 import com.example.thechair.Adapters.UserManager;
 import com.example.thechair.Adapters.appUsers;
@@ -29,8 +31,13 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.Random;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -100,6 +107,23 @@ public class HomeFragment extends Fragment {
 
         adapter = new ProfessionalsAdapter(getContext(), professionals);
         recyclerView.setAdapter(adapter);
+
+        adapter.setOnProfessionalClickListener(pro -> {
+
+            PublicProfileFragment fragment = new PublicProfileFragment();
+            Bundle args = new Bundle();
+            args.putString("professionalId", pro.getId());
+            fragment.setArguments(args);
+
+            requireActivity()
+                    .getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.appMainView, fragment)
+                    .addToBackStack(null)
+                    .commit();
+        });
+
+
 
 
 
@@ -176,28 +200,39 @@ public class HomeFragment extends Fragment {
         }
     }
 
+    private Random getDailyRandom() {
+        String today = new SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(new Date());
+        return new Random(today.hashCode());
+    }
 
 
     private void loadProfessionals() {
-        db.collection("Users").whereEqualTo("role", "professional").get()
+        db.collection("Users")
+                .whereEqualTo("role", "professional")
+                .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
-                    professionals.clear(); // clear old data before adding new
+
+                    professionals.clear();
 
                     if (!queryDocumentSnapshots.isEmpty()) {
                         for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
                             appUsers user = document.toObject(appUsers.class);
                             professionals.add(user);
                         }
-                        adapter.notifyDataSetChanged(); // refresh RecyclerView
-                    } else {
-                        Log.d("TAG", "No professionals found");
+
+                        // Shuffle list randomly
+                        Collections.shuffle(professionals, getDailyRandom());
+
+                        // Keep only first 5
+                        if (professionals.size() > 5) {
+                            professionals = professionals.subList(0, 5);
+                        }
+
+                        adapter.updateList(professionals); // adapter should accept updated list
                     }
-                })
-                .addOnFailureListener(e -> {
-                    Log.e("TAG", "Error loading professionals", e);
-                    Toast.makeText(getContext(), "Error loading professionals", Toast.LENGTH_SHORT).show();
                 });
     }
+
 
     private static class ImageLoaderTask extends AsyncTask<String, Void, Bitmap> {
         private final String url;

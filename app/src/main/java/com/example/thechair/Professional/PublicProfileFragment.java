@@ -1,5 +1,6 @@
 package com.example.thechair.Professional;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.thechair.Adapters.GalleryAdapter;
 import com.example.thechair.Adapters.ServiceAdapter;
+import com.example.thechair.Customer.PickServiceActivity;
 import com.example.thechair.R;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -34,12 +36,16 @@ public class PublicProfileFragment extends Fragment {
 
     private FirebaseFirestore db;
     private String professionalId;
+    private String profilePicUrl;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_public_profile, container, false);
+
+
+
 
         profileImage = view.findViewById(R.id.profileImage);
         proName = view.findViewById(R.id.proName);
@@ -58,9 +64,16 @@ public class PublicProfileFragment extends Fragment {
             loadProfessionalData(professionalId);
         }
 
-        bookNowButton.setOnClickListener(v ->
-                Toast.makeText(getContext(), "Booking feature coming soon!", Toast.LENGTH_SHORT).show()
-        );
+        bookNowButton.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), PickServiceActivity.class);
+            intent.putExtra("professionalId", professionalId);
+            intent.putExtra("professionalName", proName.getText().toString());
+            intent.putExtra("professionalProfession", proProfession.getText().toString());
+            intent.putExtra("professionalProfilePic", profilePicUrl);
+
+            startActivity(intent);
+
+        });
 
         return view;
     }
@@ -77,12 +90,15 @@ public class PublicProfileFragment extends Fragment {
                     proName.setText(name != null ? name : "Unknown");
                     proProfession.setText(profession != null ? profession : "Professional");
 
-                    if (profilePic != null && !profilePic.isEmpty()) {
+                    profilePicUrl = doc.getString("profilepic");
+
+                    if (profilePicUrl != null && !profilePicUrl.isEmpty()) {
                         Glide.with(this)
-                                .load(profilePic)
+                                .load(profilePicUrl)
                                 .placeholder(R.drawable.ic_person)
                                 .into(profileImage);
                     }
+
 
                     Object servicesObj = doc.get("services");
                     if (servicesObj instanceof List) {

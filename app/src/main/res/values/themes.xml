@@ -1,18 +1,37 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
+
+    <!-- Disable M3 tinting for custom buttons -->
+    <style name="NoTintMaterialButton" parent="Widget.Material3.Button">
+        <item name="backgroundTint">@null</item>
+        <item name="rippleColor">@android:color/transparent</item>
+        <item name="elevation">0dp</item>
+    </style>
+
+    <!-- Base premium theme -->
     <style name="Base.Theme.TheChair" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Primary brand color -->
-        <item name="colorPrimary">@color/md_theme_light_primary</item>
-        <item name="colorOnPrimary">@color/md_theme_light_onPrimary</item>
 
-        <!-- Surface and background -->
-        <item name="colorSurface">@color/md_theme_light_surface</item>
-        <item name="colorOnSurface">@color/md_theme_light_onSurface</item>
+        <!-- Brand palette -->
+        <item name="colorPrimary">@color/brand_charcoal</item>
+        <item name="colorOnPrimary">@color/brand_cream</item>
 
-        <!-- Optional: typography and corner shapes -->
+        <item name="colorSecondary">@color/brand_teal</item>
+        <item name="colorOnSecondary">@color/brand_cream</item>
+
+        <!-- Surfaces -->
+        <item name="colorSurface">@color/brand_charcoal_dark</item>
+        <item name="colorOnSurface">@color/brand_cream</item>
+
+        <!-- Background -->
+        <item name="android:windowBackground">@color/brand_charcoal_dark</item>
+
+        <!-- Override Material3 button tinting -->
+        <item name="materialButtonStyle">@style/NoTintMaterialButton</item>
+
+        <!-- Shape appearance (rounded + modern) -->
         <item name="shapeAppearanceMediumComponent">@style/ShapeAppearance.Material3.Corner.Medium</item>
         <item name="shapeAppearanceLargeComponent">@style/ShapeAppearance.Material3.Corner.Large</item>
     </style>
 
     <style name="Theme.TheChair" parent="Base.Theme.TheChair" />
+
 </resources>

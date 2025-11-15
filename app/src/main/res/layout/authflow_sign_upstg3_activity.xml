@@ -6,52 +6,65 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:gravity="center"
-    android:layout_marginTop="20dp"
+    android:gravity="center_horizontal"
     android:padding="28dp"
-    android:background="#FFFFFF">
+    android:background="@color/brand_charcoal_dark">
 
+    <!-- Uploaded Image Preview -->
     <ImageView
         android:id="@+id/imageViewprofile"
         android:layout_width="match_parent"
         android:layout_height="200dp"
-        android:background="@color/white"/>
+        android:layout_marginTop="20dp"
+        android:background="@color/brand_charcoal"
+        android:scaleType="centerCrop"
+        android:clipToOutline="true" />
 
-
+    <!-- Upload Image Button -->
     <Button
         android:id="@+id/buttonuploadimage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Upload image"
-        android:backgroundTint="#2196F3"/>
-    <!-- User Type -->
+        android:text="Upload Image"
+        android:textAllCaps="false"
+        android:backgroundTint="@color/brand_teal"
+        android:textColor="@color/white"
+        android:layout_marginTop="14dp"
+        android:padding="12dp" />
+
+    <!-- User Type Label -->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="4dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="6dp"
         android:text="User Type"
-        android:textColor="#000000"
-        android:textSize="16sp" />
+        android:textColor="@color/brand_cream"
+        android:textSize="16sp"
+        android:textStyle="bold" />
 
+    <!-- Radio Group -->
     <RadioGroup
         android:id="@+id/radioGroupUserType"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:layout_marginBottom="12dp">
 
         <RadioButton
             android:id="@+id/radioCustomer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:text="Customer" />
+            android:text="Customer"
+            android:textColor="@color/brand_cream" />
 
         <RadioButton
             android:id="@+id/radioServiceProvider"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Service Provider" />
+            android:layout_marginStart="20dp"
+            android:text="Service Provider"
+            android:textColor="@color/brand_cream" />
 
     </RadioGroup>
 
@@ -60,24 +73,21 @@
         android:id="@+id/checkBoxTerms"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp"
         android:text="I agree to the Terms of Service and Privacy Policy"
-        android:textColor="#000000" />
+        android:textColor="@color/brand_cream_muted"
+        android:layout_marginBottom="24dp" />
 
-
+    <!-- SIGN UP BUTTON -->
     <Button
         android:id="@+id/buttonSignUp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:backgroundTint="#2196F3"
-        android:padding="10dp"
         android:text="Sign Up"
         android:textAllCaps="false"
-        android:textColor="#FFFFFF" />
-
-
-
-
+        android:backgroundTint="@color/brand_teal"
+        android:textColor="@android:color/white"
+        android:textStyle="bold"
+        android:padding="14dp"
+        android:layout_marginTop="8dp" />
 
 </LinearLayout>

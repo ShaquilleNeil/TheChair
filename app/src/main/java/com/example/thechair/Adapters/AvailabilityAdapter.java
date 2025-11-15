@@ -30,7 +30,7 @@ public class AvailabilityAdapter extends RecyclerView.Adapter<AvailabilityAdapte
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context)
-                .inflate(R.layout.item_workday, parent, false);
+                .inflate(R.layout.da_item_workday, parent, false);
         return new ViewHolder(view);
     }
 

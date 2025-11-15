@@ -2,39 +2,81 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/white"
-    android:padding="16dp">
+    android:padding="20dp"
+    android:background="@color/brand_charcoal"
+    tools:context=".Professional.MyAvailability">
 
+    <!-- TITLE -->
     <TextView
         android:id="@+id/titleAvailability"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="My Weekly Availability"
+        android:text="Set Monthly Availability"
         android:textSize="20sp"
         android:textStyle="bold"
-        android:textColor="@color/black"
+        android:textColor="@color/brand_cream"
         android:gravity="center"
-        android:layout_marginBottom="12dp" />
+        android:layout_marginBottom="20dp" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerAvailability"
+    <!-- FROSTED CALENDAR CONTAINER -->
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:overScrollMode="never"
-        android:scrollbars="vertical" />
+        android:layout_height="wrap_content"
+        android:background="@color/frosted_bg"
+        android:padding="16dp"
+        android:orientation="vertical"
+        android:clipToOutline="true"
+        android:layout_marginBottom="20dp">
 
+        <!-- CALENDAR -->
+        <com.kizitonwose.calendar.view.CalendarView
+            android:id="@+id/calendarView"
+            android:layout_width="match_parent"
+            android:layout_height="350dp"
+            app:cv_dayViewResource="@layout/calendar_day" />
+
+    </LinearLayout>
+
+    <!-- START TIME -->
+    <TextView
+        android:id="@+id/tvStartTime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Select Start Time"
+        android:textSize="16sp"
+        android:textColor="@color/brand_cream"
+        android:background="@color/frosted_bg"
+        android:padding="14dp"
+        android:layout_marginBottom="12dp"
+        android:gravity="center_vertical" />
+
+    <!-- END TIME -->
+    <TextView
+        android:id="@+id/tvEndTime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Select End Time"
+        android:textSize="16sp"
+        android:textColor="@color/brand_cream"
+        android:background="@color/frosted_bg"
+        android:padding="14dp"
+        android:layout_marginBottom="22dp"
+        android:gravity="center_vertical" />
+
+    <!-- SAVE BUTTON -->
     <Button
         android:id="@+id/btnSaveAvailability"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="52dp"
         android:text="Save Availability"
-        android:textColor="@color/white"
-        android:backgroundTint="@color/black"
-        android:layout_marginTop="12dp"
-        android:padding="12dp" />
+        android:textStyle="bold"
+        android:textColor="@color/brand_cream"
+        android:backgroundTint="@color/brand_teal"
+        android:fontFamily="sans-serif-medium"
+        android:elevation="6dp" />
 
 </LinearLayout>

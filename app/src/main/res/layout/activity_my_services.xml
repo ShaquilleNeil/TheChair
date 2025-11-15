@@ -1,34 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Professional.MyServices"
+    android:background="@color/black"
     android:padding="20dp">
 
-    <Button
-        android:id="@+id/btnAddService"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Add Service"
-        app:layout_constraintBottom_toTopOf="@+id/rviewServices"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.024"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.222"
-        android:layout_marginTop="10dp"/>
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rviewServices"
+    <!-- GLASS CARD -->
+    <LinearLayout
+        android:id="@+id/glassPanel"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="@drawable/bg_glass_heavy"
+        android:padding="20dp"
+        android:clipToOutline="true"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.139" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- HEADER -->
+        <TextView
+            android:id="@+id/titleServices"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="My Services"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/white"
+            android:layout_marginBottom="16dp" />
+
+        <!-- ADD SERVICE BUTTON -->
+        <Button
+            android:id="@+id/btnAddService"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add Service"
+            android:textAllCaps="false"
+            android:backgroundTint="@color/warning_yellow"
+            android:textColor="@android:color/white"
+            android:paddingHorizontal="20dp"
+            android:paddingVertical="8dp"
+            android:layout_gravity="end"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- RECYCLER VIEW -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rviewServices"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:clipToPadding="false"
+            android:paddingBottom="20dp"/>
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

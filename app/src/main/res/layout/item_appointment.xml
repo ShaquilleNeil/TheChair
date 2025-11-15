@@ -6,50 +6,84 @@
     android:padding="12dp"
     android:layout_marginBottom="8dp">
 
+    <!-- TIME RANGE -->
     <TextView
         android:id="@+id/txtTime"
-        android:text="10:30 AM"
+        android:text="10:30 - 12:00"
         android:textSize="16sp"
         android:textStyle="bold"
-        android:textColor="#4F46E5"
+        android:textColor="@color/brand_teal"
         android:layout_marginBottom="4dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
+    <!-- CLIENT NAME -->
     <TextView
         android:id="@+id/txtClientName"
         android:text="Client: Alison"
         android:textSize="16sp"
         android:textStyle="bold"
-        android:textColor="#000"
+        android:textColor="@color/brand_cream"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
+    <!-- SERVICE NAME -->
     <TextView
         android:id="@+id/txtService"
-        android:text="Haircut"
+        android:text="Silk Press"
         android:textSize="14sp"
-        android:textColor="#666"
+        android:textColor="@color/brand_cream_muted"
         android:layout_marginBottom="4dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
+    <!-- STATUS -->
     <TextView
-        android:id="@+id/txtNotes"
-        android:text="Notes: Bring extensions"
+        android:id="@+id/txtStatus"
+        android:text="Status: pending"
         android:textSize="13sp"
-        android:textColor="#888"
+        android:textColor="@color/brand_cream_muted"
         android:layout_marginBottom="8dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
-    <Button
-        android:id="@+id/btnDone"
-        android:text="Mark as Done"
-        android:textSize="13sp"
-        android:textAllCaps="false"
-        android:backgroundTint="#4F46E5"
-        android:textColor="#FFFFFF"
+    <!-- BUTTONS ROW: Accept / Reject / Done -->
+    <LinearLayout
+        android:id="@+id/pendingButtons"
+        android:orientation="horizontal"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp">
+
+        <Button
+            android:id="@+id/btnAccept"
+            android:text="Accept"
+            android:textColor="@color/white"
+            android:textSize="13sp"
+            android:backgroundTint="@color/success_green"
+            android:layout_marginRight="8dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/btnReject"
+            android:text="Reject"
+            android:textColor="@color/white"
+            android:textSize="13sp"
+            android:backgroundTint="@color/error_red"
+            android:layout_marginRight="8dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/btnDone"
+            android:text="Mark as Done"
+            android:textSize="13sp"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:backgroundTint="@color/brand_teal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
 </LinearLayout>

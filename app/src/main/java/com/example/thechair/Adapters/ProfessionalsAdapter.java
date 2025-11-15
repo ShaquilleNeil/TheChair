@@ -22,40 +22,51 @@ import java.util.List;
 
 public class ProfessionalsAdapter extends RecyclerView.Adapter<ProfessionalsAdapter.ViewHolder> {
 
-    private Context mContext;
+    private final Context mContext;
     private List<appUsers> mProfessionals;
-    private UserManager userManager;
 
-
-    public ProfessionalsAdapter(Context context, List<appUsers> professionals) {
-        mContext = context;
-        mProfessionals = professionals;
+    // CLICK LISTENER
+    public interface ProfessionalClickListener {
+        void onProfessionalClick(appUsers professional);
     }
 
+    private ProfessionalClickListener clickListener;
 
+    public void setOnProfessionalClickListener(ProfessionalClickListener listener) {
+        this.clickListener = listener;
+    }
+
+    public ProfessionalsAdapter(Context context, List<appUsers> professionals) {
+        this.mContext = context;
+        this.mProfessionals = professionals;
+    }
+
+    // ---- NEW: Proper updateList method ----
+    public void updateList(List<appUsers> newList) {
+        this.mProfessionals = newList;
+        notifyDataSetChanged();
+    }
 
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(mContext).inflate(R.layout.prof_info_adapter_item, parent, false);
-
+    public ProfessionalsAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(mContext)
+                .inflate(R.layout.prof_info_adapter_item, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-
+    public void onBindViewHolder(@NonNull ProfessionalsAdapter.ViewHolder holder, int position) {
         appUsers professional = mProfessionals.get(position);
 
         holder.tvprovidername.setText(professional.getName());
 
         String imageUrl = professional.getProfilepic();
-        if (imageUrl != null) {
-            new ImageLoaderTask(imageUrl, holder.ivprovider, userManager.getInstance()).execute();
+        if (imageUrl != null && !imageUrl.isEmpty()) {
+            new ImageLoaderTask(imageUrl, holder.ivprovider).execute();
         } else {
             holder.ivprovider.setImageResource(R.drawable.banner);
         }
-
     }
 
     @Override
@@ -63,29 +74,35 @@ public class ProfessionalsAdapter extends RecyclerView.Adapter<ProfessionalsAdap
         return mProfessionals.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder {
+
         ImageView ivprovider;
         TextView tvprovidername;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
+
             ivprovider = itemView.findViewById(R.id.ivprovider);
             tvprovidername = itemView.findViewById(R.id.tvprovidername);
+
+            itemView.setOnClickListener(v -> {
+                int pos = getAdapterPosition();
+                if (pos != RecyclerView.NO_POSITION && clickListener != null) {
+                    clickListener.onProfessionalClick(mProfessionals.get(pos));
+                }
+            });
         }
     }
 
-
-
+    // ----------------- IMAGE LOADER -----------------
 
     private static class ImageLoaderTask extends AsyncTask<String, Void, Bitmap> {
         private final String url;
         private final ImageView imageView;
-        private final UserManager userManager;
 
-        public ImageLoaderTask(String url, ImageView imageView, UserManager userManager) {
+        public ImageLoaderTask(String url, ImageView imageView) {
             this.url = url;
             this.imageView = imageView;
-            this.userManager = userManager;
         }
 
         @Override
@@ -95,26 +112,23 @@ public class ProfessionalsAdapter extends RecyclerView.Adapter<ProfessionalsAdap
                 HttpURLConnection connection = (HttpURLConnection) urlConnection.openConnection();
                 connection.setDoInput(true);
                 connection.connect();
+
                 InputStream input = connection.getInputStream();
                 return BitmapFactory.decodeStream(input);
+
             } catch (Exception e) {
                 e.printStackTrace();
+                return null;
             }
-            return null;
         }
 
         @Override
         protected void onPostExecute(Bitmap bitmap) {
             if (bitmap != null) {
                 imageView.setImageBitmap(bitmap);
-                userManager.setProfileBitmap(bitmap); // cache the bitmap
             } else {
                 imageView.setImageResource(R.drawable.banner);
             }
         }
     }
-
-
-
-
 }

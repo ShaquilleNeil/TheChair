@@ -3,26 +3,25 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/brand_charcoal"
     tools:context=".Professional.PublicProfileFragment">
 
-    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@android:color/white"
         android:padding="16dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:gravity="center_horizontal">
 
             <!-- Profile Header -->
             <ImageView
                 android:id="@+id/profileImage"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_gravity="center_horizontal"
+                android:layout_width="110dp"
+                android:layout_height="110dp"
                 android:background="@drawable/circle_background"
                 android:scaleType="centerCrop"
                 android:clipToOutline="true"
@@ -33,21 +32,19 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Jane Fade"
-                android:textColor="@android:color/black"
+                android:textColor="@color/brand_cream"
                 android:textStyle="bold"
                 android:textSize="22sp"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="8dp" />
+                android:layout_marginTop="10dp" />
 
             <TextView
                 android:id="@+id/proProfession"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Barber"
-                android:textColor="@android:color/black"
+                android:textColor="@color/brand_cream_muted"
                 android:textSize="16sp"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginBottom="12dp" />
+                android:layout_marginBottom="14dp" />
 
             <!-- Services -->
             <TextView
@@ -56,7 +53,7 @@
                 android:textSize="18sp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@android:color/black"
+                android:textColor="@color/brand_cream"
                 android:layout_marginBottom="8dp"/>
 
             <androidx.recyclerview.widget.RecyclerView
@@ -66,14 +63,14 @@
                 android:nestedScrollingEnabled="false"
                 tools:listitem="@layout/item_service" />
 
-            <!-- Gallery -->
+            <!-- Portfolio Heading -->
             <TextView
                 android:text="Portfolio"
                 android:textStyle="bold"
                 android:textSize="18sp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@android:color/black"
+                android:textColor="@color/brand_cream"
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="8dp"/>
 
@@ -84,19 +81,19 @@
                 android:nestedScrollingEnabled="false"
                 tools:listitem="@layout/item_grid_image" />
 
-            <!-- Book Now -->
+            <!-- Book Now Button -->
             <Button
                 android:id="@+id/bookNowButton"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="52dp"
                 android:text="Book Now"
                 android:textAllCaps="false"
-                android:backgroundTint="@color/black"
-                android:textColor="@android:color/white"
-                android:layout_marginTop="24dp"
-                android:layout_marginBottom="32dp"/>
+                android:backgroundTint="@color/brand_teal"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:layout_marginTop="28dp"
+                android:layout_marginBottom="36dp"/>
         </LinearLayout>
     </ScrollView>
-
 
 </FrameLayout>

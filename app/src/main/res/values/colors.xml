@@ -1,36 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <!-- Basic -->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="md_theme_light_primary">#006E1C</color>
-    <color name="md_theme_light_onPrimary">#FFFFFF</color>
-    <color name="md_theme_light_secondary">#4CAF50</color>
-    <color name="md_theme_light_background">#FFFFFF</color>
-    <color name="md_theme_light_surface">#FFFFFF</color>
-    <color name="md_theme_light_onSurface">#1C1B1F</color>
-    <color name="red">#FF0000</color>
-    <color name="md_theme_dark_primary">#00C853</color>
-    <color name="md_theme_dark_onPrimary">#003314</color>
-    <color name="md_theme_dark_secondary">#81C784</color>
-    <color name="md_theme_dark_background">#121212</color>
-    <color name="md_theme_dark_surface">#121212</color>
-    <color name="md_theme_dark_onSurface">#E6E1E5</color>
-    <!-- Core brand colors -->
-    <color name="charcoal">#1C1C1E</color>        <!-- primary background -->
-    <color name="rose_gold">#B76E79</color>       <!-- accent / buttons / highlights -->
-    <color name="soft_rose">#D6A5AD</color>       <!-- lighter accent tone -->
 
-    <!-- Neutral tones -->
-    <color name="light_gray">#A9A9A9</color>      <!-- secondary text -->
-    <color name="dark_gray">#2C2C2E</color>       <!-- card surfaces -->
-    <color name="off_white">#F5F5F7</color>       <!-- icons on dark bg -->
+    <!-- THE CHAIR Branding -->
+    <color name="brand_charcoal">#1C1C1E</color>          <!-- Background -->
+    <color name="brand_charcoal_dark">#0F0F0F</color>     <!-- Deep background -->
+    <color name="brand_cream">#F8EEDC</color>             <!-- Light contrast -->
+    <color name="brand_cream_muted">#BFB6A6</color>       <!-- Secondary cream -->
+    <color name="brand_teal">#4AAAD5</color>              <!-- Accent / primary action -->
+    <color name="brand_teal_dark">#2F7E9E</color>         <!-- Button press state -->
 
-    <!-- Semantic states -->
+    <!-- Surface / UI elements -->
+    <color name="input_bg">#14FFFFFF</color>              <!-- Frosted inputs -->
+    <color name="input_border">#33FFFFFF</color>
+    <color name="frosted_bg">#1AFFFFFF</color>            <!-- Frosted card -->
+
+    <!-- Semantic colors -->
     <color name="success_green">#4CAF50</color>
     <color name="warning_yellow">#FFC107</color>
     <color name="error_red">#E57373</color>
 
-    <!-- Transparent overlays -->
+    <!-- Utility Transparent Colors -->
     <color name="transparent_black">#66000000</color>
     <color name="transparent_white">#33FFFFFF</color>
 

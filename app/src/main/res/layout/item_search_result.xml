@@ -1,50 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    app:cardCornerRadius="12dp"
-    app:cardElevation="4dp">
+    android:layout_margin="10dp"
+    app:cardCornerRadius="18dp"
+    app:cardElevation="0dp"
+    app:cardUseCompatPadding="true"
+    app:cardBackgroundColor="@android:color/transparent">
 
+    <!-- Custom outlined background -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="12dp">
+        android:padding="16dp"
+        android:background="@drawable/card_outline">
 
         <ImageView
             android:id="@+id/profileImage"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_marginEnd="16dp"
             android:scaleType="centerCrop"
-            android:src="@drawable/ic_person_placeholder"
-            android:layout_marginEnd="12dp"
             android:background="@drawable/circle_background"
-            android:clipToOutline="true" />
+            android:clipToOutline="true"
+            android:src="@drawable/ic_person" />
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:gravity="center_vertical">
 
             <TextView
                 android:id="@+id/proName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Stylist Name"
+                android:textSize="18sp"
                 android:textStyle="bold"
-                android:textSize="16sp" />
+                android:textColor="@color/brand_cream" />
 
             <TextView
                 android:id="@+id/proProfession"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Braids, Twists, Locs"
-                android:textColor="@android:color/darker_gray"
                 android:textSize="14sp"
-                android:layout_marginTop="4dp" />
+                android:textColor="@color/brand_cream_muted"
+                android:layout_marginTop="6dp" />
+
         </LinearLayout>
+
     </LinearLayout>
+
 </androidx.cardview.widget.CardView>

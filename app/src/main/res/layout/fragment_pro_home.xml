@@ -5,86 +5,109 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
-    android:layout_marginTop="20dp"
+    android:padding="20dp"
+    android:background="@color/brand_charcoal"
     tools:context=".Professional.ProHomeFragment">
 
-    <!-- Profile section -->
-
-
-    <!-- Horizontal Dates -->
-    <com.google.android.material.imageview.ShapeableImageView
-        android:id="@+id/profileImage"
-        android:layout_width="90dp"
-        android:layout_height="90dp"
-        android:layout_marginTop="16dp"
-        android:scaleType="centerCrop"
-        app:shapeAppearanceOverlay="@style/CircleImage"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="MissingConstraints" />
-
-
-    <TextView
-        android:id="@+id/tvStylistName"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
-        android:layout_marginTop="16dp"
-        android:text="Welcome, Stylist!"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@id/profileImage"
-        app:layout_constraintTop_toTopOf="@id/profileImage" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rviewDates"
+    <!-- PROFILE HEADER -->
+    <LinearLayout
+        android:id="@+id/profileHeader"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@id/profileImage"
+        android:gravity="center_vertical"
+        android:padding="18dp"
+        android:background="@drawable/bg_glass"
+        android:elevation="8dp"
+        android:clipToOutline="true"
+        android:layout_marginBottom="24dp"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="24dp"
-        android:overScrollMode="never" />
+        app:layout_constraintEnd_toEndOf="parent">
 
-    <!-- Vertical Appointments -->
+        <!-- Circular Image -->
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/profileImage"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_person"
+            app:shapeAppearanceOverlay="@style/CircleImage"
+            android:background="@drawable/circle_background"
+            android:clipToOutline="true"/>
+
+        <!-- Welcome Text -->
+        <TextView
+            android:id="@+id/tvStylistName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Welcome, Stylist!"
+            android:textColor="@color/brand_cream"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:layout_marginStart="16dp"/>
+    </LinearLayout>
+
+
+    <!-- HORIZONTAL DATES -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rviewDates"
+        android:layout_width="0dp"
+        android:layout_height="90dp"
+        android:orientation="horizontal"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:overScrollMode="never"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintTop_toBottomOf="@id/profileHeader"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+
+    <!-- APPOINTMENTS LIST -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rviewAppointments"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:overScrollMode="never"
+        android:clipToPadding="false"
         app:layout_constraintTop_toBottomOf="@id/rviewDates"
         app:layout_constraintBottom_toTopOf="@id/btnServices"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp"
-        android:overScrollMode="never" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- Buttons -->
+
+    <!-- BUTTON: SERVICES -->
     <Button
         android:id="@+id/btnServices"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="48dp"
         android:text="My Services"
         android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:backgroundTint="@color/brand_teal"
+        android:layout_marginHorizontal="48dp"
+        android:layout_marginBottom="8dp"
+        android:elevation="4dp"
         app:layout_constraintBottom_toTopOf="@id/btnAvailability"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginHorizontal="40dp"
-        android:layout_marginBottom="8dp"/>
+        app:layout_constraintEnd_toEndOf="parent" />
 
+
+    <!-- BUTTON: AVAILABILITY -->
     <Button
         android:id="@+id/btnAvailability"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="48dp"
         android:text="Set Availability"
         android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:backgroundTint="@color/brand_teal_dark"
+        android:layout_marginHorizontal="48dp"
+        android:layout_marginBottom="24dp"
+        android:elevation="4dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginHorizontal="40dp"
-        android:layout_marginBottom="24dp"/>
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

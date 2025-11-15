@@ -3,22 +3,32 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/brand_charcoal"
     android:padding="16dp">
 
+    <!-- Search Input -->
     <EditText
         android:id="@+id/searchInput"
         android:layout_marginTop="50dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Search for hairstyles or services" />
+        android:layout_height="48dp"
+        android:hint="Search for hairstyles or services"
+        android:padding="12dp"
+        android:textColor="@color/brand_cream"
+        android:textColorHint="@color/brand_cream_muted"
+        android:background="@drawable/bg_input_field"
+        android:drawablePadding="10dp" />
 
+    <!-- Loading Indicator -->
     <ProgressBar
         android:id="@+id/progressBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
         android:layout_gravity="center"
-        android:visibility="gone"/>
+        android:visibility="gone" />
 
+    <!-- Recycler View -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"

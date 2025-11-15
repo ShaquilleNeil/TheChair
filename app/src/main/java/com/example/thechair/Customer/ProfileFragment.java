@@ -16,7 +16,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.thechair.AuthFlow.LogIn;
+import com.example.thechair.AuthFlow.AuthFlow;
 import com.example.thechair.R;
 import com.example.thechair.Adapters.UserManager;
 import com.example.thechair.Adapters.appUsers;
@@ -130,7 +130,7 @@ public class ProfileFragment extends Fragment {
 
         signout.setOnClickListener(v -> {
             FirebaseAuth.getInstance().signOut();
-            Intent intent = new Intent(getActivity(), LogIn.class);
+            Intent intent = new Intent(getActivity(), AuthFlow.class);
             startActivity(intent);
             getActivity().finish();
         });

@@ -25,7 +25,7 @@ import com.bumptech.glide.Glide;
 import com.example.thechair.Adapters.GalleryAdapter;
 import com.example.thechair.Adapters.UserManager;
 import com.example.thechair.Adapters.appUsers;
-import com.example.thechair.AuthFlow.LogIn;
+import com.example.thechair.AuthFlow.AuthFlow;
 import com.example.thechair.Customer.ProfileFragment;
 import com.example.thechair.R;
 import com.google.firebase.auth.FirebaseAuth;
@@ -88,7 +88,7 @@ public class ProProfileFragment extends Fragment {
 
         btnSignout.setOnClickListener(v -> {
             FirebaseAuth.getInstance().signOut();
-            startActivity(new Intent(getActivity(), LogIn.class));
+            startActivity(new Intent(getActivity(), AuthFlow.class));
             requireActivity().finish();
         });
 
