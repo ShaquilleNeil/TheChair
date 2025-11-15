@@ -27,6 +27,6 @@
         android:paddingTop="4dp"
         app:itemIconTint="@color/nav_icon_selector"
         app:itemTextColor="@color/nav_icon_selector"
-        app:menu="@menu/bottom_nav_menu" />
+        app:menu="@menu/bottom_nav_menupro" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

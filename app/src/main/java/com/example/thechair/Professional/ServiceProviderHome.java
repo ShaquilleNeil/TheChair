@@ -21,7 +21,7 @@ public class ServiceProviderHome extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.professional_service_provider_profile_activity);
 
-        FrameLayout container = findViewById(R.id.appMainView);
+        FrameLayout container = findViewById(R.id.appMainViewpro);
 
         ViewCompat.setOnApplyWindowInsetsListener(container, (v, insets) -> {
             int topInset = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top;

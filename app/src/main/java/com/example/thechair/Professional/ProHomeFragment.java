@@ -29,10 +29,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -49,7 +47,7 @@ public class ProHomeFragment extends Fragment {
     private ImageView profileimage;
     private Button btnMyServices, btnMyAvailability;
 
-    // NEW REAL BOOKINGS MAP
+    // Store bookings grouped by display date: "Tuesday, Nov 25"
     private Map<String, List<Booking>> bookingsByDate = new HashMap<>();
 
     @Nullable
@@ -67,21 +65,21 @@ public class ProHomeFragment extends Fragment {
         btnMyAvailability = view.findViewById(R.id.btnAvailability);
 
         loadUser();
-        loadBookings();   // ← IMPORTANT!!!
+        loadBookings();
 
         recyclerDates.setLayoutManager(
                 new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         recyclerAppointments.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        // create 7-day date list
+        // ⭐ FIX: SHOW 30 DAYS, not 7 days
         List<LocalDate> dateList = new ArrayList<>();
         LocalDate today = LocalDate.now();
-        for (int i = 0; i < 7; i++) {
+        for (int i = 0; i < 30; i++) {     // show full month
             dateList.add(today.plusDays(i));
         }
 
         dateAdapter = new DateAdapter(dateList, date -> {
-            String label = formatDate(date);
+            String label = formatDate(date);            // e.g., "Tuesday, Nov 25"
             showBookingsForDate(label);
         });
 
@@ -132,39 +130,6 @@ public class ProHomeFragment extends Fragment {
         }
     }
 
-//    public static class ImageLoaderTask extends AsyncTask<String, Void, Bitmap> {
-//        private final String url;
-//        private final ImageView imageView;
-//        private final UserManager userManager;
-//
-//        public ImageLoaderTask(String url, ImageView imageView, UserManager userManager) {
-//            this.url = url;
-//            this.imageView = imageView;
-//            this.userManager = userManager;
-//        }
-//
-//        @Override
-//        protected Bitmap doInBackground(String... strings) {
-//            try {
-//                URL urlConnection = new URL(url);
-//                HttpURLConnection connection = (HttpURLConnection) urlConnection.openConnection();
-//                connection.setDoInput(true);
-//                connection.connect();
-//                InputStream input = connection.getInputStream();
-//                return BitmapFactory.decodeStream(input);
-//            } catch (Exception e) { e.printStackTrace(); }
-//            return null;
-//        }
-//
-//        @Override
-//        protected void onPostExecute(Bitmap bitmap) {
-//            if (bitmap != null) {
-//                imageView.setImageBitmap(bitmap);
-//                userManager.setProfileBitmap(bitmap);
-//            }
-//        }
-//    }
-
     // -------------------- LOAD BOOKINGS --------------------
 
     private void loadBookings() {
@@ -176,25 +141,31 @@ public class ProHomeFragment extends Fragment {
                 .collection("bookings")
                 .get()
                 .addOnSuccessListener(query -> {
+
                     bookingsByDate.clear();
 
                     for (var doc : query.getDocuments()) {
                         Booking booking = doc.toObject(Booking.class);
                         if (booking == null) continue;
 
-                        String dateKey = booking.selectedDate;  // "Monday, Nov 17"
+                        // ⭐ FIX: Firestore date = "2025-11-25" — convert to LocalDate
+                        LocalDate date = LocalDate.parse(booking.selectedDate);
+
+                        // Convert to UI label: "Tuesday, Nov 25"
+                        String dateKey = formatDate(date);
 
                         bookingsByDate
                                 .computeIfAbsent(dateKey, k -> new ArrayList<>())
                                 .add(booking);
                     }
 
+                    // Show today's bookings immediately
                     LocalDate today = LocalDate.now();
                     showBookingsForDate(formatDate(today));
                 });
     }
 
-    // -------------------- SHOW BOOKINGS FOR A SELECTED DATE --------------------
+    // -------------------- SHOW BOOKINGS --------------------
 
     private void showBookingsForDate(String dateLabel) {
         List<Booking> list = bookingsByDate.getOrDefault(dateLabel, new ArrayList<>());
