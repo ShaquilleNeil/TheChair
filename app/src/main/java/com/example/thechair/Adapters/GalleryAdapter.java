@@ -18,6 +18,17 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.MyViewHo
     private Context mContext;
     private List<String> mUploads;
 
+    private OnItemClickListener listener;
+
+    public interface OnItemClickListener {
+        void onItemClick(String imageUrl);
+    }
+
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.listener = listener;
+    }
+
+
     public GalleryAdapter(Context context, List<String> uploads) {
         mContext = context;
         mUploads = uploads;
@@ -46,6 +57,12 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.MyViewHo
                 .error(R.drawable.ic_broken_image)             // optional: show if failed
                 .centerCrop()
                 .into(holder.workImage);
+
+        holder.itemView.setOnClickListener( v -> {
+            if (listener != null) {
+               listener.onItemClick(imageUrl);
+            }
+        });
 
 
     }

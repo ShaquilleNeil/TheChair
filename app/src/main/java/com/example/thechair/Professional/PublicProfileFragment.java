@@ -6,7 +6,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,15 +36,21 @@ public class PublicProfileFragment extends Fragment {
     private RecyclerView servicesRecyclerView, galleryRecyclerView;
     private Button bookNowButton;
 
+    private GalleryAdapter galleryAdapter;
+
     private FirebaseFirestore db;
     private String professionalId;
     private String profilePicUrl;
+    private boolean servicesExpanded = false;
+    private boolean portfolioExpanded = false;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_public_profile, container, false);
+
+
 
 
 
@@ -54,6 +62,8 @@ public class PublicProfileFragment extends Fragment {
         galleryRecyclerView = view.findViewById(R.id.galleryRecyclerView);
         bookNowButton = view.findViewById(R.id.bookNowButton);
 
+        setupCollapsibles(view);
+
         db = FirebaseFirestore.getInstance();
 
         if (getArguments() != null) {
@@ -63,6 +73,8 @@ public class PublicProfileFragment extends Fragment {
         if (professionalId != null) {
             loadProfessionalData(professionalId);
         }
+
+
 
         bookNowButton.setOnClickListener(v -> {
             Intent intent = new Intent(getActivity(), PickServiceActivity.class);
@@ -119,10 +131,56 @@ public class PublicProfileFragment extends Fragment {
                         GalleryAdapter galleryAdapter = new GalleryAdapter(requireContext(), urls);
                         galleryRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
                         galleryRecyclerView.setAdapter(galleryAdapter);
+
+                        galleryAdapter.setOnItemClickListener(url -> {
+                            Intent intent = new Intent(getContext(), ImageViewer.class);
+                            intent.putExtra("imageUrl", url);
+                            startActivity(intent);
+                        });
                     }
                 })
                 .addOnFailureListener(e ->
                         Toast.makeText(getContext(), "Failed to load profile", Toast.LENGTH_SHORT).show()
                 );
+    }
+
+    private void setupCollapsibles(View view) {
+
+        /* -------------------- SERVICES SECTION -------------------- */
+
+        LinearLayout servicesHeader = view.findViewById(R.id.servicesHeader);
+        FrameLayout servicesContent = view.findViewById(R.id.servicesContent);
+        ImageView servicesArrow = view.findViewById(R.id.servicesArrow);
+
+        servicesHeader.setOnClickListener(v -> {
+            servicesExpanded = !servicesExpanded;
+
+            if (servicesExpanded) {
+                servicesContent.setVisibility(View.VISIBLE);
+                servicesArrow.animate().rotation(180f).setDuration(200).start();
+            } else {
+                servicesContent.setVisibility(View.GONE);
+                servicesArrow.animate().rotation(0f).setDuration(200).start();
+            }
+        });
+
+
+        /* -------------------- PORTFOLIO SECTION -------------------- */
+
+        LinearLayout portfolioHeader = view.findViewById(R.id.portfolioHeader);
+        FrameLayout portfolioContent = view.findViewById(R.id.portfolioContent);
+        ImageView portfolioArrow = view.findViewById(R.id.portfolioArrow);
+
+        portfolioHeader.setOnClickListener(v -> {
+            portfolioExpanded = !portfolioExpanded;
+
+            if (portfolioExpanded) {
+                portfolioContent.setVisibility(View.VISIBLE);
+                portfolioArrow.animate().rotation(180f).setDuration(200).start();
+            } else {
+                portfolioContent.setVisibility(View.GONE);
+                portfolioArrow.animate().rotation(0f).setDuration(200).start();
+            }
+        });
     }
 }

@@ -1,5 +1,6 @@
 package com.example.thechair.Customer;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -48,6 +49,12 @@ public class BookingsFragment extends Fragment {
         rvToday = view.findViewById(R.id.rvToday);
         rvUpcoming = view.findViewById(R.id.rvUpcoming);
         rvPast = view.findViewById(R.id.rvPast);
+
+        //collapse by default
+        rvToday.setVisibility(View.GONE);
+        rvUpcoming.setVisibility(View.GONE);
+        rvPast.setVisibility(View.GONE);
+
 
         rvToday.setLayoutManager(new LinearLayoutManager(getContext()));
         rvUpcoming.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -111,19 +118,27 @@ public class BookingsFragment extends Fragment {
         upcomingList.clear();
         pastList.clear();
 
-        LocalDate today = LocalDate.now();
+        LocalDate today = null;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            today = LocalDate.now();
+        }
 
         for (Booking b : allBookings) {
 
             try {
-                LocalDate bookingDate = LocalDate.parse(b.getSelectedDate()); // yyyy-MM-dd format
+                LocalDate bookingDate = null; // yyyy-MM-dd format
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    bookingDate = LocalDate.parse(b.getSelectedDate());
+                }
 
-                if (bookingDate.isEqual(today)) {
-                    todayList.add(b);
-                } else if (bookingDate.isAfter(today)) {
-                    upcomingList.add(b);
-                } else {
-                    pastList.add(b);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    if (bookingDate.isEqual(today)) {
+                        todayList.add(b);
+                    } else if (bookingDate.isAfter(today)) {
+                        upcomingList.add(b);
+                    } else {
+                        pastList.add(b);
+                    }
                 }
 
             } catch (Exception e) {

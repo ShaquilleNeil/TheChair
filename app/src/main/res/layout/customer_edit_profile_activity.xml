@@ -51,7 +51,7 @@
             android:layout_height="50dp"
             android:layout_marginTop="20dp"
             android:hint="Full Name"
-            android:textColor="@color/brand_cream"
+            android:textColor="@color/brand_charcoal"
             android:textColorHint="@color/brand_cream_muted"
             android:padding="14dp"
             android:background="@drawable/input_bg" />

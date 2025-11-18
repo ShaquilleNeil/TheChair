@@ -33,9 +33,29 @@ public class SearchFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_search, container, false);
 
+
+
+
+
         searchInput = view.findViewById(R.id.searchInput);
         recyclerView = view.findViewById(R.id.recyclerView);
         progressBar = view.findViewById(R.id.progressBar);
+
+        setupSearchListener();
+
+        String searchText = null;
+        if (getArguments() != null) {
+            searchText = getArguments().getString("search");
+        }
+
+
+        if (searchText != null) {
+            searchInput.setText(searchText);
+            searchInput.setSelection(searchText.length());
+        }
+
+
+
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new SearchAdapter(new ArrayList<>());

@@ -24,7 +24,7 @@
             android:layout_height="90dp"
             android:scaleType="centerCrop"
             android:clipToOutline="true"
-            android:background="@drawable/provider_image_ring"
+            android:background="@drawable/circle_mask"
             android:padding="2dp"
             android:src="@drawable/ic_provider"/>
 
@@ -34,7 +34,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:textColor="@color/brand_cream"
+            android:textColor="@color/black"
             android:textSize="14sp"
             android:textStyle="bold"
             android:textAlignment="center"/>

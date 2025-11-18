@@ -50,8 +50,8 @@ dependencies {
     implementation("com.github.bumptech.glide:glide:5.0.5")
     annotationProcessor("com.github.bumptech.glide:compiler:5.0.5")
     implementation ("com.google.firebase:firebase-messaging")
-    implementation("com.kizitonwose.calendar:view:2.4.1")
-
+    implementation("com.github.chrisbanes:PhotoView:2.3.0")
+    implementation("com.prolificinteractive:material-calendarview:1.4.3")
 
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
 

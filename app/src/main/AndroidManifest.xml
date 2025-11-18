@@ -15,6 +15,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TheChair">
         <activity
+            android:name=".Professional.ImageViewer"
+            android:exported="false" />
+        <activity
             android:name=".AuthFlow.AuthFlow"
             android:exported="false" />
 

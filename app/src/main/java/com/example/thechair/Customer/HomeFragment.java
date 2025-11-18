@@ -50,8 +50,8 @@ public class HomeFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 
     private FirebaseFirestore db;
-    private TextView username, tvprovidername;
-    private ImageView profileimage;
+    private TextView username, tvprovidername, weaveText,locsText,haircutText,braidsText;
+    private ImageView profileimage, braids, weave,locs,haircut;
     private FirebaseAuth mAuth;
     private RecyclerView recyclerView;
     private ProfessionalsAdapter adapter;
@@ -129,6 +129,36 @@ public class HomeFragment extends Fragment {
 
         username = view.findViewById(R.id.username);
         profileimage = view.findViewById(R.id.profileImage);
+        haircutText = view.findViewById(R.id.haircutText);
+        weaveText = view.findViewById(R.id.weaveText);
+        locsText = view.findViewById(R.id.locsText);
+        braidsText = view.findViewById(R.id.braidsText);
+
+        haircut = view.findViewById(R.id.haircut);
+        weave = view.findViewById(R.id.weave);
+        locs = view.findViewById(R.id.locs);
+        braids = view.findViewById(R.id.braids);
+
+
+        locs.setOnClickListener(v -> {
+            String search = locsText.getText().toString();
+            openSearch(search);
+        });
+        weave.setOnClickListener(v -> {
+            String search = weaveText.getText().toString();
+            openSearch(search);
+        });
+        haircut.setOnClickListener(v -> {
+            String search = haircutText.getText().toString();
+            openSearch(search);
+        });
+        braids.setOnClickListener(v -> {
+                    String search = braidsText.getText().toString();
+                    openSearch(search);
+                });
+
+
+
 
 
 
@@ -269,6 +299,20 @@ public class HomeFragment extends Fragment {
                 imageView.setImageResource(R.drawable.banner);
             }
         }
+    }
+
+    private void openSearch(String search){
+        SearchFragment fragment = new SearchFragment();
+        Bundle args = new Bundle();
+        args.putString("search", search);
+        fragment.setArguments(args);
+
+        requireActivity()
+                .getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.appMainView, fragment)
+                .addToBackStack(null)
+                .commit();
     }
 
 
