@@ -1,8 +1,12 @@
 package com.example.thechair.Adapters;
 
+import com.google.firebase.firestore.GeoPoint;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import com.google.firebase.firestore.GeoPoint;
+
 
 public class appUsers implements Serializable {
 
@@ -20,7 +24,7 @@ public class appUsers implements Serializable {
     private List<String> tags;         // service tags
 
     private Address address;           // nested address map
-    private Geo geo;
+    private GeoPoint geo;
     //phone number
     private String phoneNumber;
 
@@ -31,7 +35,7 @@ public class appUsers implements Serializable {
 
     // Full constructor (services/portfolio/tags can be empty at signup)
     public appUsers(String id, String name, String email, String role,
-                    Address address, Geo geo, String phoneNumber) {
+                    Address address, GeoPoint geo, String phoneNumber) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -92,8 +96,8 @@ public class appUsers implements Serializable {
     public Address getAddress() { return address; }
     public void setAddress(Address address) { this.address = address; }
 
-    public Geo getGeo() { return geo; }
-    public void setGeo(Geo geo) { this.geo = geo; }
+    public GeoPoint getGeo() { return geo; }
+    public void setGeo(GeoPoint geo) { this.geo = geo; }
 
     public String getPhoneNumber() { return phoneNumber; }
 
