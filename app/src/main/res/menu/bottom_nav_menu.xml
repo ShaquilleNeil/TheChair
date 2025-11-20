@@ -12,6 +12,11 @@
         android:title="Search" />
 
     <item
+        android:id="@+id/nav_map"
+        android:icon="@drawable/ic_nearby"
+        android:title="Nearby" />
+
+    <item
         android:id="@+id/nav_bookings"
         android:icon="@drawable/ic_bookings"
         android:title="Bookings" />

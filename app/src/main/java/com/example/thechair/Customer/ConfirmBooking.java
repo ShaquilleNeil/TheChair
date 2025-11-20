@@ -2,6 +2,7 @@ package com.example.thechair.Customer;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.CalendarContract;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -171,6 +172,8 @@ public class ConfirmBooking extends AppCompatActivity {
                                         .document(bookingId)
                                         .set(bookingData);
 
+                                addToGoogleCalendar(bookingData);
+
                                 Toast.makeText(this, "Booking created successfully", Toast.LENGTH_SHORT).show();
 
                                 // Go home
@@ -182,6 +185,56 @@ public class ConfirmBooking extends AppCompatActivity {
                             });
                 });
     }
+
+    private void addToGoogleCalendar(Map<String, Object> bookingData) {
+        try {
+            String date = bookingData.get("selectedDate").toString();        // yyyy-MM-dd
+            String time = bookingData.get("serviceTime").toString();         // HH:mm
+            int duration = Integer.parseInt(bookingData.get("serviceDuration").toString()); // minutes
+
+            String proName = bookingData.get("professionalName").toString();
+            String serviceName = bookingData.get("serviceName").toString();
+
+            // Correct date split
+            String[] d = date.split("-");   // yyyy-MM-dd
+            int year = Integer.parseInt(d[0]);
+            int month = Integer.parseInt(d[1]) - 1; // Calendar month 0–11
+            int day = Integer.parseInt(d[2]);
+
+            // Correct time split
+            String[] t = time.split(":");
+            int hour = Integer.parseInt(t[0]);
+            int minute = Integer.parseInt(t[1]);
+
+            // Build Calendar instance
+            Calendar cal = Calendar.getInstance();
+            cal.set(year, month, day, hour, minute);
+
+            long startMillis = cal.getTimeInMillis();
+            long endMillis = startMillis + (duration * 60L * 1000L);
+
+            // Create event intent
+            Intent calendarIntent = new Intent(Intent.ACTION_INSERT);
+            calendarIntent.setData(CalendarContract.Events.CONTENT_URI);
+
+            calendarIntent.putExtra(CalendarContract.Events.TITLE,
+                    serviceName + " with " + proName);
+
+            calendarIntent.putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, startMillis);
+            calendarIntent.putExtra(CalendarContract.EXTRA_EVENT_END_TIME, endMillis);
+
+            calendarIntent.putExtra(CalendarContract.Events.DESCRIPTION,
+                    "Booking made in The Chair app.");
+
+            // Launch calendar app
+            startActivity(calendarIntent);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Could not add to Google Calendar", Toast.LENGTH_SHORT).show();
+        }
+    }
+
 
     // ----------------------------------------------------------
     //                TIME CALCULATION HELPER

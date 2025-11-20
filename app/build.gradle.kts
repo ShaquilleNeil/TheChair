@@ -52,7 +52,8 @@ dependencies {
     implementation ("com.google.firebase:firebase-messaging")
     implementation("com.github.chrisbanes:PhotoView:2.3.0")
     implementation("com.prolificinteractive:material-calendarview:1.4.3")
-
+    implementation("com.google.android.gms:play-services-maps:19.0.0")
+    implementation("com.google.android.gms:play-services-location:21.0.1")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
 
     implementation("com.google.firebase:firebase-functions-ktx")

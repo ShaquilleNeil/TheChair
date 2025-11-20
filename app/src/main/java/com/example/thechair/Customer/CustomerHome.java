@@ -55,6 +55,8 @@ public class CustomerHome extends AppCompatActivity {
             else if (id == R.id.nav_search) fragment = new SearchFragment();
             else if (id == R.id.nav_bookings) fragment = new BookingsFragment();
             else if (id == R.id.nav_profile) fragment = new ProfileFragment();
+            else if (id == R.id.nav_map) fragment = new NearbyFragment();
+
 
             if (fragment != null) {
                 getSupportFragmentManager().beginTransaction()
