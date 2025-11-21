@@ -1,96 +1,47 @@
 package com.example.thechair.Adapters;
 
 public class Booking {
+
     public String bookingId;
+    public String customerId;
+    public String customerName;
+
     public String professionalId;
     public String professionalName;
     public String proPic;
-    public String customerName;
+
     public String serviceName;
     public String serviceTime;
     public String endTime;
+
     public String selectedDate;
     public String status;
 
+    public int serviceDuration;   // <-- NEW
+    public int servicePrice;      // <-- NEW
+
+    public long timestamp;        // <-- Optional but recommended
+
     public Booking() {}
 
-    public String getBookingId() {
-        return bookingId;
-    }
+    public String getBookingId() { return bookingId; }
+    public String getCustomerId() { return customerId; }
+    public String getCustomerName() { return customerName; }
 
-    public void setBookingId(String bookingId) {
-        this.bookingId = bookingId;
-    }
+    public String getProfessionalId() { return professionalId; }
+    public String getProfessionalName() { return professionalName; }
 
-    public String getCustomerName() {
-        return customerName;
-    }
+    public String getProPic() { return proPic; }
 
-    public void setCustomerName(String customerName) {
-        this.customerName = customerName;
-    }
+    public String getServiceName() { return serviceName; }
+    public String getServiceTime() { return serviceTime; }
+    public String getEndTime() { return endTime; }
 
-    public String getEndTime() {
-        return endTime;
-    }
+    public String getSelectedDate() { return selectedDate; }
+    public String getStatus() { return status; }
 
-    public void setEndTime(String endTime) {
-        this.endTime = endTime;
-    }
+    public int getServiceDuration() { return serviceDuration; }  // new getter
+    public int getServicePrice() { return servicePrice; }        // new getter
 
-    public String getProfessionalId() {
-        return professionalId;
-    }
-
-    public void setProfessionalId(String professionalId) {
-        this.professionalId = professionalId;
-    }
-
-    public String getSelectedDate() {
-        return selectedDate;
-    }
-
-    public void setSelectedDate(String selectedDate) {
-        this.selectedDate = selectedDate;
-    }
-
-    public String getServiceName() {
-        return serviceName;
-    }
-
-    public void setServiceName(String serviceName) {
-        this.serviceName = serviceName;
-    }
-
-    public String getServiceTime() {
-        return serviceTime;
-    }
-
-    public void setServiceTime(String serviceTime) {
-        this.serviceTime = serviceTime;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public String getProfessionalName() {
-        return professionalName;
-    }
-
-    public void setProfessionalName(String professionalName) {
-        this.professionalName = professionalName;
-    }
-
-    public String getProPic() {
-        return proPic;
-    }
-
-    public void setProPic(String proPic) {
-        this.proPic = proPic;
-    }
+    public long getTimestamp() { return timestamp; }
 }

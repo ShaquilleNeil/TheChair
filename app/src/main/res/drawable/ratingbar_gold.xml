@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Empty stars -->
+    <item
+        android:id="@android:id/background"
+        android:drawable="@drawable/star_empty" />
+
+    <!-- Half stars -->
+    <item
+        android:id="@android:id/secondaryProgress"
+        android:drawable="@drawable/star_half" />
+
+    <!-- Filled stars -->
+    <item
+        android:id="@android:id/progress"
+        android:drawable="@drawable/star_filled" />
+
+</layer-list>

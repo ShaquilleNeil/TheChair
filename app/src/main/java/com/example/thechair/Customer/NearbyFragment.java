@@ -1,13 +1,17 @@
 package com.example.thechair.Customer;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.LocationManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -26,6 +30,7 @@ import android.view.ViewGroup;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.example.thechair.Adapters.DirectionsHelper;
 import com.example.thechair.Professional.PublicProfileFragment;
 import com.example.thechair.R;
 import com.google.android.gms.maps.GoogleMap;
@@ -42,23 +47,34 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.location.Priority;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.example.thechair.BuildConfig;
 
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 
 import android.provider.Settings;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -86,6 +102,7 @@ public class NearbyFragment extends Fragment implements OnMapReadyCallback {
    private GoogleMap googleMap;
 
     private FusedLocationProviderClient fusedLocationClient;
+    private Polyline currentRoute;
 
     private final ActivityResultLauncher<String> permissionLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
@@ -165,8 +182,11 @@ public class NearbyFragment extends Fragment implements OnMapReadyCallback {
         googleMap.setOnMarkerClickListener(marker -> {
 
             String proId = marker.getTag().toString();
+            String proName = marker.getTitle();
+            LatLng position = marker.getPosition();
 
-            openPublicProfile(proId);
+
+            markerPopup(proId, proName, position);
 
             return true; // consume the click event
         });
@@ -235,9 +255,12 @@ public class NearbyFragment extends Fragment implements OnMapReadyCallback {
 
         OkHttpClient client = new OkHttpClient();
 
-        String url = "https://maps.googleapis.com/maps/api/geocode/json?address="
-                + URLEncoder.encode(fullAddress, StandardCharsets.UTF_8)
-                + "&key=" + BuildConfig.MAPS_API_KEY;
+        String url = null;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            url = "https://maps.googleapis.com/maps/api/geocode/json?address="
+                    + URLEncoder.encode(fullAddress, StandardCharsets.UTF_8)
+                    + "&key=" + BuildConfig.MAPS_API_KEY;
+        }
 
         Request request = new Request.Builder()
                 .url(url)
@@ -258,13 +281,13 @@ public class NearbyFragment extends Fragment implements OnMapReadyCallback {
 
                 String body = response.body().string();
 
-                // 🔥 CRITICAL: Log the raw response
+
                 Log.e("GEOCODER_RAW", body);
 
                 try {
                     JSONObject json = new JSONObject(body);
 
-                    // 🔥 API status
+
                     String status = json.optString("status");
                     Log.e("GEOCODER_STATUS", "Status = " + status);
 
@@ -320,7 +343,7 @@ public class NearbyFragment extends Fragment implements OnMapReadyCallback {
                                         Math.abs(geo.getLatitude()) < 0.0001 ||
                                         Math.abs(geo.getLongitude()) < 0.0001;
 
-                        // --- Read nested address ---
+
                         Map<String, Object> addressMap = (Map<String, Object>) doc.get("address");
 
                         if (addressMap == null) {
@@ -491,6 +514,33 @@ public class NearbyFragment extends Fragment implements OnMapReadyCallback {
     }
 
 
+private void markerPopup(String proId, String proName, LatLng position){
+    BottomSheetDialog dialog = new BottomSheetDialog(requireContext());
+    View view = getLayoutInflater().inflate(R.layout.marker_menu, null);
+    dialog.setContentView(view);
+
+    TextView proNameTextView = view.findViewById(R.id.proName);
+    Button btnViewProfile = view.findViewById(R.id.btnViewProfile);
+    Button btnDirections = view.findViewById(R.id.btnDirections);
+
+    proNameTextView.setText(proName);
+
+    btnViewProfile.setOnClickListener(v -> {
+        dialog.dismiss();
+        openPublicProfile(proId);
+
+        });
+
+    btnDirections.setOnClickListener(v -> {
+        dialog.dismiss();
+        DirectionsHelper.openExternalGoogleMaps(requireContext(), position, proName);
+
+        });
+
+    dialog.show();
+
+
+}
 
 
 

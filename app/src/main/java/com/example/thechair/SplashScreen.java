@@ -41,7 +41,7 @@ public class SplashScreen extends AppCompatActivity {
                 startActivity(new Intent(SplashScreen.this, AuthFlow.class));
                 finish();
             }
-        }, 800);
+        }, 1);
     }
 
     // ----------------------------------------------------------

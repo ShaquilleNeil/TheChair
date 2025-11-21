@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,11 +21,15 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.thechair.Adapters.DirectionsHelper;
 import com.example.thechair.Adapters.GalleryAdapter;
+import com.example.thechair.Adapters.ReviewsPopup;
 import com.example.thechair.Adapters.ServiceAdapter;
 import com.example.thechair.Customer.PickServiceActivity;
 import com.example.thechair.R;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.GeoPoint;
 
 import java.util.List;
 import java.util.Map;
@@ -32,17 +37,25 @@ import java.util.Map;
 public class PublicProfileFragment extends Fragment {
 
     private ImageView profileImage;
-    private TextView proName, proProfession;
+    private TextView proName, proProfession, reviewCount;
     private RecyclerView servicesRecyclerView, galleryRecyclerView;
-    private Button bookNowButton;
+    private Button bookNowButton, btnDirections;
 
     private GalleryAdapter galleryAdapter;
 
     private FirebaseFirestore db;
     private String professionalId;
     private String profilePicUrl;
+    private RatingBar ratingBar;
+    private Double rating;
+
     private boolean servicesExpanded = false;
+
     private boolean portfolioExpanded = false;
+
+
+    private LatLng proLatLng;
+
 
     @Nullable
     @Override
@@ -50,17 +63,19 @@ public class PublicProfileFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_public_profile, container, false);
 
-
-
-
-
-
         profileImage = view.findViewById(R.id.profileImage);
         proName = view.findViewById(R.id.proName);
         proProfession = view.findViewById(R.id.proProfession);
         servicesRecyclerView = view.findViewById(R.id.servicesRecyclerView);
         galleryRecyclerView = view.findViewById(R.id.galleryRecyclerView);
         bookNowButton = view.findViewById(R.id.bookNowButton);
+        btnDirections = view.findViewById(R.id.btnDirections);
+        reviewCount = view.findViewById(R.id.reviewCount);
+        ratingBar = view.findViewById(R.id.ratingBar);
+
+
+
+
 
         setupCollapsibles(view);
 
@@ -87,6 +102,26 @@ public class PublicProfileFragment extends Fragment {
 
         });
 
+        btnDirections.setOnClickListener(v -> {
+            if (proLatLng != null) {
+                DirectionsHelper.openExternalGoogleMaps(
+                        requireContext(),
+                        proLatLng,
+                        proName.getText().toString()
+                );
+            } else {
+                Toast.makeText(requireContext(), "Location unavailable", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        reviewCount.setOnClickListener(v -> {
+            ReviewsPopup popup = new ReviewsPopup(requireContext(), professionalId);
+            popup.show();
+        });
+
+
+
+
         return view;
     }
 
@@ -98,11 +133,32 @@ public class PublicProfileFragment extends Fragment {
                     String name = doc.getString("name");
                     String profession = doc.getString("profession");
                     String profilePic = doc.getString("profilepic");
+                    rating = doc.getDouble("rating");
+
+                    if (rating != null) {
+                        ratingBar.setRating(rating.floatValue());
+                    } else {
+                        ratingBar.setRating(0f);
+                    }
+
+                    Long count = doc.getLong("ratingCount");
+                    if (count != null)
+                        reviewCount.setText("(" + count + " reviews)");
+                    else
+                        reviewCount.setText("(0 reviews)");
+
 
                     proName.setText(name != null ? name : "Unknown");
                     proProfession.setText(profession != null ? profession : "Professional");
 
                     profilePicUrl = doc.getString("profilepic");
+
+                    GeoPoint geo = doc.getGeoPoint("geo");
+
+                    if (geo != null) {
+                        proLatLng = new LatLng(geo.getLatitude(), geo.getLongitude());
+                    }
+
 
                     if (profilePicUrl != null && !profilePicUrl.isEmpty()) {
                         Glide.with(this)

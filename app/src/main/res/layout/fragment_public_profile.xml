@@ -47,6 +47,23 @@
                 android:textSize="16sp"
                 android:layout_marginBottom="14dp" />
 
+            <RatingBar
+                android:id="@+id/ratingBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:numStars="5"
+                android:stepSize="0.5"
+                android:isIndicator="true"
+                android:rating="0"
+                style="@style/Widget.AppCompat.RatingBar.Small"/>
+
+            <TextView
+                android:id="@+id/reviewCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="See Reviews" />
+
+
             <!-- ===================================================== -->
             <!-- SERVICES COLLAPSIBLE SECTION -->
             <!-- ===================================================== -->
@@ -157,6 +174,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="52dp"
                 android:text="Book Now"
+                android:textAllCaps="false"
+                android:backgroundTint="@color/brand_teal"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:layout_marginTop="28dp"
+                android:layout_marginBottom="36dp" />
+            <Button
+                android:id="@+id/btnDirections"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:text="Get Directions"
                 android:textAllCaps="false"
                 android:backgroundTint="@color/brand_teal"
                 android:textColor="@color/white"
