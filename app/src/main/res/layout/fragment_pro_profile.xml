@@ -81,6 +81,7 @@
             android:backgroundTint="@color/error_red"
             android:textColor="@color/white"
             android:layout_marginTop="16dp"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
             app:layout_constraintTop_toBottomOf="@id/profileHeaderCard"
             app:layout_constraintStart_toStartOf="parent" />
 
@@ -159,6 +160,7 @@
                 android:textColor="@color/white"
                 android:backgroundTint="@color/brand_teal"
                 android:elevation="4dp"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_gravity="center_vertical" />
         </LinearLayout>
 

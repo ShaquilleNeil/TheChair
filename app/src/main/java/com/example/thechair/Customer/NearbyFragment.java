@@ -411,6 +411,7 @@ public class NearbyFragment extends Fragment implements OnMapReadyCallback {
                                                 Marker m = googleMap.addMarker(
                                                         new MarkerOptions()
                                                                 .position(latLng)
+                                                                .title(name)
                                                                 .icon(BitmapDescriptorFactory.fromBitmap(markerBitmap))
                                                                 .anchor(0.5f, 1.0f)
                                                 );
@@ -447,6 +448,7 @@ public class NearbyFragment extends Fragment implements OnMapReadyCallback {
                                             Marker m = googleMap.addMarker(
                                                     new MarkerOptions()
                                                             .position(pos)
+                                                            .title(name)
                                                             .icon(BitmapDescriptorFactory.fromBitmap(markerBitmap))
                                                             .anchor(0.5f, 1.0f)
                                             );

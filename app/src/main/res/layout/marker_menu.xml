@@ -19,12 +19,16 @@
         android:id="@+id/btnViewProfile"
         android:text="View Profile"
         android:layout_width="match_parent"
+        android:backgroundTint="@color/success_green"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
         android:layout_height="wrap_content" />
 
     <Button
         android:id="@+id/btnDirections"
         android:text="Get Directions"
         android:layout_marginTop="10dp"
+        android:backgroundTint="@color/brand_teal_dark"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 

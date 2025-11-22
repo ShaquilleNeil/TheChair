@@ -36,7 +36,7 @@
         <com.prolificinteractive.materialcalendarview.MaterialCalendarView
             android:id="@+id/calendarView"
             android:layout_width="match_parent"
-            android:layout_height="350dp"
+            android:layout_height="320dp"
             app:mcv_showOtherDates="none"
             app:mcv_arrowColor="@color/brand_cream"
             app:mcv_selectionColor="@color/brand_teal"
@@ -80,6 +80,7 @@
         android:layout_height="52dp"
         android:text="Save Availability"
         android:textStyle="bold"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
         android:textColor="@color/brand_cream"
         android:backgroundTint="@color/brand_teal"
         android:fontFamily="sans-serif-medium"

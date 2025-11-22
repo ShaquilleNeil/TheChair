@@ -111,6 +111,7 @@
                 android:textAllCaps="false"
                 android:backgroundTint="@color/brand_teal"
                 android:textColor="@color/white"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:elevation="4dp" />
 
             <!-- Sign Out -->
@@ -122,6 +123,7 @@
                 android:text="Sign Out"
                 android:textAllCaps="false"
                 android:backgroundTint="@color/error_red"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:textColor="@color/white" />
 
         </LinearLayout>

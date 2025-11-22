@@ -163,6 +163,7 @@
             android:textAllCaps="false"
             android:textColor="@color/brand_charcoal"
             android:textStyle="bold"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
             android:backgroundTint="@color/brand_teal" />
 
         <!-- CANCEL BUTTON -->
@@ -174,6 +175,7 @@
             android:text="Cancel"
             android:textAllCaps="false"
             android:textColor="@color/white"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
             android:backgroundTint="@color/brand_cream_muted" />
 
         <Space

@@ -92,6 +92,7 @@
         android:text="Add Service"
         android:textAllCaps="false"
         android:textStyle="bold"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
         android:textColor="@color/brand_cream"
         android:backgroundTint="@color/brand_teal"
         android:fontFamily="sans-serif-medium"/>

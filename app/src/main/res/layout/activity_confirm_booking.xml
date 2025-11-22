@@ -110,6 +110,7 @@
                 android:textColor="@color/brand_cream"
                 android:textStyle="bold"
                 android:textSize="16sp"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:backgroundTint="@color/brand_teal"
                 android:fontFamily="sans-serif-medium"/>
         </LinearLayout>

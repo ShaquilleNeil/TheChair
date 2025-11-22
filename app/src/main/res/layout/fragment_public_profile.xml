@@ -179,6 +179,7 @@
                 android:textColor="@color/white"
                 android:textStyle="bold"
                 android:layout_marginTop="28dp"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_marginBottom="36dp" />
             <Button
                 android:id="@+id/btnDirections"
@@ -189,6 +190,7 @@
                 android:backgroundTint="@color/brand_teal"
                 android:textColor="@color/white"
                 android:textStyle="bold"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_marginTop="28dp"
                 android:layout_marginBottom="36dp" />
 

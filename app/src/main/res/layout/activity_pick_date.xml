@@ -46,7 +46,7 @@
                 android:textSize="22sp"
                 android:textStyle="bold"
                 android:textColor="@color/brand_cream"
-                android:layout_marginBottom="8dp"/>
+                android:layout_marginBottom="4dp"/>
 
             <TextView
                 android:id="@+id/proProfession"
@@ -55,7 +55,7 @@
                 android:text="Barber"
                 android:textColor="@color/brand_cream_muted"
                 android:textSize="16sp"
-                android:layout_marginBottom="20dp" />
+                android:layout_marginBottom="10dp" />
 
             <!-- SERVICE DETAILS (unchanged) -->
             <TextView
@@ -98,7 +98,7 @@
                 android:id="@+id/calendarView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp"
+                android:layout_marginBottom="10dp"
                 app:mcv_showOtherDates="none" />
 
             <!-- Selected Date Label -->

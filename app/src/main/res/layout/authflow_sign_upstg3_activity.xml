@@ -30,6 +30,7 @@
         android:backgroundTint="@color/brand_teal"
         android:textColor="@color/white"
         android:layout_marginTop="14dp"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
         android:padding="12dp" />
 
     <!-- User Type Label -->
@@ -88,6 +89,7 @@
         android:textColor="@android:color/white"
         android:textStyle="bold"
         android:padding="14dp"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
         android:layout_marginTop="8dp" />
 
 </LinearLayout>
