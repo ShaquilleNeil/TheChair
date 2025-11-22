@@ -40,7 +40,7 @@ import java.util.Map;
 
 public class ProHomeFragment extends Fragment {
 
-    private TextView username;
+    private TextView username, tvNoAppointments;
     private RecyclerView recyclerDates, recyclerAppointments;
     private DateAdapter dateAdapter;
     private AppointmentAdapter appointmentAdapter;
@@ -63,6 +63,10 @@ public class ProHomeFragment extends Fragment {
         profileimage = view.findViewById(R.id.profileImage);
         btnMyServices = view.findViewById(R.id.btnServices);
         btnMyAvailability = view.findViewById(R.id.btnAvailability);
+        tvNoAppointments = view.findViewById(R.id.tvNoAppointments);
+
+
+
 
         loadUser();
         loadBookings();
@@ -169,8 +173,18 @@ public class ProHomeFragment extends Fragment {
 
     private void showBookingsForDate(String dateLabel) {
         List<Booking> list = bookingsByDate.getOrDefault(dateLabel, new ArrayList<>());
-        appointmentAdapter = new AppointmentAdapter(list);
-        recyclerAppointments.setAdapter(appointmentAdapter);
+        if(list.isEmpty()) {
+            recyclerAppointments.setVisibility(View.GONE);
+            tvNoAppointments.setVisibility(View.VISIBLE);
+
+        }else{
+            recyclerAppointments.setVisibility(View.VISIBLE);
+            tvNoAppointments.setVisibility(View.GONE);
+
+            appointmentAdapter = new AppointmentAdapter(list);
+            recyclerAppointments.setAdapter(appointmentAdapter);
+        }
+
     }
 
     // -------------------- FORMAT DATE --------------------

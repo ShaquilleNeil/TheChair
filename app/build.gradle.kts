@@ -66,6 +66,7 @@ dependencies {
     implementation(libs.firebase.storage)
     implementation(libs.firebase.database)
     implementation("com.github.bumptech.glide:glide:5.0.5")
+    implementation(libs.coordinatorlayout)
     annotationProcessor("com.github.bumptech.glide:compiler:5.0.5")
     implementation("com.google.firebase:firebase-messaging")
     implementation("com.github.chrisbanes:PhotoView:2.3.0")

@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@android:style/Widget.DeviceDefault.ScrollView"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    android:background="@color/brand_charcoal"
+    android:fillViewport="true"
+    tools:context=".Professional.ProEditProfile">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <!-- PROFILE PHOTO -->
+        <FrameLayout
+            android:layout_width="130dp"
+            android:layout_height="130dp"
+            android:layout_marginTop="24dp">
+
+            <ImageView
+                android:id="@+id/editProfileImage"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/circle_background"
+                android:clipToOutline="true"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_person" />
+
+            <ImageButton
+                android:id="@+id/btnChangePhoto"
+                android:layout_width="42dp"
+                android:layout_height="42dp"
+                android:layout_gravity="bottom|end"
+                android:layout_margin="6dp"
+                android:background="@drawable/bg_glass_circle"
+                android:contentDescription="Change photo"
+                android:src="@drawable/ic_edit_24"
+                app:tint="@color/brand_cream" />
+        </FrameLayout>
+
+
+        <!-- NAME -->
+        <EditText
+            android:id="@+id/inputName"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="20dp"
+            android:hint="Full Name"
+            android:textColor="@color/brand_cream"
+            android:textColorHint="@color/brand_cream_muted"
+            android:padding="14dp"
+            android:background="@drawable/input_bg" />
+
+        <!-- PROFESSION -->
+        <EditText
+            android:id="@+id/inputProfession"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="12dp"
+            android:hint="Profession (e.g. Loctician, Barber)"
+            android:textColor="@color/brand_cream"
+            android:textColorHint="@color/brand_cream_muted"
+            android:padding="14dp"
+            android:background="@drawable/input_bg" />
+
+        <!-- PHONE NUMBER -->
+        <EditText
+            android:id="@+id/inputPhone"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="12dp"
+            android:inputType="phone"
+            android:hint="Phone Number"
+            android:textColor="@color/brand_cream"
+            android:textColorHint="@color/brand_cream_muted"
+            android:padding="14dp"
+            android:background="@drawable/input_bg" />
+
+        <!-- EMAIL (DISABLED) -->
+        <EditText
+            android:id="@+id/inputEmail"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="12dp"
+            android:hint="Email"
+            android:enabled="false"
+            android:textColor="@color/brand_cream_muted"
+            android:textColorHint="@color/brand_cream_muted"
+            android:padding="14dp"
+            android:background="@drawable/input_bg_disabled" />
+
+
+        <!-- DIVIDER -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="10dp"
+            android:background="@color/brand_cream_muted" />
+
+        <!-- ADDRESS TITLE -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Business Address"
+            android:textColor="@color/brand_cream"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="6dp" />
+
+        <!-- ADDRESS FIELDS -->
+        <EditText
+            android:id="@+id/inputAddressLine1"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:hint="Street Address"
+            android:textColor="@color/brand_cream"
+            android:textColorHint="@color/brand_cream_muted"
+            android:padding="14dp"
+            android:background="@drawable/input_bg" />
+
+        <EditText
+            android:id="@+id/inputAddressLine2"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="8dp"
+            android:hint="Unit / Suite (optional)"
+            android:textColor="@color/brand_cream"
+            android:textColorHint="@color/brand_cream_muted"
+            android:padding="14dp"
+            android:background="@drawable/input_bg" />
+
+        <EditText
+            android:id="@+id/inputCity"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="8dp"
+            android:hint="City"
+            android:textColor="@color/brand_cream"
+            android:textColorHint="@color/brand_cream_muted"
+            android:padding="14dp"
+            android:background="@drawable/input_bg" />
+
+        <EditText
+            android:id="@+id/inputProvince"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="8dp"
+            android:hint="Province / State"
+            android:textColor="@color/brand_cream"
+            android:textColorHint="@color/brand_cream_muted"
+            android:padding="14dp"
+            android:background="@drawable/input_bg" />
+
+        <EditText
+            android:id="@+id/inputPostalCode"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="8dp"
+            android:hint="Postal / ZIP Code"
+            android:textColor="@color/brand_cream"
+            android:textColorHint="@color/brand_cream_muted"
+            android:padding="14dp"
+            android:background="@drawable/input_bg" />
+
+
+        <!-- SAVE BUTTON -->
+        <Button
+            android:id="@+id/btnSaveChanges"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="24dp"
+            android:text="Save Changes"
+            android:textAllCaps="false"
+            android:textColor="@color/brand_charcoal"
+            android:textStyle="bold"
+            android:backgroundTint="@color/brand_teal"
+            style="@style/Widget.MaterialComponents.Button.TextButton" />
+
+        <!-- CANCEL BUTTON -->
+        <Button
+            android:id="@+id/btnCancel"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="12dp"
+            android:text="Cancel"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:backgroundTint="@color/brand_cream_muted"
+            style="@style/Widget.MaterialComponents.Button.TextButton" />
+
+        <Space
+            android:layout_width="1dp"
+            android:layout_height="24dp" />
+
+    </LinearLayout>
+</ScrollView>

@@ -65,7 +65,18 @@
                     android:textColor="@color/brand_cream_muted"
                     android:textSize="15sp"
                     android:layout_marginTop="4dp" />
+
+                <Button
+                    android:id="@+id/btnEditProfile"
+                    android:layout_width="90dp"
+                    android:layout_height="33dp"
+                    android:backgroundTint="@color/success_green"
+                    android:textSize="9dp"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    android:text="Edit Profile"/>
             </LinearLayout>
+
+
 
         </LinearLayout>
 
@@ -85,50 +96,6 @@
             app:layout_constraintTop_toBottomOf="@id/profileHeaderCard"
             app:layout_constraintStart_toStartOf="parent" />
 
-
-        <!-- Services Header -->
-        <TextView
-            android:id="@+id/servicesTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Services"
-            android:textStyle="bold"
-            android:textSize="18sp"
-            android:textColor="@color/brand_cream"
-            android:layout_marginTop="28dp"
-            app:layout_constraintTop_toBottomOf="@id/btn_sign_out"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <!-- See All -->
-        <TextView
-            android:id="@+id/seeAll"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="See All"
-            android:textColor="@color/brand_teal"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            android:layout_marginEnd="16dp"
-            app:layout_constraintTop_toTopOf="@id/servicesTitle"
-            app:layout_constraintBottom_toBottomOf="@id/servicesTitle"
-            app:layout_constraintEnd_toEndOf="parent" />
-
-        <!-- Horizontal Services RecyclerView -->
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/serviceProvidersRecyclerView"
-            android:layout_width="0dp"
-            android:layout_height="110dp"
-            android:layout_marginTop="8dp"
-            android:paddingStart="8dp"
-            android:paddingEnd="8dp"
-            android:orientation="horizontal"
-            android:overScrollMode="never"
-            app:layout_constraintTop_toBottomOf="@id/servicesTitle"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            tools:listitem="@layout/prof_info_adapter_item" />
-
-        <!-- Gallery Header -->
         <LinearLayout
             android:id="@+id/galleryHeaderLayout"
             android:layout_width="0dp"
@@ -137,7 +104,7 @@
             android:gravity="center_vertical"
             android:layout_marginTop="24dp"
             android:paddingHorizontal="12dp"
-            app:layout_constraintTop_toBottomOf="@id/serviceProvidersRecyclerView"
+            app:layout_constraintTop_toBottomOf="@id/btn_sign_out"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
 
@@ -162,6 +129,7 @@
                 android:elevation="4dp"
                 style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_gravity="center_vertical" />
+
         </LinearLayout>
 
         <!-- Gallery Grid -->

@@ -47,7 +47,7 @@ import java.util.Map;
 
 public class ProProfileFragment extends Fragment {
 
-    private Button btnSignout, btnworkUpload;
+    private Button btnSignout, btnworkUpload, btnEditProfile;
     private ImageView profileimage;
     private TextView name, profession;
 
@@ -58,6 +58,17 @@ public class ProProfileFragment extends Fragment {
 
     private FirebaseFirestore db;
     private FirebaseAuth auth;
+
+    private final ActivityResultLauncher<Intent> editProfileLauncher =
+            registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+
+                if (result.getResultCode() == getActivity().RESULT_OK) {
+                    // Refresh profile after editing
+                    loadUser();
+                    loadPortfolio();
+                }
+            });
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -71,6 +82,8 @@ public class ProProfileFragment extends Fragment {
         profession = view.findViewById(R.id.userProfession);
         btnworkUpload = view.findViewById(R.id.btnworkUpload);
         galleryRecyclerView = view.findViewById(R.id.galleryRecyclerView);
+        btnEditProfile = view.findViewById(R.id.btnEditProfile);
+
 
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
@@ -85,6 +98,12 @@ public class ProProfileFragment extends Fragment {
         loadPortfolio();
 
         btnworkUpload.setOnClickListener(v -> selectImageLauncher.launch("image/*"));
+
+        btnEditProfile.setOnClickListener(v -> {
+                editProfileLauncher.launch(new Intent(getActivity(), ProEditProfile.class));
+
+
+        });
 
         btnSignout.setOnClickListener(v -> {
             FirebaseAuth.getInstance().signOut();

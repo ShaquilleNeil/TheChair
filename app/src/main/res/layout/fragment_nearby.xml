@@ -1,57 +1,147 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/rootCoordinator"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Customer.NearbyFragment">
 
-    <!-- MAP BEHIND EVERYTHING -->
-    <com.google.android.gms.maps.MapView
-        android:id="@+id/mapView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
-    <!-- FLOATING FILTER SEARCH BUTTON + EXPANDING BAR -->
+    <!-- MAP -->
     <FrameLayout
-        android:id="@+id/searchFabContainer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top|start"
-        android:layout_margin="16dp">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-        <!-- 🔵 COLLAPSED SEARCH BUTTON -->
+        <com.google.android.gms.maps.MapView
+            android:id="@+id/mapView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <!-- 🔍 SEARCH FAB + EXPANDING BAR -->
+        <FrameLayout
+            android:id="@+id/searchFabContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:layout_gravity="top|start">
+
+            <ImageView
+                android:id="@+id/searchFab"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:background="@drawable/rounded_white_circle"
+                android:padding="14dp"
+                android:elevation="20dp"
+                android:src="@android:drawable/ic_menu_search" />
+
+            <LinearLayout
+                android:id="@+id/searchContainer"
+                android:layout_width="260dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center_vertical"
+                android:background="@drawable/rounded_white"
+                android:elevation="20dp"
+                android:padding="8dp"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <EditText
+                    android:id="@+id/serviceSearchBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@android:color/transparent"
+                    android:textSize="16sp"
+                    android:hint="Filter by style..."
+                    android:paddingStart="8dp" />
+            </LinearLayout>
+        </FrameLayout>
+
+        <!-- ⭐ FILTER FAB (moved under search FAB) -->
         <ImageView
-            android:id="@+id/searchFab"
+            android:id="@+id/btnOpenFilters"
             android:layout_width="56dp"
             android:layout_height="56dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="100dp"
+            android:layout_gravity="top|start"
             android:background="@drawable/rounded_white_circle"
+            android:elevation="20dp"
             android:padding="14dp"
-            android:elevation="8dp"
-            android:src="@android:drawable/ic_menu_search" />
-
-        <!-- 🔍 EXPANDED SEARCH BAR (starts hidden) -->
-        <LinearLayout
-            android:id="@+id/searchContainer"
-            android:layout_width="260dp"
-            android:layout_height="50dp"
-            android:layout_gravity="center_vertical"
-            android:background="@drawable/rounded_white"
-            android:elevation="10dp"
-            android:padding="8dp"
-            android:orientation="horizontal"
-            android:visibility="gone">
-
-            <EditText
-                android:id="@+id/serviceSearchBar"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@android:color/transparent"
-                android:textSize="16sp"
-                android:hint="Filter by style..."
-                android:paddingStart="8dp" />
-
-        </LinearLayout>
-
+            android:src="@drawable/ic_filter" />
     </FrameLayout>
 
-</FrameLayout>
+    <!-- ⭐ BOTTOM SHEET FILTER PANEL -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/filterSheet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_bottomsheet"
+        android:padding="20dp"
+        android:paddingBottom="40dp"
+        app:cardElevation="12dp"
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
+        app:behavior_peekHeight="0dp"
+        app:behavior_hideable="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Filters"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="5dp"
+                android:textColor="@color/white"
+                android:layout_marginBottom="16dp" />
+
+            <TextView
+                android:id="@+id/radiusLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="5dp"
+                android:text="Search radius: 10 km"
+                android:textColor="@color/white"
+                android:textSize="15sp" />
+
+            <SeekBar
+                android:id="@+id/radiusSeekBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:max="50"
+                android:layout_marginTop="8dp" />
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/switchShowAll"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Show all professionals"
+                android:layout_marginRight="5dp"
+                android:textColor="@color/white"
+                android:layout_marginTop="8dp" />
+
+            <Button
+                android:id="@+id/btnNearbyList"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Nearby list"
+                android:layout_marginTop="10dp" />
+
+            <Button
+                android:id="@+id/btnCloseSheet"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:text="Done"
+                android:textColor="@color/white"
+                android:backgroundTint="@color/brand_teal"
+                android:layout_marginBottom="44dp" />
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
