@@ -1,31 +1,38 @@
 package com.example.thechair.Customer;
 
-import android.content.ActivityNotFoundException;
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
-import android.location.Address;
-import android.location.Geocoder;
+import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.provider.Settings;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
-
-import android.os.Handler;
-import android.os.Looper;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
@@ -33,45 +40,22 @@ import com.bumptech.glide.request.transition.Transition;
 import com.example.thechair.Adapters.DirectionsHelper;
 import com.example.thechair.Professional.PublicProfileFragment;
 import com.example.thechair.R;
+import com.example.thechair.BuildConfig;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.Priority;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
-
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
-import android.location.Location;
-import android.Manifest;
-import android.content.pm.PackageManager;
-import androidx.core.app.ActivityCompat;
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.location.Priority;
-import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.example.thechair.BuildConfig;
-
-import com.google.android.gms.maps.model.Polyline;
-import com.google.android.gms.maps.model.PolylineOptions;
-import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 
-import android.provider.Settings;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -86,91 +70,70 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link NearbyFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class NearbyFragment extends Fragment implements OnMapReadyCallback {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
     private MapView mapView;
-   private GoogleMap googleMap;
+    private GoogleMap googleMap;
+    private final List<ProMarker> proMarkers = new ArrayList<>();
 
     private FusedLocationProviderClient fusedLocationClient;
-    private Polyline currentRoute;
 
     private final ActivityResultLauncher<String> permissionLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
-                if (isGranted && googleMap != null) {
-                    enableLocationAndZoom();
-                }
+                if (isGranted && googleMap != null) enableLocationAndZoom();
             });
 
+    private EditText searchBar;
 
+    public NearbyFragment() {}
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    public NearbyFragment() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment NearbyFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static NearbyFragment newInstance(String param1, String param2) {
-        NearbyFragment fragment = new NearbyFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         View view = inflater.inflate(R.layout.fragment_nearby, container, false);
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
-
 
         mapView = view.findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
 
+        // 🔍 Attach search bar
+        searchBar = view.findViewById(R.id.serviceSearchBar);
+        ImageView searchFab = view.findViewById(R.id.searchFab);
+        LinearLayout searchContainer = view.findViewById(R.id.searchContainer);
+        EditText searchBar = view.findViewById(R.id.serviceSearchBar);
 
+// Expand on tap
+        searchFab.setOnClickListener(v -> {
+            searchFab.setVisibility(View.GONE);
+            searchContainer.setVisibility(View.VISIBLE);
+            searchBar.requestFocus();
+        });
 
+// Collapse when empty + back pressed
+        searchBar.setOnFocusChangeListener((v, hasFocus) -> {
+            if (!hasFocus && searchBar.getText().toString().trim().isEmpty()) {
+                searchContainer.setVisibility(View.GONE);
+                searchFab.setVisibility(View.VISIBLE);
+            }
+        });
 
+        setupSearchFiltering();
 
         return view;
     }
+
 
     @Override
     public void onMapReady(@NonNull GoogleMap map) {
         googleMap = map;
         googleMap.getUiSettings().setZoomControlsEnabled(true);
+        googleMap.getUiSettings().setMyLocationButtonEnabled(true);
+        googleMap.getUiSettings().setCompassEnabled(true);
+
 
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -180,22 +143,27 @@ public class NearbyFragment extends Fragment implements OnMapReadyCallback {
         }
 
         googleMap.setOnMarkerClickListener(marker -> {
-
             String proId = marker.getTag().toString();
             String proName = marker.getTitle();
-            LatLng position = marker.getPosition();
-
-
-            markerPopup(proId, proName, position);
-
-            return true; // consume the click event
+            LatLng pos = marker.getPosition();
+            markerPopup(proId, proName, pos);
+            return true;
         });
 
-
         enableLocationAndZoom();
-
         professionalsGeo();
+    }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        mapView.onStart();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        mapView.onStop();
     }
 
     @Override
@@ -222,22 +190,66 @@ public class NearbyFragment extends Fragment implements OnMapReadyCallback {
         if (mapView != null) mapView.onLowMemory();
     }
 
+
+
+    /* ============================================================
+       SEARCH BAR — FILTER MARKERS BY TAG
+       ============================================================ */
+    private void setupSearchFiltering() {
+        searchBar.addTextChangedListener(new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                filterMarkers(s.toString());
+            }
+
+            @Override public void afterTextChanged(Editable s) {}
+        });
+    }
+
+    private void filterMarkers(String query) {
+        query = query.toLowerCase().trim();
+
+        for (ProMarker pm : proMarkers) {
+            boolean match = false;
+
+            for (String tag : pm.tags) {
+                if (tag.toLowerCase().contains(query)) {
+                    match = true;
+                    break;
+                }
+            }
+
+            pm.marker.setVisible(match);
+        }
+    }
+
+
+    /* ============================================================
+       LOCATION ENABLE
+       ============================================================ */
     private void enableLocationAndZoom() {
-        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            return;
+
+        boolean fine = ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED;
+
+        boolean coarse = ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED;
+
+        if (!fine && !coarse) {
+            permissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
+            return; // This is fine because the launcher will call this again
         }
 
-        LocationManager lm = (LocationManager) requireContext().getSystemService(Context.LOCATION_SERVICE);
-
-        boolean isGpsOn = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
-
-        if (!isGpsOn) {
-            startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+        try {
+            googleMap.setMyLocationEnabled(true);
+        } catch (SecurityException e) {
+            e.printStackTrace();
         }
 
-
-        googleMap.setMyLocationEnabled(true);
+        googleMap.getUiSettings().setMyLocationButtonEnabled(true);
+        googleMap.getUiSettings().setCompassEnabled(true);
 
         fusedLocationClient.getCurrentLocation(
                 Priority.PRIORITY_HIGH_ACCURACY,
@@ -246,83 +258,18 @@ public class NearbyFragment extends Fragment implements OnMapReadyCallback {
             if (location != null) {
                 LatLng here = new LatLng(location.getLatitude(), location.getLongitude());
                 googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(here, 16f));
-            }
-        });
-
-    }
-
-    private void geocodeWithGoogleAPI(String fullAddress, Consumer<LatLng> callback) {
-
-        OkHttpClient client = new OkHttpClient();
-
-        String url = null;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            url = "https://maps.googleapis.com/maps/api/geocode/json?address="
-                    + URLEncoder.encode(fullAddress, StandardCharsets.UTF_8)
-                    + "&key=" + BuildConfig.MAPS_API_KEY;
-        }
-
-        Request request = new Request.Builder()
-                .url(url)
-                .build();
-
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                Log.e("GEOCODER_API", "Request failed: " + e.getMessage());
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                if (!response.isSuccessful()) {
-                    Log.e("GEOCODER_API", "HTTP error: " + response.code());
-                    return;
-                }
-
-                String body = response.body().string();
-
-
-                Log.e("GEOCODER_RAW", body);
-
-                try {
-                    JSONObject json = new JSONObject(body);
-
-
-                    String status = json.optString("status");
-                    Log.e("GEOCODER_STATUS", "Status = " + status);
-
-                    if (!"OK".equals(status)) {
-                        Log.e("GEOCODER_API", "API Error: " + status);
-                        return;
-                    }
-
-                    JSONArray results = json.getJSONArray("results");
-                    Log.e("GEOCODER_RESULTS", "Results length = " + results.length());
-
-                    if (results.length() > 0) {
-                        JSONObject location = results.getJSONObject(0)
-                                .getJSONObject("geometry")
-                                .getJSONObject("location");
-
-                        double lat = location.getDouble("lat");
-                        double lng = location.getDouble("lng");
-
-                        LatLng latLng = new LatLng(lat, lng);
-
-                        new Handler(Looper.getMainLooper())
-                                .post(() -> callback.accept(latLng));
-                    } else {
-                        Log.e("GEOCODER_API", "No results for: " + fullAddress);
-                    }
-
-                } catch (Exception e) {
-                    Log.e("GEOCODER_API", "JSON parse error: " + e.getMessage());
-                }
+            } else {
+                Log.e("LOCATION", "Location returned null");
             }
         });
     }
 
 
+
+
+    /* ============================================================
+       FIRESTORE FETCH + MARKERS
+       ============================================================ */
     private void professionalsGeo() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -330,180 +277,85 @@ public class NearbyFragment extends Fragment implements OnMapReadyCallback {
                 .get()
                 .addOnSuccessListener(query -> {
 
-                    if (query.isEmpty()) return;
-
                     for (var doc : query.getDocuments()) {
 
                         if (!"professional".equals(doc.getString("role"))) continue;
 
                         GeoPoint geo = doc.getGeoPoint("geo");
 
-                        boolean needsGeocoding =
-                                geo == null ||
-                                        Math.abs(geo.getLatitude()) < 0.0001 ||
-                                        Math.abs(geo.getLongitude()) < 0.0001;
+                        // 🔥  GET TAGS
+                        List<String> rawTags = (List<String>) doc.get("tags");
+                        if (rawTags == null) rawTags = new ArrayList<>();
+
+                        final List<String> tags = new ArrayList<>(rawTags); // ← make final copy
 
 
-                        Map<String, Object> addressMap = (Map<String, Object>) doc.get("address");
+                        if (geo == null) continue;
 
-                        if (addressMap == null) {
-                            Log.e("ADDRESS", "User " + doc.getId() + " has no address map.");
-                            continue;
-                        }
+                        LatLng pos = new LatLng(geo.getLatitude(), geo.getLongitude());
+                        String name = doc.getString("name");
+                        String profession = doc.getString("profession");
+                        String profileUrl = doc.getString("profilepic");
 
-                        String street  = (String) addressMap.get("street");
-                        String apt     = (String) addressMap.get("room");
-                        String city    = (String) addressMap.get("city");
-                        String state   = (String) addressMap.get("province");
-                        String postal  = (String) addressMap.get("postalCode");
-                        String country = (String) addressMap.get("country");
+                        Glide.with(requireActivity())
+                                .asBitmap()
+                                .load(profileUrl)
+                                .into(new CustomTarget<Bitmap>() {
+                                    @Override
+                                    public void onResourceReady(Bitmap bitmap, Transition<? super Bitmap> transition) {
+                                        Marker m = googleMap.addMarker(
+                                                new MarkerOptions()
+                                                        .position(pos)
+                                                        .title(name)
+                                                        .icon(BitmapDescriptorFactory.fromBitmap(
+                                                                createBitmapFromView(getMarkerView(name, profession, bitmap))
+                                                        ))
+                                                        .anchor(0.5f, 1f)
+                                        );
 
-                        if (street == null || city == null || state == null || postal == null) {
-                            Log.e("ADDRESS", "Skipping user " + doc.getId() + " — missing address parts");
-                            continue;
-                        }
-
-                        // Normalize street name
-                        street = street
-                                .replace("Ave.", "Avenue")
-                                .replace("Ave", "Avenue")
-                                .replace("ave.", "Avenue")
-                                .replace("ave", "Avenue");
-
-                        // Normalize postal code
-                        if (postal.length() == 6) {
-                            postal = postal.substring(0,3) + " " + postal.substring(3);
-                        }
-
-                        String fullAddress = street
-                                + (apt != null && !apt.isEmpty() ? " " + apt : "")
-                                + ", " + city
-                                + ", " + state + " " + postal
-                                + ", " + (country != null ? country : "Canada");
-
-                        if (needsGeocoding) {
-                            Log.d("GEOCODE_REQUEST", "Geocoding: " + fullAddress);
-
-                            geocodeWithGoogleAPI(fullAddress, latLng -> {
-
-                                Log.d("GEOCODE_RESPONSE", doc.getString("name") +
-                                        " → " + latLng.latitude + ", " + latLng.longitude);
-
-                                db.collection("Users")
-                                        .document(doc.getId())
-                                        .update("geo", new GeoPoint(latLng.latitude, latLng.longitude));
-
-                                String name = doc.getString("name");
-                                String profession = doc.getString("profession");
-                                String profileUrl = doc.getString("profilepic");
-
-                                Glide.with(requireActivity())
-                                        .asBitmap()
-                                        .load(profileUrl)
-                                        .into(new CustomTarget<Bitmap>() {
-                                            @Override
-                                            public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
-                                                if (!isAdded() || getActivity() == null) return;
-
-                                                View markerView = getMarkerView(name, profession, resource);
-                                                Bitmap markerBitmap = createBitmapFromView(markerView);
-
-                                                Marker m = googleMap.addMarker(
-                                                        new MarkerOptions()
-                                                                .position(latLng)
-                                                                .title(name)
-                                                                .icon(BitmapDescriptorFactory.fromBitmap(markerBitmap))
-                                                                .anchor(0.5f, 1.0f)
-                                                );
-
-                                                if (m != null) {
-                                                    m.setTag(doc.getId());  // attach professional's Firestore ID
-                                                }
-
-                                            }
-
-                                            @Override
-                                            public void onLoadCleared(@Nullable Drawable placeholder) {}
-                                        });
-
-                            });
-
-                        } else {
-                            LatLng pos = new LatLng(geo.getLatitude(), geo.getLongitude());
-
-                            String name = doc.getString("name");
-                            String profession = doc.getString("profession");
-                            String profileUrl = doc.getString("profilepic");
-
-                            Glide.with(requireActivity())
-                                    .asBitmap()
-                                    .load(profileUrl)
-                                    .into(new CustomTarget<Bitmap>() {
-                                        @Override
-                                        public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
-                                            if (!isAdded() || getActivity() == null) return;
-                                            View markerView = getMarkerView(name, profession, resource);
-                                            Bitmap markerBitmap = createBitmapFromView(markerView);
-
-                                            Marker m = googleMap.addMarker(
-                                                    new MarkerOptions()
-                                                            .position(pos)
-                                                            .title(name)
-                                                            .icon(BitmapDescriptorFactory.fromBitmap(markerBitmap))
-                                                            .anchor(0.5f, 1.0f)
-                                            );
-
-                                            if (m != null) {
-                                                m.setTag(doc.getId());  // attach professional's Firestore ID
-                                            }
-
+                                        if (m != null) {
+                                            m.setTag(doc.getId());
+                                            proMarkers.add(new ProMarker(m, tags)); // ⭐ Save tags
                                         }
+                                    }
 
-                                        @Override
-                                        public void onLoadCleared(@Nullable Drawable placeholder) {}
-                                    });
-
-                        }
+                                    @Override public void onLoadCleared(@Nullable Drawable placeholder) {}
+                                });
                     }
                 });
     }
-    private View getMarkerView(String name, String profession, Bitmap profileBitmap) {
-        View markerView = LayoutInflater.from(getContext())
-                .inflate(R.layout.marker_professional, null);
 
-        ImageView image = markerView.findViewById(R.id.markerImage);
-        TextView tvName = markerView.findViewById(R.id.markerName);
-        TextView tvProfession = markerView.findViewById(R.id.markerProfession);
 
-        image.setImageBitmap(profileBitmap);
-        tvName.setText(name);
-        tvProfession.setText(profession);
+    /* ============================================================
+       MARKER POPUP
+       ============================================================ */
+    private void markerPopup(String proId, String proName, LatLng position) {
+        BottomSheetDialog dialog = new BottomSheetDialog(requireContext());
+        View view = getLayoutInflater().inflate(R.layout.marker_menu, null);
+        dialog.setContentView(view);
 
-        return markerView;
+        TextView name = view.findViewById(R.id.proName);
+        Button btnProfile = view.findViewById(R.id.btnViewProfile);
+        Button btnDirections = view.findViewById(R.id.btnDirections);
+
+        name.setText(proName);
+
+        btnProfile.setOnClickListener(v -> {
+            dialog.dismiss();
+            openPublicProfile(proId);
+        });
+
+        btnDirections.setOnClickListener(v -> {
+            dialog.dismiss();
+            DirectionsHelper.openExternalGoogleMaps(requireContext(), position, proName);
+        });
+
+        dialog.show();
     }
 
-
-    private Bitmap createBitmapFromView(View view) {
-        view.measure(
-                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
-                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
-        );
-        view.layout(0, 0, view.getMeasuredWidth(), view.getMeasuredHeight());
-
-        Bitmap bitmap = Bitmap.createBitmap(
-                view.getMeasuredWidth(),
-                view.getMeasuredHeight(),
-                Bitmap.Config.ARGB_8888
-        );
-
-        Canvas canvas = new Canvas(bitmap);
-        view.draw(canvas);
-        return bitmap;
-    }
 
     private void openPublicProfile(String proId) {
         Fragment fragment = new PublicProfileFragment();
-
         Bundle args = new Bundle();
         args.putString("professionalId", proId);
         fragment.setArguments(args);
@@ -516,36 +368,51 @@ public class NearbyFragment extends Fragment implements OnMapReadyCallback {
     }
 
 
-private void markerPopup(String proId, String proName, LatLng position){
-    BottomSheetDialog dialog = new BottomSheetDialog(requireContext());
-    View view = getLayoutInflater().inflate(R.layout.marker_menu, null);
-    dialog.setContentView(view);
+    /* ============================================================
+       MARKER VIEW UTILITIES
+       ============================================================ */
+    private View getMarkerView(String name, String profession, Bitmap img) {
+        View view = LayoutInflater.from(getContext())
+                .inflate(R.layout.marker_professional, null);
 
-    TextView proNameTextView = view.findViewById(R.id.proName);
-    Button btnViewProfile = view.findViewById(R.id.btnViewProfile);
-    Button btnDirections = view.findViewById(R.id.btnDirections);
+        ImageView pfp = view.findViewById(R.id.markerImage);
+        TextView tvName = view.findViewById(R.id.markerName);
+        TextView tvProfession = view.findViewById(R.id.markerProfession);
 
-    proNameTextView.setText(proName);
+        pfp.setImageBitmap(img);
+        tvName.setText(name);
+        tvProfession.setText(profession);
 
-    btnViewProfile.setOnClickListener(v -> {
-        dialog.dismiss();
-        openPublicProfile(proId);
+        return view;
+    }
 
-        });
+    private Bitmap createBitmapFromView(View view) {
+        view.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+        view.layout(0, 0, view.getMeasuredWidth(), view.getMeasuredHeight());
 
-    btnDirections.setOnClickListener(v -> {
-        dialog.dismiss();
-        DirectionsHelper.openExternalGoogleMaps(requireContext(), position, proName);
+        Bitmap bitmap = Bitmap.createBitmap(
+                view.getMeasuredWidth(),
+                view.getMeasuredHeight(),
+                Bitmap.Config.ARGB_8888);
 
-        });
-
-    dialog.show();
-
-
-}
-
+        Canvas canvas = new Canvas(bitmap);
+        view.draw(canvas);
+        return bitmap;
+    }
 
 
+    /* ============================================================
+       PRO MARKER MODEL
+       ============================================================ */
+    public static class ProMarker {
+        public Marker marker;
+        public List<String> tags;
+
+        public ProMarker(Marker marker, List<String> tags) {
+            this.marker = marker;
+            this.tags = tags;
+        }
+    }
 
 
 
