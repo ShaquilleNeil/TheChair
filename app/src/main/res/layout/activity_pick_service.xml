@@ -6,56 +6,59 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:layout_gravity="center"
+    android:gravity="center_horizontal"
     android:padding="20dp"
-    android:background="@color/brand_charcoal_dark">
+    android:background="@color/white">
 
-    <!-- Profile Header -->
+    <!-- Profile Image -->
     <ImageView
         android:id="@+id/profileImage"
         android:layout_width="110dp"
         android:layout_height="110dp"
         android:layout_gravity="center_horizontal"
-        android:background="@drawable/circle_background"
-        android:scaleType="centerCrop"
+        android:background="@drawable/circle_background_cream"
         android:clipToOutline="true"
+        android:scaleType="centerCrop"
         android:src="@drawable/ic_person" />
 
+    <!-- Name -->
     <TextView
         android:id="@+id/proName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Jane Fade"
-        android:textColor="@color/brand_cream"
+        android:textColor="@color/text_primary"
         android:textStyle="bold"
         android:textSize="22sp"
         android:layout_marginTop="10dp" />
 
+    <!-- Profession -->
     <TextView
         android:id="@+id/proProfession"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Barber"
-        android:textColor="@color/brand_cream_muted"
+        android:textColor="@color/text_secondary"
         android:textSize="16sp"
         android:layout_marginBottom="18dp" />
 
-    <!-- Services -->
+    <!-- Services Title -->
     <TextView
         android:text="Services"
         android:textStyle="bold"
         android:textSize="20sp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/brand_cream"
-        android:layout_marginBottom="10dp"/>
+        android:textColor="@color/text_primary"
+        android:layout_marginBottom="10dp" />
 
-    <!-- Scroll container (kept exactly as you had it) -->
+    <!-- Services List Scroll -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/brand_charcoal"
-        android:padding="16dp">
+        android:background="@color/cream"
+        android:padding="16dp"
+        android:clipToOutline="true">
 
         <LinearLayout
             android:layout_width="match_parent"

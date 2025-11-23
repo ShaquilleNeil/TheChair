@@ -4,30 +4,32 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="10dp"
+    android:layout_margin="12dp"
     app:cardCornerRadius="18dp"
-    app:cardElevation="0dp"
+    app:cardElevation="8dp"
     app:cardUseCompatPadding="true"
-    app:cardBackgroundColor="@android:color/transparent">
+    app:cardBackgroundColor="@color/cream">
 
-    <!-- Custom outlined background -->
+    <!-- Main Content -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="16dp"
-        android:background="@drawable/card_outline">
+        android:padding="18dp">
 
+        <!-- Profile Image -->
         <ImageView
             android:id="@+id/profileImage"
             android:layout_width="70dp"
             android:layout_height="70dp"
             android:layout_marginEnd="16dp"
             android:scaleType="centerCrop"
-            android:background="@drawable/circle_background"
             android:clipToOutline="true"
+            android:background="@drawable/profile_ring"
+            android:padding="3dp"
             android:src="@drawable/ic_person" />
 
+        <!-- Name + Profession -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -42,7 +44,7 @@
                 android:text="Stylist Name"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                android:textColor="@color/brand_cream" />
+                android:textColor="@color/text_primary" />
 
             <TextView
                 android:id="@+id/proProfession"
@@ -50,7 +52,7 @@
                 android:layout_height="wrap_content"
                 android:text="Braids, Twists, Locs"
                 android:textSize="14sp"
-                android:textColor="@color/brand_cream_muted"
+                android:textColor="@color/text_secondary"
                 android:layout_marginTop="6dp" />
 
         </LinearLayout>

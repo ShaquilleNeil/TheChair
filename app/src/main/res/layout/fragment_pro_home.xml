@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="20dp"
-    android:background="@color/brand_charcoal"
+    android:background="@color/white"
     tools:context=".Professional.ProHomeFragment">
 
     <!-- PROFILE HEADER -->
@@ -17,7 +17,7 @@
         android:orientation="horizontal"
         android:gravity="center_vertical"
         android:padding="18dp"
-        android:background="@drawable/bg_glass"
+        android:background="@drawable/card_premium_bg"
         android:elevation="8dp"
         android:clipToOutline="true"
         android:layout_marginBottom="24dp"
@@ -25,7 +25,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- Circular Image -->
+        <!-- Profile Image -->
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/profileImage"
             android:layout_width="80dp"
@@ -33,7 +33,7 @@
             android:scaleType="centerCrop"
             android:src="@drawable/ic_person"
             app:shapeAppearanceOverlay="@style/CircleImage"
-            android:background="@drawable/circle_background"
+            android:background="@drawable/profile_ring"
             android:clipToOutline="true"/>
 
         <!-- Welcome Text -->
@@ -42,17 +42,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Welcome, Stylist!"
-            android:textColor="@color/brand_cream"
+            android:textColor="@color/text_primary"
             android:textStyle="bold"
             android:textSize="20sp"
             android:layout_marginStart="16dp"/>
     </LinearLayout>
 
-
-    <!-- HORIZONTAL DATES -->
-
-
-    <!-- APPOINTMENTS LIST -->
+    <!-- DATES RECYCLER -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rviewDates"
         android:layout_width="0dp"
@@ -62,30 +58,28 @@
         android:overScrollMode="never"
         android:paddingStart="8dp"
         android:paddingEnd="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintTop_toBottomOf="@id/profileHeader"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/profileHeader" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
+    <!-- APPOINTMENTS LIST -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rviewAppointments"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:clipToPadding="false"
         android:overScrollMode="never"
-        app:layout_constraintBottom_toTopOf="@id/btnServices"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/rviewDates"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintBottom_toTopOf="@id/btnServices"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <TextView
         android:id="@+id/tvNoAppointments"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="No Appointments"
-        android:textColor="@color/brand_cream"
+        android:textColor="@color/text_primary"
         android:textStyle="bold"
         android:textSize="16sp"
         android:visibility="gone"
@@ -93,8 +87,6 @@
         app:layout_constraintBottom_toTopOf="@id/btnServices"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
-
-
 
     <!-- BUTTON: SERVICES -->
     <Button
@@ -104,15 +96,14 @@
         android:text="My Services"
         android:textAllCaps="false"
         android:textColor="@color/white"
-        android:backgroundTint="@color/brand_teal"
+        android:backgroundTint="@color/burgundy"
         android:layout_marginHorizontal="48dp"
         android:layout_marginBottom="8dp"
         android:elevation="4dp"
-        style="@style/Widget.MaterialComponents.Button.TextButton"
+        style="@style/Widget.Material3.Button"
         app:layout_constraintBottom_toTopOf="@id/btnAvailability"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
-
 
     <!-- BUTTON: AVAILABILITY -->
     <Button
@@ -121,12 +112,12 @@
         android:layout_height="48dp"
         android:text="Set Availability"
         android:textAllCaps="false"
-        android:textColor="@color/white"
-        android:backgroundTint="@color/brand_teal_dark"
+        android:textColor="@color/burgundy"
+        android:backgroundTint="@color/cream"
         android:layout_marginHorizontal="48dp"
         android:layout_marginBottom="24dp"
+        style="@style/Widget.Material3.Button"
         android:elevation="4dp"
-        style="@style/Widget.MaterialComponents.Button.TextButton"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />

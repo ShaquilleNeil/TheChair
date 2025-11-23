@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/brand_charcoal"
+    android:background="@color/cream"
     android:padding="24dp">
 
     <LinearLayout
@@ -13,31 +13,31 @@
         android:orientation="vertical"
         android:gravity="center_horizontal">
 
-        <!-- FROSTED CARD CONTAINER -->
+        <!-- FROSTED CARD / GLASS -->
         <LinearLayout
-
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="24dp"
             android:layout_marginTop="12dp"
             android:layout_marginBottom="24dp"
-            android:background="@color/frosted_bg"
+            android:background="@drawable/bg_glass"
             android:clipToOutline="true"
             android:elevation="14dp">
 
-            <!-- PROFILE SECTION (unchanged) -->
+            <!-- PROFILE IMAGE -->
             <ImageView
                 android:id="@+id/profileImage"
                 android:layout_width="110dp"
                 android:layout_height="110dp"
                 android:layout_gravity="center_horizontal"
-                android:background="@drawable/circle_background"
+                android:background="@drawable/profile_ring"
                 android:scaleType="centerCrop"
                 android:clipToOutline="true"
                 android:src="@drawable/ic_person"
                 android:layout_marginBottom="20dp" />
 
+            <!-- NAME -->
             <TextView
                 android:id="@+id/tvProName"
                 android:layout_width="wrap_content"
@@ -45,7 +45,7 @@
                 android:text="Pro Name"
                 android:textSize="22sp"
                 android:textStyle="bold"
-                android:textColor="@color/brand_cream"
+                android:textColor="@color/text_primary"
                 android:layout_marginBottom="4dp"/>
 
             <TextView
@@ -53,11 +53,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Barber"
-                android:textColor="@color/brand_cream_muted"
+                android:textColor="@color/text_secondary"
                 android:textSize="16sp"
                 android:layout_marginBottom="10dp" />
 
-            <!-- SERVICE DETAILS (unchanged) -->
+            <!-- SERVICE DETAILS -->
             <TextView
                 android:id="@+id/tvServiceName"
                 android:layout_width="wrap_content"
@@ -65,7 +65,7 @@
                 android:text="Service Name"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                android:textColor="@color/brand_cream"
+                android:textColor="@color/text_primary"
                 android:layout_marginBottom="12dp"/>
 
             <TextView
@@ -74,7 +74,7 @@
                 android:layout_height="wrap_content"
                 android:text="Price: $40"
                 android:textSize="18sp"
-                android:textColor="@color/brand_cream"
+                android:textColor="@color/burgundy"
                 android:layout_marginBottom="12dp"/>
 
             <TextView
@@ -83,17 +83,17 @@
                 android:layout_height="wrap_content"
                 android:text="Duration: 45 minutes"
                 android:textSize="18sp"
-                android:textColor="@color/brand_cream"
+                android:textColor="@color/text_secondary"
                 android:layout_marginBottom="22dp"/>
 
             <!-- Divider -->
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/brand_cream_muted"
+                android:background="@color/border_light"
                 android:layout_marginBottom="20dp" />
 
-            <!-- CALENDAR VIEW INSERTED HERE -->
+            <!-- CALENDAR -->
             <com.prolificinteractive.materialcalendarview.MaterialCalendarView
                 android:id="@+id/calendarView"
                 android:layout_width="match_parent"
@@ -101,13 +101,13 @@
                 android:layout_marginBottom="10dp"
                 app:mcv_showOtherDates="none" />
 
-            <!-- Selected Date Label -->
+            <!-- Date Label -->
             <TextView
                 android:id="@+id/tvSelectedDate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Select a date"
-                android:textColor="@color/brand_cream"
+                android:textColor="@color/text_primary"
                 android:textSize="16sp"
                 android:layout_marginBottom="16dp" />
 

@@ -6,6 +6,8 @@
     android:id="@+id/rootCoordinator"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
+    android:fitsSystemWindows="true"
     tools:context=".Customer.NearbyFragment">
 
     <!-- MAP -->
@@ -18,7 +20,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-        <!-- 🔍 SEARCH FAB + EXPANDING BAR -->
+        <!-- SEARCH FAB + EXPAND BAR -->
         <FrameLayout
             android:id="@+id/searchFabContainer"
             android:layout_width="wrap_content"
@@ -26,21 +28,23 @@
             android:layout_margin="16dp"
             android:layout_gravity="top|start">
 
+            <!-- Small Search FAB -->
             <ImageView
                 android:id="@+id/searchFab"
                 android:layout_width="56dp"
                 android:layout_height="56dp"
-                android:background="@drawable/rounded_white_circle"
+                android:background="@drawable/fab_circle_premium"
                 android:padding="14dp"
                 android:elevation="20dp"
-                android:src="@android:drawable/ic_menu_search" />
+                android:src="@drawable/ic_search_burgundy" />
 
+            <!-- Expanding Search Bar -->
             <LinearLayout
                 android:id="@+id/searchContainer"
                 android:layout_width="260dp"
                 android:layout_height="50dp"
                 android:layout_gravity="center_vertical"
-                android:background="@drawable/rounded_white"
+                android:background="@drawable/card_premium_bg"
                 android:elevation="20dp"
                 android:padding="8dp"
                 android:orientation="horizontal"
@@ -52,12 +56,14 @@
                     android:layout_height="match_parent"
                     android:background="@android:color/transparent"
                     android:textSize="16sp"
-                    android:hint="Filter by style..."
-                    android:paddingStart="8dp" />
+                    android:hint="Search styles…"
+                    android:paddingStart="8dp"
+                    android:textColor="@color/text_primary"
+                    android:textColorHint="@color/text_secondary" />
             </LinearLayout>
         </FrameLayout>
 
-        <!-- ⭐ FILTER FAB (moved under search FAB) -->
+        <!-- FILTER FAB -->
         <ImageView
             android:id="@+id/btnOpenFilters"
             android:layout_width="56dp"
@@ -65,13 +71,13 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="100dp"
             android:layout_gravity="top|start"
-            android:background="@drawable/rounded_white_circle"
+            android:background="@drawable/fab_circle_premium"
             android:elevation="20dp"
             android:padding="14dp"
-            android:src="@drawable/ic_filter" />
+            android:src="@drawable/ic_filter_burgundy" />
     </FrameLayout>
 
-    <!-- ⭐ BOTTOM SHEET FILTER PANEL -->
+    <!-- BOTTOM SHEET FILTER PANEL -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/filterSheet"
         android:layout_width="match_parent"
@@ -82,6 +88,7 @@
         app:cardElevation="12dp"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
         app:behavior_peekHeight="0dp"
+        android:layout_marginBottom="120dp"
         app:behavior_hideable="true">
 
         <LinearLayout
@@ -138,8 +145,7 @@
                 android:layout_height="48dp"
                 android:text="Done"
                 android:textColor="@color/white"
-                android:backgroundTint="@color/brand_teal"
-                android:layout_marginBottom="44dp" />
+                android:layout_marginBottom="124dp" />
         </LinearLayout>
 
     </com.google.android.material.card.MaterialCardView>

@@ -33,7 +33,7 @@
                     android:id="@+id/profileImage"
                     android:layout_width="70dp"
                     android:layout_height="70dp"
-                    android:background="@drawable/circle_mask"
+                    android:background="@drawable/circle_background"
                     android:clipToOutline="true"
                     android:scaleType="centerCrop"
                     android:src="@drawable/ic_person" />
@@ -45,7 +45,7 @@
                     android:text="John Doe"
                     android:textSize="20sp"
                     android:textStyle="bold"
-                    android:textColor="@color/brand_charcoal_dark"
+                    android:textColor="@color/text_primary"
                     android:layout_marginStart="16dp" />
             </LinearLayout>
 
@@ -55,7 +55,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="160dp"
                 android:layout_marginBottom="20dp"
-                android:background="@drawable/rounded_rectangle"
+                android:background="@drawable/card_premium_bg"
                 android:clipToOutline="true"
                 android:scaleType="centerCrop"
                 android:src="@drawable/banner" />
@@ -76,7 +76,7 @@
                     android:text="Categories"
                     android:textSize="22sp"
                     android:textStyle="bold"
-                    android:textColor="@color/brand_charcoal_dark" />
+                    android:textColor="@color/text_primary" />
 
                 <TextView
                     android:id="@+id/seeAll"
@@ -84,9 +84,10 @@
                     android:layout_height="wrap_content"
                     android:text="See All"
                     android:textSize="14sp"
-                    android:textColor="@color/brand_teal" />
+                    android:textColor="@color/burgundy" />
             </LinearLayout>
 
+            <!-- CATEGORIES ROW -->
             <!-- CATEGORIES ROW -->
             <LinearLayout
                 android:id="@+id/categoriesLayout"
@@ -110,7 +111,7 @@
                         android:id="@+id/haircut"
                         android:layout_width="58dp"
                         android:layout_height="58dp"
-                        android:background="@drawable/circle_mask"
+                        android:background="@drawable/circle_background_cream"
                         android:clipToOutline="true"
                         android:scaleType="centerCrop"
                         android:src="@drawable/haircut" />
@@ -120,7 +121,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Haircut"
-                        android:textColor="@color/brand_charcoal_dark"
+                        android:textColor="@color/text_primary"
                         android:textSize="13sp"
                         android:layout_marginTop="6dp" />
                 </LinearLayout>
@@ -137,7 +138,7 @@
                         android:id="@+id/locs"
                         android:layout_width="58dp"
                         android:layout_height="58dp"
-                        android:background="@drawable/circle_mask"
+                        android:background="@drawable/circle_background_cream"
                         android:clipToOutline="true"
                         android:scaleType="centerCrop"
                         android:src="@drawable/locs" />
@@ -147,7 +148,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Locs"
-                        android:textColor="@color/brand_charcoal_dark"
+                        android:textColor="@color/text_primary"
                         android:textSize="13sp"
                         android:layout_marginTop="6dp" />
                 </LinearLayout>
@@ -164,18 +165,17 @@
                         android:id="@+id/weave"
                         android:layout_width="58dp"
                         android:layout_height="58dp"
-                        android:background="@drawable/circle_mask"
+                        android:background="@drawable/circle_background_cream"
                         android:clipToOutline="true"
                         android:scaleType="centerCrop"
-                        android:src="@drawable/weave"
-                       />
+                        android:src="@drawable/weave" />
 
                     <TextView
                         android:id="@+id/weaveText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Weaves"
-                        android:textColor="@color/brand_charcoal_dark"
+                        android:textColor="@color/text_primary"
                         android:textSize="13sp"
                         android:layout_marginTop="6dp" />
                 </LinearLayout>
@@ -192,7 +192,7 @@
                         android:id="@+id/braids"
                         android:layout_width="58dp"
                         android:layout_height="58dp"
-                        android:background="@drawable/circle_mask"
+                        android:background="@drawable/circle_background_cream"
                         android:clipToOutline="true"
                         android:scaleType="centerCrop"
                         android:src="@drawable/braids" />
@@ -202,18 +202,20 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Braiding"
-                        android:textColor="@color/brand_charcoal_dark"
+                        android:textColor="@color/text_primary"
                         android:textSize="13sp"
                         android:layout_marginTop="6dp" />
                 </LinearLayout>
+
             </LinearLayout>
+
 
             <!-- PICKS OF THE DAY -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="5 Picks of the Day"
-                android:textColor="@color/brand_charcoal_dark"
+                android:textColor="@color/text_primary"
                 android:textSize="22sp"
                 android:textStyle="bold"
                 android:layout_marginBottom="16dp" />

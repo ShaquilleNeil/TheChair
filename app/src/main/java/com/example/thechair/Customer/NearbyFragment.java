@@ -34,6 +34,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
@@ -190,6 +191,48 @@ public class NearbyFragment extends Fragment implements OnMapReadyCallback {
         professionalsGeo();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (mapView != null) mapView.onResume();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (mapView != null) mapView.onStart();
+    }
+
+    @Override
+    public void onPause() {
+        if (mapView != null) mapView.onPause();
+        super.onPause();
+    }
+
+    @Override
+    public void onStop() {
+        if (mapView != null) mapView.onStop();
+        super.onStop();
+    }
+
+    @Override
+    public void onDestroyView() {
+        if (mapView != null) mapView.onDestroy();
+        super.onDestroyView();
+    }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        if (mapView != null) mapView.onLowMemory();
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (mapView != null) mapView.onSaveInstanceState(outState);
+    }
+
     private void enableLocationAndZoom() {
         if (ActivityCompat.checkSelfPermission(requireContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -334,7 +377,11 @@ public class NearbyFragment extends Fragment implements OnMapReadyCallback {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         db.collection("Users").get().addOnSuccessListener(query -> {
+
+            if (!isAdded()) return; // Fragment no longer active → stop
+
             for (var doc : query) {
+
                 if (!"professional".equals(doc.getString("role"))) continue;
 
                 GeoPoint geo = doc.getGeoPoint("geo");
@@ -346,7 +393,7 @@ public class NearbyFragment extends Fragment implements OnMapReadyCallback {
                 String url = doc.getString("profilepic");
                 String id = doc.getId();
 
-                Glide.with(requireActivity())
+                Glide.with(requireContext())   // safer than requireActivity()
                         .asBitmap()
                         .load(url)
                         .into(new CustomTarget<Bitmap>() {
@@ -354,13 +401,18 @@ public class NearbyFragment extends Fragment implements OnMapReadyCallback {
                             public void onResourceReady(@NonNull Bitmap bmp,
                                                         @Nullable Transition<? super Bitmap> t) {
 
-                                Marker m = googleMap.addMarker(new MarkerOptions()
-                                        .position(pos)
-                                        .title(name)
-                                        .icon(BitmapDescriptorFactory.fromBitmap(
-                                                createBitmapFromView(getMarkerView(name, profession, bmp))
-                                        ))
-                                        .anchor(0.5f, 1f)
+                                if (!isAdded()) return;                 // ← safety
+                                if (googleMap == null) return;          // ← safety
+
+                                View mv = getMarkerView(name, profession, bmp);
+                                Bitmap markerBmp = createBitmapFromView(mv);
+
+                                Marker m = googleMap.addMarker(
+                                        new MarkerOptions()
+                                                .position(pos)
+                                                .title(name)
+                                                .icon(BitmapDescriptorFactory.fromBitmap(markerBmp))
+                                                .anchor(0.5f, 1f)
                                 );
 
                                 if (m != null) {
@@ -368,12 +420,16 @@ public class NearbyFragment extends Fragment implements OnMapReadyCallback {
 
                                     double dist = -1;
                                     if (lastKnownLocation != null) {
-                                        LatLng user = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
+                                        LatLng user = new LatLng(
+                                                lastKnownLocation.getLatitude(),
+                                                lastKnownLocation.getLongitude()
+                                        );
                                         dist = distanceBetweenKm(user, pos);
                                     }
 
                                     proMarkers.add(new ProMarker(m, id, name, profession, pos, dist));
                                 }
+
                                 updateMarkerVisibility();
                             }
 
@@ -382,6 +438,7 @@ public class NearbyFragment extends Fragment implements OnMapReadyCallback {
             }
         });
     }
+
 
     private void updateMarkerVisibility() {
         String q = currentQuery.toLowerCase().trim();
@@ -410,6 +467,9 @@ public class NearbyFragment extends Fragment implements OnMapReadyCallback {
     }
 
     private void markerPopup(String id, String name, LatLng pos) {
+        if (!isAdded()) return;            // STOP if fragment is detached
+        if (getContext() == null) return;
+
         BottomSheetDialog dialog = new BottomSheetDialog(requireContext());
         View v = getLayoutInflater().inflate(R.layout.marker_menu, null);
         dialog.setContentView(v);
@@ -418,29 +478,37 @@ public class NearbyFragment extends Fragment implements OnMapReadyCallback {
 
         v.findViewById(R.id.btnViewProfile).setOnClickListener(x -> {
             dialog.dismiss();
-            openPublicProfile(id);
+            if (isAdded()) openPublicProfile(id);
         });
 
         v.findViewById(R.id.btnDirections).setOnClickListener(x -> {
             dialog.dismiss();
-            DirectionsHelper.openExternalGoogleMaps(requireContext(), pos, name);
+            if (isAdded())
+                DirectionsHelper.openExternalGoogleMaps(requireContext(), pos, name);
         });
 
         dialog.show();
     }
 
+
     private void openPublicProfile(String id) {
+        if (!isAdded()) return;
+
+        FragmentActivity act = getActivity();
+        if (act == null || act.isFinishing()) return;
+
         Fragment fragment = new PublicProfileFragment();
         Bundle args = new Bundle();
         args.putString("professionalId", id);
         fragment.setArguments(args);
 
-        requireActivity().getSupportFragmentManager()
+        act.getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.appMainView, fragment)
                 .addToBackStack(null)
-                .commit();
+                .commitAllowingStateLoss();   // ← prevents crash
     }
+
 
     private View getMarkerView(String name, String profession, Bitmap bmp) {
         View v = LayoutInflater.from(getContext())

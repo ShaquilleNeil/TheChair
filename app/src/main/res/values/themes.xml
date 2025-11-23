@@ -1,37 +1,36 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Disable M3 tinting for custom buttons -->
-    <style name="NoTintMaterialButton" parent="Widget.Material3.Button">
-        <item name="backgroundTint">@null</item>
-        <item name="rippleColor">@android:color/transparent</item>
-        <item name="elevation">0dp</item>
+    <style name="Theme.TheChair" parent="Theme.Material3.Light.NoActionBar">
+
+        <!-- BRAND COLORS -->
+        <item name="colorPrimary">@color/burgundy</item>
+        <item name="colorPrimaryContainer">@color/burgundy_dark</item>
+        <item name="colorOnPrimary">@color/white</item>
+
+        <!-- BACKGROUND + SURFACES -->
+        <item name="android:windowBackground">@color/white</item>
+        <item name="colorSurface">@color/cream</item>
+        <item name="colorSurfaceVariant">@color/surface_light</item>
+
+        <!-- TEXT COLORS (GLOBAL OVERRIDES) -->
+        <item name="android:textColorPrimary">@color/text_primary</item>
+        <item name="android:textColorSecondary">@color/text_secondary</item>
+        <item name="colorOnSurface">@color/text_primary</item>
+
+        <!-- BUTTON STYLE OVERRIDE -->
+        <item name="materialButtonStyle">@style/TheChairButton</item>
+
+        <!-- OPTIONAL: REMOVE M3 AUTOMATIC TINTING -->
+        <item name="android:colorAccent">@color/burgundy</item>
+        <item name="colorSecondary">@color/burgundy</item>
+
     </style>
 
-    <!-- Base premium theme -->
-    <style name="Base.Theme.TheChair" parent="Theme.Material3.DayNight.NoActionBar">
-
-        <!-- Brand palette -->
-        <item name="colorPrimary">@color/brand_charcoal</item>
-        <item name="colorOnPrimary">@color/brand_cream</item>
-
-        <item name="colorSecondary">@color/brand_teal</item>
-        <item name="colorOnSecondary">@color/brand_cream</item>
-
-        <!-- Surfaces -->
-        <item name="colorSurface">@color/brand_charcoal_dark</item>
-        <item name="colorOnSurface">@color/brand_cream</item>
-
-        <!-- Background -->
-        <item name="android:windowBackground">@color/brand_charcoal_dark</item>
-
-        <!-- Override Material3 button tinting -->
-        <item name="materialButtonStyle">@style/NoTintMaterialButton</item>
-
-        <!-- Shape appearance (rounded + modern) -->
-        <item name="shapeAppearanceMediumComponent">@style/ShapeAppearance.Material3.Corner.Medium</item>
-        <item name="shapeAppearanceLargeComponent">@style/ShapeAppearance.Material3.Corner.Large</item>
+    <!-- GLOBAL BURGUNDY BUTTON -->
+    <style name="TheChairButton" parent="Widget.Material3.Button">
+        <item name="backgroundTint">@color/burgundy</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="rippleColor">@color/burgundy_dark</item>
     </style>
-
-    <style name="Theme.TheChair" parent="Base.Theme.TheChair" />
 
 </resources>

@@ -2,13 +2,11 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="oval">
 
-    <!-- Transparent center -->
-    <solid android:color="@android:color/transparent"/>
+    <solid android:color="@color/cream" />
 
-    <!-- Soft premium outline -->
     <stroke
         android:width="2dp"
-        android:color="#40FFFFFF"/>   <!-- 25% white glow -->
+        android:color="@color/burgundy" />
 
-    <!-- No corners needed for circle -->
 </shape>
+

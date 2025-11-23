@@ -1,35 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
-    android:padding="20dp"
-    android:background="@drawable/bg_rounded_white"
+    android:padding="22dp"
+    android:background="@drawable/dialog_bg_premium"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:elevation="12dp">
 
     <TextView
         android:id="@+id/proName"
         android:text="Professional Name"
         android:textSize="18sp"
         android:textStyle="bold"
-        android:layout_marginBottom="16dp"
+        android:textColor="@color/text_primary"
+        android:layout_marginBottom="18dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
+    <!-- View Profile (Primary CTA – Burgundy) -->
     <Button
         android:id="@+id/btnViewProfile"
         android:text="View Profile"
+        android:textColor="@color/white"
+        android:backgroundTint="@color/burgundy"
         android:layout_width="match_parent"
-        android:backgroundTint="@color/success_green"
-        style="@style/Widget.MaterialComponents.Button.TextButton"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        style="@style/Widget.Material3.Button" />
 
+    <!-- Directions (Secondary CTA – Cream surface + Burgundy text) -->
     <Button
         android:id="@+id/btnDirections"
         android:text="Get Directions"
-        android:layout_marginTop="10dp"
-        android:backgroundTint="@color/brand_teal_dark"
-        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:textColor="@color/burgundy"
+        android:backgroundTint="@color/cream"
+        android:layout_marginTop="12dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        style="@style/Widget.Material3.Button" />
 
 </LinearLayout>

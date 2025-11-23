@@ -14,18 +14,20 @@
         android:orientation="vertical"
         android:padding="18dp">
 
-        <!-- TODAY SECTION HEADER -->
+        <!-- ============================= -->
+        <!-- TODAY HEADER - PREMIUM TILE -->
+        <!-- ============================= -->
         <LinearLayout
             android:id="@+id/sectionToday"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:padding="14dp"
+            android:padding="16dp"
             android:gravity="center_vertical"
-            android:background="@color/success_green"
-            android:elevation="4dp"
+            android:background="@drawable/card_premium_bg"
+            android:elevation="6dp"
             android:clipToOutline="true"
-            android:layout_marginBottom="10dp">
+            android:layout_marginBottom="12dp">
 
             <TextView
                 android:id="@+id/tvToday"
@@ -35,15 +37,15 @@
                 android:text="Today"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                android:textColor="@color/brand_charcoal" />
+                android:textColor="@color/text_primary" />
 
             <ImageView
                 android:id="@+id/ivTodayArrow"
-                android:layout_width="34dp"
-                android:layout_height="34dp"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
                 android:padding="4dp"
                 android:src="@drawable/ic_arrow_drop_down"
-                android:tint="@color/black" />
+                android:tint="@color/burgundy" />
         </LinearLayout>
 
         <!-- TODAY LIST -->
@@ -56,19 +58,20 @@
 
 
 
-        <!-- UPCOMING SECTION HEADER -->
+        <!-- =============================== -->
+        <!-- UPCOMING HEADER - PREMIUM TILE -->
+        <!-- =============================== -->
         <LinearLayout
             android:id="@+id/sectionUpcoming"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:padding="14dp"
+            android:padding="16dp"
             android:gravity="center_vertical"
-            android:background="@color/starGold"
-            android:elevation="4dp"
+            android:background="@drawable/card_premium_bg"
+            android:elevation="6dp"
             android:clipToOutline="true"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="10dp">
+            android:layout_marginBottom="12dp">
 
             <TextView
                 android:id="@+id/tvUpcoming"
@@ -78,17 +81,18 @@
                 android:text="Upcoming"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                android:textColor="@color/brand_charcoal" />
+                android:textColor="@color/text_primary" />
 
             <ImageView
                 android:id="@+id/ivUpcomingArrow"
-                android:layout_width="34dp"
-                android:layout_height="34dp"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
                 android:padding="4dp"
                 android:src="@drawable/ic_arrow_drop_down"
-                android:tint="@color/black" />
+                android:tint="@color/burgundy" />
         </LinearLayout>
 
+        <!-- UPCOMING LIST -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvUpcoming"
             android:layout_width="match_parent"
@@ -98,19 +102,20 @@
 
 
 
-        <!-- PAST SECTION HEADER -->
+        <!-- =========================== -->
+        <!-- PAST HEADER - PREMIUM TILE -->
+        <!-- =========================== -->
         <LinearLayout
             android:id="@+id/sectionPast"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:padding="14dp"
+            android:padding="16dp"
             android:gravity="center_vertical"
-            android:background="@color/brand_teal"
-            android:elevation="4dp"
+            android:background="@drawable/card_premium_bg"
+            android:elevation="6dp"
             android:clipToOutline="true"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="10dp">
+            android:layout_marginBottom="12dp">
 
             <TextView
                 android:id="@+id/tvPast"
@@ -120,17 +125,18 @@
                 android:text="Past"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                android:textColor="@color/brand_charcoal" />
+                android:textColor="@color/text_primary" />
 
             <ImageView
                 android:id="@+id/ivPastArrow"
-                android:layout_width="34dp"
-                android:layout_height="34dp"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
                 android:padding="4dp"
                 android:src="@drawable/ic_arrow_drop_down"
-                android:tint="@color/black" />
+                android:tint="@color/burgundy" />
         </LinearLayout>
 
+        <!-- PAST LIST -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvPast"
             android:layout_width="match_parent"

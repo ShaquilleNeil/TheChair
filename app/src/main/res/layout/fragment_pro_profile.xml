@@ -5,7 +5,7 @@
     android:id="@+id/proProfileFragmentLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/brand_charcoal"
+    android:background="@color/white"
     tools:context=".Professional.ProProfileFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -14,14 +14,14 @@
         android:layout_height="match_parent"
         android:padding="20dp">
 
-        <!-- Profile Card (Frosted) -->
+        <!-- Profile Card -->
         <LinearLayout
             android:id="@+id/profileHeaderCard"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:padding="20dp"
-            android:background="@drawable/bg_glass"
+            android:background="@drawable/card_premium_bg"
             android:elevation="8dp"
             android:clipToOutline="true"
             android:layout_marginTop="24dp"
@@ -36,7 +36,8 @@
                 android:layout_height="90dp"
                 android:src="@drawable/ic_person"
                 android:scaleType="centerCrop"
-                android:background="@drawable/circle_background"
+                android:background="@drawable/profile_ring"
+                android:padding="3dp"
                 android:clipToOutline="true"
                 android:contentDescription="Profile Picture" />
 
@@ -53,7 +54,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Username"
-                    android:textColor="@color/brand_cream"
+                    android:textColor="@color/text_primary"
                     android:textStyle="bold"
                     android:textSize="22sp" />
 
@@ -62,26 +63,24 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Profession"
-                    android:textColor="@color/brand_cream_muted"
+                    android:textColor="@color/text_secondary"
                     android:textSize="15sp"
                     android:layout_marginTop="4dp" />
 
                 <Button
                     android:id="@+id/btnEditProfile"
                     android:layout_width="90dp"
-                    android:layout_height="33dp"
-                    android:backgroundTint="@color/success_green"
-                    android:textSize="9dp"
-                    style="@style/Widget.MaterialComponents.Button.TextButton"
-                    android:text="Edit Profile"/>
+                    android:layout_height="36dp"
+                    android:text="Edit Profile"
+                    android:textColor="@color/white"
+                    android:textSize="11sp"
+                    android:backgroundTint="@color/burgundy"
+                    style="@style/Widget.Material3.Button"
+                    android:layout_marginTop="6dp" />
             </LinearLayout>
-
-
-
         </LinearLayout>
 
-
-        <!-- Sign Out Button -->
+        <!-- Sign Out -->
         <Button
             android:id="@+id/btn_sign_out"
             android:layout_width="120dp"
@@ -89,13 +88,15 @@
             android:text="Sign Out"
             android:textAllCaps="false"
             android:textSize="14sp"
+            android:textStyle="bold"
             android:backgroundTint="@color/error_red"
             android:textColor="@color/white"
+            style="@style/Widget.Material3.Button"
             android:layout_marginTop="16dp"
-            style="@style/Widget.MaterialComponents.Button.TextButton"
             app:layout_constraintTop_toBottomOf="@id/profileHeaderCard"
             app:layout_constraintStart_toStartOf="parent" />
 
+        <!-- Gallery Header -->
         <LinearLayout
             android:id="@+id/galleryHeaderLayout"
             android:layout_width="0dp"
@@ -115,7 +116,7 @@
                 android:text="Your Work"
                 android:textStyle="bold"
                 android:textSize="18sp"
-                android:textColor="@color/brand_cream"
+                android:textColor="@color/text_primary"
                 android:layout_marginEnd="12dp" />
 
             <Button
@@ -125,14 +126,12 @@
                 android:text="+"
                 android:textSize="22sp"
                 android:textColor="@color/white"
-                android:backgroundTint="@color/brand_teal"
-                android:elevation="4dp"
-                style="@style/Widget.MaterialComponents.Button.TextButton"
-                android:layout_gravity="center_vertical" />
-
+                android:backgroundTint="@color/burgundy"
+                style="@style/Widget.Material3.Button"
+                android:elevation="4dp" />
         </LinearLayout>
 
-        <!-- Gallery Grid -->
+        <!-- Gallery -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/galleryRecyclerView"
             android:layout_width="0dp"

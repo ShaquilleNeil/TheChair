@@ -1,35 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:padding="6dp"
-    android:background="@drawable/marker_bg"
     android:gravity="center_horizontal"
+    android:background="@drawable/marker_bg_premium"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 
+    <!-- Profile Image -->
     <ImageView
         android:id="@+id/markerImage"
-        android:layout_width="55dp"
-        android:layout_height="55dp"
+        android:layout_width="52dp"
+        android:layout_height="52dp"
         android:scaleType="centerCrop"
-        android:background="@drawable/circle_mask"
-        android:src="@drawable/ic_person" />
+        android:clipToOutline="true"
+        android:background="@drawable/circle_background"
+        android:padding="3dp" />
 
+    <!-- Provider Name -->
     <TextView
         android:id="@+id/markerName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Name"
-        android:textColor="#000000"
+        android:textColor="@color/text_primary"
         android:textSize="12sp"
         android:textStyle="bold"
-        android:paddingTop="4dp" />
+        android:paddingTop="4dp"
+        android:maxLines="1" />
 
+    <!-- Provider Profession -->
     <TextView
         android:id="@+id/markerProfession"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Profession"
-        android:textColor="#333333"
-        android:textSize="11sp" />
+        android:textColor="@color/text_secondary"
+        android:textSize="11sp"
+        android:maxLines="1" />
 </LinearLayout>

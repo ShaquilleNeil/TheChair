@@ -14,5 +14,14 @@
         <item name="android:insetBottom">8dp</item>
     </style>
 
+    <style name="TheChairRatingBar" parent="@style/Widget.AppCompat.RatingBar.Indicator">
+        <item name="android:progressTint">@color/burgundy</item>          <!-- filled stars -->
+        <item name="android:secondaryProgressTint">@color/burgundy</item> <!-- half stars -->
+        <item name="android:indeterminateTint">@color/burgundy</item>
+
+        <item name="android:progressBackgroundTint">@color/border_light</item> <!-- empty stars -->
+    </style>
+
+
 
 </resources>

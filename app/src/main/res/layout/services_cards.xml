@@ -3,52 +3,69 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="10dp"
-    app:cardElevation="4dp"
-    app:cardCornerRadius="16dp"
-    app:cardBackgroundColor="@android:color/transparent">
+    android:layout_margin="14dp"
+    app:cardElevation="6dp"
+    app:cardCornerRadius="20dp"
+    app:cardUseCompatPadding="true"
+    app:cardBackgroundColor="@color/white">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="18dp"
-        android:background="@drawable/card_outline">
+        android:orientation="horizontal">
 
-        <!-- Service Name -->
-        <TextView
-            android:id="@+id/serviceName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Box Braids"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:textColor="@color/brand_cream" />
+        <!-- Left Accent Stripe -->
+        <View
+            android:layout_width="6dp"
+            android:layout_height="match_parent"
+            android:background="@color/burgundy"
+            android:alpha="0.95"/>
 
-        <!-- Price & Duration -->
+        <!-- Content -->
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_marginTop="10dp">
+            android:layout_weight="1"
+            android:padding="10dp"
+            android:orientation="vertical">
 
+            <!-- Service Name -->
             <TextView
-                android:id="@+id/servicePrice"
+                android:id="@+id/serviceName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Box Braids"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_primary"/>
+
+            <!-- Price + Duration -->
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="$50"
-                android:textColor="@color/brand_teal"
-                android:textSize="16sp"
-                android:textStyle="bold" />
+                android:orientation="vertical"
+                android:layout_marginTop="2dp">
 
-            <TextView
-                android:id="@+id/serviceDuration"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="50 mins"
-                android:textColor="@color/brand_cream_muted"
-                android:textSize="14sp" />
+                <TextView
+                    android:id="@+id/servicePrice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="$50"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/burgundy"/>
+
+                <TextView
+                    android:id="@+id/serviceDuration"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="50 mins"
+                    android:textSize="14sp"
+                    android:textColor="@color/text_secondary"/>
+            </LinearLayout>
+
         </LinearLayout>
 
     </LinearLayout>
+
 </androidx.cardview.widget.CardView>

@@ -6,7 +6,7 @@
     android:orientation="vertical"
     android:padding="20dp"
     android:gravity="center_horizontal"
-    android:background="@color/brand_charcoal">
+    android:background="@color/cream">
 
     <!-- Title -->
     <TextView
@@ -14,42 +14,43 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Add New Service"
-        android:textColor="@color/brand_cream"
+        android:textColor="@color/text_primary"
         android:textSize="22sp"
         android:textStyle="bold"
         android:layout_marginBottom="24dp"/>
 
-    <!-- Service Name Label -->
+    <!-- Label: Service Name -->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Service Name"
-        android:textColor="@color/brand_cream_muted"
+        android:textColor="@color/text_secondary"
         android:textSize="14sp"
         android:layout_marginBottom="4dp"/>
 
-    <!-- Service Name Input -->
+    <!-- Input: Service Name -->
     <EditText
         android:id="@+id/inputServiceName"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:hint="e.g. Box Braids"
         android:padding="14dp"
-        android:background="@drawable/bg_input_field"
-        android:textColor="@color/brand_cream"
-        android:textColorHint="@color/brand_cream_muted"
+        android:background="@drawable/input_bg"
+        android:textColor="@color/text_primary"
+        android:textColorHint="@color/text_secondary"
+        android:singleLine="true"
         android:layout_marginBottom="16dp"/>
 
-    <!-- Price Label -->
+    <!-- Label: Price -->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Price ($)"
-        android:textColor="@color/brand_cream_muted"
+        android:textColor="@color/text_secondary"
         android:textSize="14sp"
         android:layout_marginBottom="4dp"/>
 
-    <!-- Price Input -->
+    <!-- Input: Price -->
     <EditText
         android:id="@+id/inputServicePrice"
         android:layout_width="match_parent"
@@ -57,21 +58,22 @@
         android:hint="e.g. 50"
         android:padding="14dp"
         android:inputType="numberDecimal"
-        android:textColor="@color/brand_cream"
-        android:textColorHint="@color/brand_cream_muted"
-        android:background="@drawable/bg_input_field"
+        android:textColor="@color/text_primary"
+        android:textColorHint="@color/text_secondary"
+        android:background="@drawable/input_bg"
+        android:singleLine="true"
         android:layout_marginBottom="16dp"/>
 
-    <!-- Duration Label -->
+    <!-- Label: Duration -->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Duration (minutes)"
-        android:textColor="@color/brand_cream_muted"
+        android:textColor="@color/text_secondary"
         android:textSize="14sp"
         android:layout_marginBottom="4dp"/>
 
-    <!-- Duration Input -->
+    <!-- Input: Duration -->
     <EditText
         android:id="@+id/inputServiceDuration"
         android:layout_width="match_parent"
@@ -79,10 +81,11 @@
         android:hint="e.g. 45"
         android:padding="14dp"
         android:inputType="number"
-        android:textColor="@color/brand_cream"
-        android:textColorHint="@color/brand_cream_muted"
-        android:background="@drawable/bg_input_field"
-        android:layout_marginBottom="30dp" />
+        android:background="@drawable/input_bg"
+        android:textColor="@color/text_primary"
+        android:textColorHint="@color/text_secondary"
+        android:singleLine="true"
+        android:layout_marginBottom="30dp"/>
 
     <!-- Add Service Button -->
     <Button
@@ -92,8 +95,7 @@
         android:text="Add Service"
         android:textAllCaps="false"
         android:textStyle="bold"
-        style="@style/Widget.MaterialComponents.Button.TextButton"
-        android:textColor="@color/brand_cream"
-        android:backgroundTint="@color/brand_teal"
+        android:backgroundTint="@color/burgundy"
+        android:textColor="@color/white"
         android:fontFamily="sans-serif-medium"/>
 </LinearLayout>

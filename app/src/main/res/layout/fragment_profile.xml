@@ -18,15 +18,14 @@
             android:orientation="vertical"
             android:gravity="center_horizontal">
 
-            <!-- Profile Card (Soft Glass) -->
+            <!-- Profile Card -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="24dp"
                 android:orientation="vertical"
-                android:background="@drawable/bg_glass_soft"
-                android:elevation="4dp"
-                android:clipToOutline="true"
+                android:background="@drawable/profile_card_premium"
+                android:elevation="6dp"
                 android:layout_marginTop="16dp">
 
                 <!-- Profile Image -->
@@ -35,7 +34,8 @@
                     android:layout_width="120dp"
                     android:layout_height="120dp"
                     android:layout_gravity="center_horizontal"
-                    android:background="@drawable/circle_background"
+                    android:background="@drawable/profile_ring"
+                    android:padding="4dp"
                     android:clipToOutline="true"
                     android:scaleType="centerCrop"
                     android:src="@drawable/ic_person" />
@@ -46,8 +46,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="14dp"
-                    android:text="John Doe"
-                    android:textColor="@color/brand_charcoal"
+                    android:textColor="@color/text_primary"
                     android:textSize="22sp"
                     android:textStyle="bold" />
 
@@ -57,8 +56,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:text="john.doe@example.com"
-                    android:textColor="@color/brand_charcoal"
+                    android:textColor="@color/text_secondary"
                     android:textSize="16sp" />
 
                 <!-- Phone -->
@@ -67,26 +65,25 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:text="+1 234 567 890"
-                    android:textColor="@color/brand_charcoal"
+                    android:textColor="@color/text_secondary"
                     android:textSize="16sp" />
 
                 <!-- Divider -->
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:layout_marginTop="20dp"
-                    android:layout_marginBottom="16dp"
-                    android:background="@color/input_border" />
+                    android:layout_marginTop="18dp"
+                    android:layout_marginBottom="14dp"
+                    android:background="@color/border_light" />
 
                 <!-- Address Heading -->
                 <TextView
-                    android:layout_height="wrap_content"
                     android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:text="Address"
                     android:textStyle="bold"
                     android:textSize="16sp"
-                    android:textColor="@color/brand_charcoal" />
+                    android:textColor="@color/text_primary" />
 
                 <!-- Address -->
                 <TextView
@@ -94,8 +91,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:text="123 Main St, Room 101, City"
-                    android:textColor="@color/brand_charcoal"
+                    android:textColor="@color/text_secondary"
                     android:textSize="16sp" />
 
             </LinearLayout>
@@ -107,14 +103,14 @@
                 android:layout_height="54dp"
                 android:layout_marginTop="28dp"
                 android:text="Edit Profile"
-                android:textStyle="bold"
                 android:textAllCaps="false"
-                android:backgroundTint="@color/brand_teal"
+                android:textStyle="bold"
                 android:textColor="@color/white"
-                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:backgroundTint="@color/burgundy"
+                style="@style/Widget.Material3.Button"
                 android:elevation="4dp" />
 
-            <!-- Sign Out -->
+            <!-- Sign Out Button -->
             <Button
                 android:id="@+id/btnSignOut"
                 android:layout_width="match_parent"
@@ -122,9 +118,10 @@
                 android:layout_marginTop="18dp"
                 android:text="Sign Out"
                 android:textAllCaps="false"
+                android:textStyle="bold"
                 android:backgroundTint="@color/error_red"
-                style="@style/Widget.MaterialComponents.Button.TextButton"
-                android:textColor="@color/white" />
+                android:textColor="@color/white"
+                style="@style/Widget.Material3.Button" />
 
         </LinearLayout>
 

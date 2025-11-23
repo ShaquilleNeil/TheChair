@@ -52,7 +52,6 @@ public class ServiceAdapter extends RecyclerView.Adapter<ServiceAdapter.ViewHold
         holder.serviceName.setText(name != null ? name : "Service");
         holder.servicePrice.setText(price != null ? "$" + price : "");
         holder.serviceDuration.setText(duration != null ? duration + " mins" : "");
-        holder.serviceDescription.setText(description != null ? description : "");
 
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) listener.onServiceClick(service);
@@ -72,7 +71,7 @@ public class ServiceAdapter extends RecyclerView.Adapter<ServiceAdapter.ViewHold
             serviceName = itemView.findViewById(R.id.serviceName);
             servicePrice = itemView.findViewById(R.id.servicePrice);
             serviceDuration = itemView.findViewById(R.id.serviceDuration);
-            serviceDescription = itemView.findViewById(R.id.serviceDescription);
+
         }
     }
 }

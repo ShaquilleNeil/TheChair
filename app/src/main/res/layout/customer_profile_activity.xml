@@ -3,30 +3,29 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fitsSystemWindows="false">
+    android:layout_height="match_parent">
 
-
+    <!-- MAIN CONTENT (Fragments go here) -->
     <FrameLayout
         android:id="@+id/appMainView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/white"
-        android:fitsSystemWindows="false"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        android:paddingBottom="80dp" />
+        android:background="@color/white"
+        android:paddingBottom="0dp" />
 
-    <!-- Bottom Navigation -->
+    <!-- BOTTOM NAVIGATION -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="115dp"
         android:layout_gravity="bottom"
         android:background="@color/white"
         android:elevation="12dp"
-        android:paddingTop="4dp"
-        app:itemIconTint="@color/nav_icon_selector"
-        app:itemTextColor="@color/nav_icon_selector"
-        app:menu="@menu/bottom_nav_menu" />
+        android:paddingTop="5dp"
+        app:itemIconTint="@color/nav_selector"
+        app:itemTextColor="@color/nav_selector"
+        app:menu="@menu/bottom_nav_menu"
+        app:labelVisibilityMode="labeled" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

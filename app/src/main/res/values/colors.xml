@@ -29,4 +29,23 @@
     <color name="starGold">#FFC107</color>
 
 
+    <!-- BRAND CORE -->
+    <color name="burgundy">#7A0026</color>
+    <color name="burgundy_dark">#5C001C</color>
+
+    <!-- NEUTRALS -->
+    <color name="cream">#F5EDE2</color>
+
+    <!-- TEXT -->
+    <color name="text_primary">#1C1C1E</color>
+    <color name="text_secondary">#6D6D6D</color>
+
+    <!-- BORDERS / DIVIDERS -->
+    <color name="border_light">#E8E8E8</color>
+
+    <!-- OPTIONAL SHADOW SURFACE FOR MODERN CARDS -->
+    <color name="surface_light">#FFF8F1</color>
+
+
+
 </resources>

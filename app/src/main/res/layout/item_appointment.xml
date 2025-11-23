@@ -1,10 +1,12 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/bg_card"
-    android:padding="12dp"
-    android:layout_marginBottom="8dp">
+    android:background="@drawable/bg_card_premium"
+    android:padding="16dp"
+    android:layout_marginBottom="10dp">
 
     <!-- TIME RANGE -->
     <TextView
@@ -12,7 +14,7 @@
         android:text="10:30 - 12:00"
         android:textSize="16sp"
         android:textStyle="bold"
-        android:textColor="@color/brand_teal"
+        android:textColor="@color/burgundy"
         android:layout_marginBottom="4dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
@@ -23,7 +25,7 @@
         android:text="Client: Alison"
         android:textSize="16sp"
         android:textStyle="bold"
-        android:textColor="@color/brand_cream"
+        android:textColor="@color/text_primary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
@@ -32,7 +34,7 @@
         android:id="@+id/txtService"
         android:text="Silk Press"
         android:textSize="14sp"
-        android:textColor="@color/brand_cream_muted"
+        android:textColor="@color/text_secondary"
         android:layout_marginBottom="4dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
@@ -42,28 +44,27 @@
         android:id="@+id/txtStatus"
         android:text="Status: pending"
         android:textSize="13sp"
-        android:textColor="@color/brand_cream_muted"
-        android:layout_marginBottom="8dp"
+        android:textColor="@color/text_secondary"
+        android:layout_marginBottom="10dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
-    <!-- BUTTONS ROW: Accept / Reject / Done -->
+    <!-- BUTTONS ROW -->
     <LinearLayout
         android:id="@+id/pendingButtons"
         android:orientation="horizontal"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp">
+        android:layout_height="wrap_content">
 
         <Button
             android:id="@+id/btnAccept"
             android:text="Accept"
             android:textColor="@color/white"
             android:textSize="13sp"
-            android:backgroundTint="@color/success_green"
+            android:backgroundTint="@color/burgundy"
             android:layout_marginRight="8dp"
+            style="@style/Widget.Material3.Button"
             android:layout_width="wrap_content"
-            style="@style/Widget.MaterialComponents.Button.TextButton"
             android:layout_height="wrap_content" />
 
         <Button
@@ -73,20 +74,19 @@
             android:textSize="13sp"
             android:backgroundTint="@color/error_red"
             android:layout_marginRight="8dp"
+            style="@style/Widget.Material3.Button"
             android:layout_width="wrap_content"
-            style="@style/Widget.MaterialComponents.Button.TextButton"
             android:layout_height="wrap_content" />
 
         <Button
             android:id="@+id/btnDone"
             android:text="Mark as Done"
-            android:textSize="13sp"
             android:textAllCaps="false"
             android:textColor="@color/white"
-            android:backgroundTint="@color/brand_teal"
+            android:textSize="13sp"
+            android:backgroundTint="@color/burgundy_dark"
+            style="@style/Widget.Material3.Button"
             android:layout_width="wrap_content"
-            style="@style/Widget.MaterialComponents.Button.TextButton"
             android:layout_height="wrap_content" />
     </LinearLayout>
-
 </LinearLayout>

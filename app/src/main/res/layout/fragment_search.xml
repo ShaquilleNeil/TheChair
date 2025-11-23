@@ -1,23 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/brand_charcoal"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:background="@color/white">
 
     <!-- Search Input -->
     <EditText
         android:id="@+id/searchInput"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="40dp"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
+        android:layout_height="50dp"
         android:hint="Search for hairstyles or services"
-        android:padding="12dp"
-        android:textColor="@color/brand_cream"
-        android:textColorHint="@color/brand_cream_muted"
-        android:background="@drawable/bg_input_field"
-        android:drawablePadding="10dp" />
+        android:padding="14dp"
+        android:textColor="@color/text_primary"
+        android:textColorHint="@color/text_secondary"
+        android:background="@drawable/bg_input_field_premium"
+        android:drawablePadding="12dp" />
 
     <!-- Loading Indicator -->
     <ProgressBar

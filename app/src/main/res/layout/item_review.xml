@@ -1,29 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
-    android:padding="10dp"
+    android:padding="12dp"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
+    <!-- Customer Name -->
     <TextView
         android:id="@+id/reviewName"
         android:text="Customer Name"
-        android:textColor="@color/brand_cream"
+        android:textColor="@color/text_primary"
         android:textStyle="bold"
+        android:textSize="15sp"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content" />
 
+    <!-- Rating (burgundy stars) -->
     <RatingBar
         android:id="@+id/reviewRating"
-        style="@style/Widget.AppCompat.RatingBar.Small"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:rating="0"/>
+        android:numStars="5"
+        android:stepSize="1"
+        android:isIndicator="true"
+        android:theme="@style/TheChairRatingBar"
+        android:layout_marginTop="4dp" />
 
+    <!-- Comment -->
     <TextView
         android:id="@+id/reviewComment"
-        android:textColor="@color/brand_cream_muted"
-        android:layout_marginTop="5dp"
+        android:textColor="@color/text_secondary"
+        android:textSize="14sp"
+        android:layout_marginTop="6dp"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content" />
+
 </LinearLayout>

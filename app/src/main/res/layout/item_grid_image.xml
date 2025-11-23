@@ -2,9 +2,10 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="130dp"
-    android:layout_margin="6dp"
-    android:background="@drawable/work_image_outline"
-    android:clipToOutline="true">
+    android:layout_margin="8dp"
+    android:background="@drawable/work_image_outline_premium"
+    android:clipToOutline="true"
+    android:elevation="6dp">
 
     <ImageView
         android:id="@+id/workImage"

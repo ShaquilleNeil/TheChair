@@ -8,7 +8,7 @@
     android:orientation="vertical"
     android:gravity="center_horizontal"
     android:padding="28dp"
-    android:background="@color/brand_charcoal_dark">
+    android:background="@color/white">
 
     <!-- Address Line 1 -->
     <TextView
@@ -16,19 +16,19 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="Address Line 1"
-        android:textColor="@color/brand_cream"
+        android:textColor="@color/text_primary"
         android:textSize="16sp" />
 
     <EditText
         android:id="@+id/editTextAddress1"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:layout_marginBottom="12dp"
-        android:background="@drawable/bg_input_field"
+        android:background="@color/cream"
         android:hint="Enter address line 1"
-        android:textColor="@color/white"
-        android:textColorHint="@color/brand_cream_muted"
-        android:padding="12dp"
+        android:textColor="@color/text_primary"
+        android:textColorHint="@color/text_secondary"
+        android:padding="14dp"
         android:inputType="textPostalAddress" />
 
     <!-- Address Line 2 -->
@@ -36,19 +36,19 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Address Line 2 (Optional)"
-        android:textColor="@color/brand_cream"
+        android:textColor="@color/text_primary"
         android:textSize="16sp" />
 
     <EditText
         android:id="@+id/editTextAddress2"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:layout_marginBottom="12dp"
-        android:background="@drawable/bg_input_field"
+        android:background="@color/cream"
         android:hint="Enter address line 2"
-        android:textColor="@color/white"
-        android:textColorHint="@color/brand_cream_muted"
-        android:padding="12dp"
+        android:textColor="@color/text_primary"
+        android:textColorHint="@color/text_secondary"
+        android:padding="14dp"
         android:inputType="textPostalAddress" />
 
     <!-- City -->
@@ -56,19 +56,19 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="City"
-        android:textColor="@color/brand_cream"
+        android:textColor="@color/text_primary"
         android:textSize="16sp" />
 
     <EditText
         android:id="@+id/editTextCity"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:layout_marginBottom="12dp"
-        android:background="@drawable/bg_input_field"
+        android:background="@color/cream"
         android:hint="Enter city"
-        android:textColor="@color/white"
-        android:textColorHint="@color/brand_cream_muted"
-        android:padding="12dp"
+        android:textColor="@color/text_primary"
+        android:textColorHint="@color/text_secondary"
+        android:padding="14dp"
         android:inputType="text" />
 
     <!-- Province -->
@@ -76,19 +76,19 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Province"
-        android:textColor="@color/brand_cream"
+        android:textColor="@color/text_primary"
         android:textSize="16sp" />
 
     <EditText
         android:id="@+id/editTextProvince"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:layout_marginBottom="12dp"
-        android:background="@drawable/bg_input_field"
+        android:background="@color/cream"
         android:hint="Enter province"
-        android:textColor="@color/white"
-        android:textColorHint="@color/brand_cream_muted"
-        android:padding="12dp"
+        android:textColor="@color/text_primary"
+        android:textColorHint="@color/text_secondary"
+        android:padding="14dp"
         android:inputType="text" />
 
     <!-- Postal Code -->
@@ -96,19 +96,19 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Postal Code"
-        android:textColor="@color/brand_cream"
+        android:textColor="@color/text_primary"
         android:textSize="16sp" />
 
     <EditText
         android:id="@+id/editTextPostalCode"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:layout_marginBottom="12dp"
-        android:background="@drawable/bg_input_field"
+        android:background="@color/cream"
         android:hint="Enter postal code"
-        android:textColor="@color/white"
-        android:textColorHint="@color/brand_cream_muted"
-        android:padding="12dp"
+        android:textColor="@color/text_primary"
+        android:textColorHint="@color/text_secondary"
+        android:padding="14dp"
         android:inputType="textPostalAddress" />
 
     <!-- Phone Number -->
@@ -116,33 +116,33 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Phone Number"
-        android:textColor="@color/brand_cream"
+        android:textColor="@color/text_primary"
         android:textSize="16sp" />
 
     <EditText
         android:id="@+id/editTextPhoneNumber"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:layout_marginBottom="20dp"
-        android:background="@drawable/bg_input_field"
+        android:background="@color/cream"
         android:hint="Enter phone number"
-        android:textColor="@color/white"
-        android:textColorHint="@color/brand_cream_muted"
-        android:padding="12dp"
+        android:textColor="@color/text_primary"
+        android:textColorHint="@color/text_secondary"
+        android:padding="14dp"
         android:inputType="phone" />
 
-    <!-- NEXT Button -->
+    <!-- NEXT BUTTON -->
     <Button
         android:id="@+id/buttonnext"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:layout_marginTop="10dp"
         android:text="Next"
         android:textAllCaps="false"
         android:textColor="@color/white"
         android:textSize="16sp"
-        style="@style/Widget.MaterialComponents.Button.TextButton"
-        android:backgroundTint="@color/brand_teal"
-        android:padding="14dp" />
+        android:backgroundTint="@color/burgundy"
+        android:textStyle="bold"
+        style="@style/Widget.Material3.Button" />
 
 </LinearLayout>
