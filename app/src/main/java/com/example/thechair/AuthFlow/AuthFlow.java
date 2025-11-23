@@ -180,6 +180,7 @@ public class AuthFlow extends AppCompatActivity {
         String password = signupPassword.getText().toString().trim();
         String confirm = signupConfirm.getText().toString().trim();
 
+        // 1. Validate *before* Firestore
         if (TextUtils.isEmpty(name) ||
                 TextUtils.isEmpty(email) ||
                 TextUtils.isEmpty(password) ||
@@ -206,14 +207,29 @@ public class AuthFlow extends AppCompatActivity {
             return;
         }
 
-        // Build appUsers object just like your old SignUp activity
-        appUsers user = new appUsers();
-        user.setName(name);
-        user.setEmail(email);
+        // 2. Firestore check → async
+        db.collection("Users")
+                .whereEqualTo("email", email)
+                .get()
+                .addOnSuccessListener(query -> {
+                    if (!query.isEmpty()) {
+                        Toast.makeText(AuthFlow.this, "Email already exists", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
 
-        Intent intent = new Intent(AuthFlow.this, SignUpstg2.class);
-        intent.putExtra("user", user);
-        intent.putExtra("password", password);
-        startActivity(intent);
+                    // 3. NO duplicate found → proceed
+                    appUsers user = new appUsers();
+                    user.setName(name);
+                    user.setEmail(email);
+
+                    Intent intent = new Intent(AuthFlow.this, SignUpstg2.class);
+                    intent.putExtra("user", user);
+                    intent.putExtra("password", password);
+                    startActivity(intent);
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(AuthFlow.this, "Error checking email", Toast.LENGTH_SHORT).show();
+                });
     }
+
 }

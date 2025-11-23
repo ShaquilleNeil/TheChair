@@ -25,7 +25,7 @@
         android:layout_height="50dp"
         android:layout_marginBottom="12dp"
         android:background="@color/cream"
-        android:hint="Enter address line 1"
+        android:hint="e.g. 1648 Rue Prieur E"
         android:textColor="@color/text_primary"
         android:textColorHint="@color/text_secondary"
         android:padding="14dp"
@@ -45,7 +45,7 @@
         android:layout_height="50dp"
         android:layout_marginBottom="12dp"
         android:background="@color/cream"
-        android:hint="Enter address line 2"
+        android:hint="e.g. Apt 2, Suite 304 (optional)"
         android:textColor="@color/text_primary"
         android:textColorHint="@color/text_secondary"
         android:padding="14dp"
@@ -65,11 +65,11 @@
         android:layout_height="50dp"
         android:layout_marginBottom="12dp"
         android:background="@color/cream"
-        android:hint="Enter city"
+        android:hint="e.g. Montréal"
         android:textColor="@color/text_primary"
         android:textColorHint="@color/text_secondary"
         android:padding="14dp"
-        android:inputType="text" />
+        android:inputType="textCapWords" />
 
     <!-- Province -->
     <TextView
@@ -85,11 +85,31 @@
         android:layout_height="50dp"
         android:layout_marginBottom="12dp"
         android:background="@color/cream"
-        android:hint="Enter province"
+        android:hint="e.g. Québec or QC"
         android:textColor="@color/text_primary"
         android:textColorHint="@color/text_secondary"
         android:padding="14dp"
-        android:inputType="text" />
+        android:inputType="textCapWords" />
+
+    <!-- Country -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Country"
+        android:textColor="@color/text_primary"
+        android:textSize="16sp" />
+
+    <EditText
+        android:id="@+id/editTextCountry"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginBottom="12dp"
+        android:background="@color/cream"
+        android:hint="e.g. Canada"
+        android:textColor="@color/text_primary"
+        android:textColorHint="@color/text_secondary"
+        android:padding="14dp"
+        android:inputType="textCapWords" />
 
     <!-- Postal Code -->
     <TextView
@@ -105,7 +125,7 @@
         android:layout_height="50dp"
         android:layout_marginBottom="12dp"
         android:background="@color/cream"
-        android:hint="Enter postal code"
+        android:hint="e.g. H2C 1M4"
         android:textColor="@color/text_primary"
         android:textColorHint="@color/text_secondary"
         android:padding="14dp"
@@ -125,13 +145,12 @@
         android:layout_height="50dp"
         android:layout_marginBottom="20dp"
         android:background="@color/cream"
-        android:hint="Enter phone number"
+        android:hint="e.g. 514-555-1234"
         android:textColor="@color/text_primary"
         android:textColorHint="@color/text_secondary"
         android:padding="14dp"
         android:inputType="phone" />
 
-    <!-- NEXT BUTTON -->
     <Button
         android:id="@+id/buttonnext"
         android:layout_width="match_parent"

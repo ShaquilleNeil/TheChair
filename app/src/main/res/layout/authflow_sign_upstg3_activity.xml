@@ -68,6 +68,31 @@
             android:textColor="@color/text_primary" />
     </RadioGroup>
 
+    <TextView
+        android:id="@+id/tvprofession"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="6dp"
+        android:text="Profession"
+        android:textColor="@color/text_primary"
+        android:textSize="16sp"
+        android:visibility="gone"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/editTextProfession"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginBottom="12dp"
+        android:background="@color/cream"
+        android:hint="e.g. Barber, Loctician etc"
+        android:textColor="@color/text_primary"
+        android:textColorHint="@color/text_secondary"
+        android:padding="14dp"
+        android:visibility="gone"
+        android:inputType="textPostalAddress" />
+
     <!-- TERMS CHECKBOX -->
     <CheckBox
         android:id="@+id/checkBoxTerms"

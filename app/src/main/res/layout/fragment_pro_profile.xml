@@ -34,12 +34,10 @@
                 android:id="@+id/profileImage"
                 android:layout_width="90dp"
                 android:layout_height="90dp"
-                android:src="@drawable/ic_person"
-                android:scaleType="centerCrop"
-                android:background="@drawable/profile_ring"
-                android:padding="3dp"
+                android:background="@drawable/circle_background"
                 android:clipToOutline="true"
-                android:contentDescription="Profile Picture" />
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_person" />
 
             <!-- Name + Profession -->
             <LinearLayout
@@ -121,13 +119,13 @@
 
             <Button
                 android:id="@+id/btnworkUpload"
-                android:layout_width="42dp"
-                android:layout_height="42dp"
-                android:text="+"
-                android:textSize="22sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Upload"
+                android:textSize="15dp"
                 android:textColor="@color/white"
                 android:backgroundTint="@color/burgundy"
-                style="@style/Widget.Material3.Button"
+                style="@style/Widget.Material3.Button.IconButton.Filled"
                 android:elevation="4dp" />
         </LinearLayout>
 

@@ -7,13 +7,16 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.Settings;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,12 +37,12 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.example.thechair.Adapters.DirectionsHelper;
+import com.example.thechair.BuildConfig;
 import com.example.thechair.Professional.PublicProfileFragment;
 import com.example.thechair.R;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -56,13 +59,27 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
-import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.card.MaterialCardView;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class NearbyFragment extends Fragment implements OnMapReadyCallback {
 
@@ -70,11 +87,11 @@ public class NearbyFragment extends Fragment implements OnMapReadyCallback {
 
     private MapView mapView;
     private GoogleMap googleMap;
-    private final List<ProMarker> proMarkers = new ArrayList<>();
 
     private FusedLocationProviderClient fusedLocationClient;
     private Location lastKnownLocation;
 
+    // Radius bubble
     private Circle radiusCircle;
     private float currentRadiusKm = DEFAULT_RADIUS_KM;
     private boolean useRadiusFilter = true;
@@ -89,12 +106,33 @@ public class NearbyFragment extends Fragment implements OnMapReadyCallback {
     private EditText searchBar;
     private String currentQuery = "";
 
+    // All loaded professional markers
+    private final List<ProMarker> proMarkers = new ArrayList<>();
+
     // Permission launcher
     private final ActivityResultLauncher<String> permissionLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
-                if (isGranted && googleMap != null) enableLocationAndZoom();
+                if (isGranted && googleMap != null) {
+                    enableLocationAndZoom();
+                }
             });
 
+    public NearbyFragment() { }
+
+    public static NearbyFragment newInstance(String param1, String param2) {
+        NearbyFragment fragment = new NearbyFragment();
+        Bundle args = new Bundle();
+        args.putString("param1", param1);
+        args.putString("param2", param2);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -102,76 +140,90 @@ public class NearbyFragment extends Fragment implements OnMapReadyCallback {
 
         View view = inflater.inflate(R.layout.fragment_nearby, container, false);
 
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
-
         // MAP
         mapView = view.findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
 
-        // SEARCH FAB
+        // SEARCH FAB + CONTAINER
         searchBar = view.findViewById(R.id.serviceSearchBar);
         ImageView searchFab = view.findViewById(R.id.searchFab);
         LinearLayout searchContainer = view.findViewById(R.id.searchContainer);
 
-        searchFab.setOnClickListener(v -> {
-            searchFab.setVisibility(View.GONE);
-            searchContainer.setVisibility(View.VISIBLE);
-            searchBar.requestFocus();
-        });
+        if (searchFab != null && searchContainer != null && searchBar != null) {
+            searchFab.setOnClickListener(v -> {
+                searchFab.setVisibility(View.GONE);
+                searchContainer.setVisibility(View.VISIBLE);
+                searchBar.requestFocus();
+            });
 
-        searchBar.setOnFocusChangeListener((v, hasFocus) -> {
-            if (!hasFocus && searchBar.getText().toString().trim().isEmpty()) {
-                searchContainer.setVisibility(View.GONE);
-                searchFab.setVisibility(View.VISIBLE);
-            }
-        });
+            searchBar.setOnFocusChangeListener((v, hasFocus) -> {
+                if (!hasFocus && searchBar.getText().toString().trim().isEmpty()) {
+                    searchContainer.setVisibility(View.GONE);
+                    searchFab.setVisibility(View.VISIBLE);
+                }
+            });
 
-        setupSearchFiltering();
+            view.setOnTouchListener((v, event) -> {
+                if(searchBar.hasFocus()) {
+                    searchBar.clearFocus();
 
-        // FILTER SHEET SETUP
+                }
+                return false;
+            });
+
+            setupSearchFiltering();
+        }
+
+        // FILTER BOTTOM SHEET
         MaterialCardView filterSheet = view.findViewById(R.id.filterSheet);
-        BottomSheetBehavior<MaterialCardView> sheetBehavior =
-                BottomSheetBehavior.from(filterSheet);
+        if (filterSheet != null) {
+            BottomSheetBehavior<MaterialCardView> sheetBehavior =
+                    BottomSheetBehavior.from(filterSheet);
 
-        ImageView btnOpenFilters = view.findViewById(R.id.btnOpenFilters);
-        btnOpenFilters.setOnClickListener(v ->
-                sheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED));
+            ImageView btnOpenFilters = view.findViewById(R.id.btnOpenFilters);
+            Button btnCloseSheet = view.findViewById(R.id.btnCloseSheet);
 
-        Button btnCloseSheet = view.findViewById(R.id.btnCloseSheet);
-        btnCloseSheet.setOnClickListener(v ->
-                sheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN));
+            radiusSeekBar = view.findViewById(R.id.radiusSeekBar);
+            radiusLabel = view.findViewById(R.id.radiusLabel);
+            switchShowAll = view.findViewById(R.id.switchShowAll);
+            nearbyListButton = view.findViewById(R.id.btnNearbyList);
 
-        // Bottom sheet controls
-        radiusSeekBar = view.findViewById(R.id.radiusSeekBar);
-        radiusLabel = view.findViewById(R.id.radiusLabel);
-        switchShowAll = view.findViewById(R.id.switchShowAll);
-        nearbyListButton = view.findViewById(R.id.btnNearbyList);
+            // Start hidden
+            sheetBehavior.setHideable(true);
+            sheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
 
-        // Start hidden
-        sheetBehavior.setHideable(true);
-        sheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+            if (btnOpenFilters != null) {
+                btnOpenFilters.setOnClickListener(v ->
+                        sheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED));
+            }
 
-        setupRadiusControls();
-        setupShowAllToggle();
-        setupNearbyListButton();
+            if (btnCloseSheet != null) {
+                btnCloseSheet.setOnClickListener(v ->
+                        sheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN));
+            }
+
+            setupRadiusControls();
+            setupShowAllToggle();
+            setupNearbyListButton();
+        }
 
         return view;
     }
 
-    // MAP READY
     @Override
     public void onMapReady(@NonNull GoogleMap map) {
         googleMap = map;
 
+        // Zoom controls on the side + basic UI
         googleMap.getUiSettings().setZoomControlsEnabled(true);
         googleMap.getUiSettings().setCompassEnabled(true);
         googleMap.getUiSettings().setMyLocationButtonEnabled(true);
+        googleMap.setPadding(0,0,0,187);
 
-        if (ActivityCompat.checkSelfPermission(requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION)
+        // Location permission check
+        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
-
             permissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
             return;
         }
@@ -179,18 +231,27 @@ public class NearbyFragment extends Fragment implements OnMapReadyCallback {
         googleMap.setOnMarkerClickListener(marker -> {
             if (marker.getTag() == null) return false;
 
-            markerPopup(
-                    marker.getTag().toString(),
-                    marker.getTitle(),
-                    marker.getPosition()
-            );
-            return true;
+            String proId = marker.getTag().toString();
+            String proName = marker.getTitle();
+            LatLng position = marker.getPosition();
+
+            markerPopup(proId, proName, position);
+            return true; // consume event
         });
 
         enableLocationAndZoom();
         professionalsGeo();
     }
 
+
+    private int getNavHeight() {
+        int res = getResources().getIdentifier("navigation_bar_height", "dimen", "android");
+        return res > 0 ? getResources().getDimensionPixelSize(res) : 180;
+    }
+
+    // =====================
+    //   LIFECYCLE
+    // =====================
     @Override
     public void onResume() {
         super.onResume();
@@ -198,21 +259,9 @@ public class NearbyFragment extends Fragment implements OnMapReadyCallback {
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        if (mapView != null) mapView.onStart();
-    }
-
-    @Override
     public void onPause() {
         if (mapView != null) mapView.onPause();
         super.onPause();
-    }
-
-    @Override
-    public void onStop() {
-        if (mapView != null) mapView.onStop();
-        super.onStop();
     }
 
     @Override
@@ -227,17 +276,20 @@ public class NearbyFragment extends Fragment implements OnMapReadyCallback {
         if (mapView != null) mapView.onLowMemory();
     }
 
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        if (mapView != null) mapView.onSaveInstanceState(outState);
-    }
-
+    // =====================
+    //   LOCATION + RADIUS
+    // =====================
     private void enableLocationAndZoom() {
-        if (ActivityCompat.checkSelfPermission(requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            permissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
+        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
             return;
+        }
+
+        LocationManager lm = (LocationManager) requireContext().getSystemService(Context.LOCATION_SERVICE);
+        boolean isGpsOn = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
+
+        if (!isGpsOn) {
+            startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
         }
 
         try {
@@ -251,91 +303,14 @@ public class NearbyFragment extends Fragment implements OnMapReadyCallback {
             if (location != null) {
                 lastKnownLocation = location;
                 LatLng here = new LatLng(location.getLatitude(), location.getLongitude());
-                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(here, 14));
+                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(here, 14f));
 
-                updateRadiusCircle();
-            }
-        });
-    }
-
-    // SEARCH FILTER
-    private void setupSearchFiltering() {
-        searchBar.addTextChangedListener(new TextWatcher() {
-            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                currentQuery = s.toString();
-                updateMarkerVisibility();
-            }
-
-            @Override public void afterTextChanged(Editable s) {}
-        });
-    }
-
-    // RADIUS CONTROLS
-    private void setupRadiusControls() {
-        radiusSeekBar.setMax(50);
-        radiusSeekBar.setProgress(1);
-        updateRadiusLabel();
-
-        radiusSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override public void onProgressChanged(SeekBar sb, int progress, boolean fromUser) {
-                currentRadiusKm = Math.max(1, progress);
-                updateRadiusLabel();
                 updateRadiusCircle();
                 updateDistancesAndVisibility();
             }
-            @Override public void onStartTrackingTouch(SeekBar sb) {}
-            @Override public void onStopTrackingTouch(SeekBar sb) {}
         });
     }
 
-    private void updateRadiusLabel() {
-        radiusLabel.setText("Within " + (int) currentRadiusKm + " km");
-    }
-
-    // TOGGLE "SHOW ALL"
-    private void setupShowAllToggle() {
-        switchShowAll.setChecked(false);
-        switchShowAll.setOnCheckedChangeListener((b, checked) -> {
-            useRadiusFilter = !checked;
-            updateMarkerVisibility();
-        });
-    }
-
-    // POPUP LIST
-    private void setupNearbyListButton() {
-        nearbyListButton.setOnClickListener(v -> showNearbyListDialog());
-    }
-
-    private void showNearbyListDialog() {
-        if (proMarkers.isEmpty()) {
-            Toast.makeText(requireContext(), "No professionals loaded yet", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        StringBuilder sb = new StringBuilder();
-        for (ProMarker pm : proMarkers) {
-            if (!shouldShowMarker(pm)) continue;
-
-            sb.append(pm.name)
-                    .append(" – ")
-                    .append(pm.profession)
-                    .append(String.format(" (%.1f km)", pm.distanceKm))
-                    .append("\n");
-        }
-
-        if (sb.length() == 0) sb.append("No professionals in this radius.");
-
-        new AlertDialog.Builder(requireContext())
-                .setTitle("Nearby Professionals")
-                .setMessage(sb.toString())
-                .setPositiveButton("OK", null)
-                .show();
-    }
-
-    // RADIUS CIRCLE
     private void updateRadiusCircle() {
         if (googleMap == null || lastKnownLocation == null) return;
 
@@ -372,82 +347,130 @@ public class NearbyFragment extends Fragment implements OnMapReadyCallback {
         updateMarkerVisibility();
     }
 
-    // FETCH PROS
-    private void professionalsGeo() {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
+    // =====================
+    //   SEARCH + FILTER UI
+    // =====================
+    private void setupSearchFiltering() {
+        if (searchBar == null) return;
 
-        db.collection("Users").get().addOnSuccessListener(query -> {
+        searchBar.addTextChangedListener(new android.text.TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
 
-            if (!isAdded()) return; // Fragment no longer active → stop
-
-            for (var doc : query) {
-
-                if (!"professional".equals(doc.getString("role"))) continue;
-
-                GeoPoint geo = doc.getGeoPoint("geo");
-                if (geo == null) continue;
-
-                LatLng pos = new LatLng(geo.getLatitude(), geo.getLongitude());
-                String name = doc.getString("name");
-                String profession = doc.getString("profession");
-                String url = doc.getString("profilepic");
-                String id = doc.getId();
-
-                Glide.with(requireContext())   // safer than requireActivity()
-                        .asBitmap()
-                        .load(url)
-                        .into(new CustomTarget<Bitmap>() {
-                            @Override
-                            public void onResourceReady(@NonNull Bitmap bmp,
-                                                        @Nullable Transition<? super Bitmap> t) {
-
-                                if (!isAdded()) return;                 // ← safety
-                                if (googleMap == null) return;          // ← safety
-
-                                View mv = getMarkerView(name, profession, bmp);
-                                Bitmap markerBmp = createBitmapFromView(mv);
-
-                                Marker m = googleMap.addMarker(
-                                        new MarkerOptions()
-                                                .position(pos)
-                                                .title(name)
-                                                .icon(BitmapDescriptorFactory.fromBitmap(markerBmp))
-                                                .anchor(0.5f, 1f)
-                                );
-
-                                if (m != null) {
-                                    m.setTag(id);
-
-                                    double dist = -1;
-                                    if (lastKnownLocation != null) {
-                                        LatLng user = new LatLng(
-                                                lastKnownLocation.getLatitude(),
-                                                lastKnownLocation.getLongitude()
-                                        );
-                                        dist = distanceBetweenKm(user, pos);
-                                    }
-
-                                    proMarkers.add(new ProMarker(m, id, name, profession, pos, dist));
-                                }
-
-                                updateMarkerVisibility();
-                            }
-
-                            @Override public void onLoadCleared(@Nullable Drawable placeholder) {}
-                        });
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                currentQuery = s.toString();
+                updateMarkerVisibility();
             }
+
+            @Override public void afterTextChanged(android.text.Editable s) { }
         });
     }
 
+    private void setupRadiusControls() {
+        if (radiusSeekBar == null || radiusLabel == null) return;
+
+        radiusSeekBar.setMax(50);
+        radiusSeekBar.setProgress((int) DEFAULT_RADIUS_KM);
+        updateRadiusLabel();
+
+        radiusSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override public void onProgressChanged(SeekBar sb, int progress, boolean fromUser) {
+                currentRadiusKm = Math.max(1, progress);
+                updateRadiusLabel();
+                updateRadiusCircle();
+                updateDistancesAndVisibility();
+            }
+            @Override public void onStartTrackingTouch(SeekBar sb) { }
+            @Override public void onStopTrackingTouch(SeekBar sb) { }
+        });
+    }
+
+    private void updateRadiusLabel() {
+        if (radiusLabel != null) {
+            radiusLabel.setText("Within " + (int) currentRadiusKm + " km");
+        }
+    }
+
+    private void setupShowAllToggle() {
+        if (switchShowAll == null) return;
+
+        switchShowAll.setChecked(false);
+        switchShowAll.setOnCheckedChangeListener((b, checked) -> {
+            // If "Show all" is ON → ignore radius filter
+            useRadiusFilter = !checked;
+            updateMarkerVisibility();
+        });
+    }
+
+    private void setupNearbyListButton() {
+        if (nearbyListButton == null) return;
+
+        nearbyListButton.setOnClickListener(v -> showNearbyListDialog());
+    }
+
+    private void showNearbyListDialog() {
+        if (proMarkers.isEmpty()) {
+            Toast.makeText(requireContext(), "No professionals loaded yet", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        StringBuilder sb = new StringBuilder();
+        for (ProMarker pm : proMarkers) {
+            if (!shouldShowMarker(pm)) continue;
+
+            sb.append(pm.name)
+                    .append(" – ")
+                    .append(pm.profession)
+                    .append(pm.distanceKm >= 0
+                            ? String.format(" (%.1f km)", pm.distanceKm)
+                            : "")
+                    .append("\n");
+        }
+
+        if (sb.length() == 0) sb.append("No professionals in this radius.");
+
+        new AlertDialog.Builder(requireContext())
+                .setTitle("Nearby Professionals")
+                .setMessage(sb.toString())
+                .setPositiveButton("OK", null)
+                .show();
+    }
 
     private void updateMarkerVisibility() {
-        String q = currentQuery.toLowerCase().trim();
+        String q = currentQuery == null ? "" : currentQuery.toLowerCase().trim();
 
         for (ProMarker pm : proMarkers) {
 
-            boolean matches = q.isEmpty() ||
-                    pm.name.toLowerCase().contains(q) ||
-                    pm.profession.toLowerCase().contains(q);
+            String nameSafe = pm.name == null ? "" : pm.name.toLowerCase();
+            String professionSafe = pm.profession == null ? "" : pm.profession.toLowerCase();
+
+            boolean matchesName = nameSafe.contains(q);
+            boolean matchesProfession = professionSafe.contains(q);
+
+            // Services — already stored lowercase
+            boolean matchesService = false;
+            for (String s : pm.serviceNames) {
+                if (s.contains(q)) {
+                    matchesService = true;
+                    break;
+                }
+            }
+
+            // Tags — already stored lowercase
+            boolean matchesTag = false;
+            for (String t : pm.tags) {
+                if (t.contains(q)) {
+                    matchesTag = true;
+                    break;
+                }
+            }
+
+            // FINAL match result:
+            boolean matches = q.isEmpty()
+                    || matchesName
+                    || matchesProfession
+                    || matchesService
+                    || matchesTag;
 
             boolean within = true;
             if (useRadiusFilter && pm.distanceKm >= 0) {
@@ -458,6 +481,8 @@ public class NearbyFragment extends Fragment implements OnMapReadyCallback {
         }
     }
 
+
+
     private boolean shouldShowMarker(ProMarker pm) {
         boolean within = !useRadiusFilter || pm.distanceKm <= currentRadiusKm;
         boolean matches = currentQuery.trim().isEmpty()
@@ -466,75 +491,343 @@ public class NearbyFragment extends Fragment implements OnMapReadyCallback {
         return matches && within;
     }
 
-    private void markerPopup(String id, String name, LatLng pos) {
-        if (!isAdded()) return;            // STOP if fragment is detached
-        if (getContext() == null) return;
+    // =====================
+    //   GEOCODING (GOOGLE API)
+    // =====================
+    private void geocodeWithGoogleAPI(String fullAddress, Consumer<LatLng> callback) {
 
-        BottomSheetDialog dialog = new BottomSheetDialog(requireContext());
-        View v = getLayoutInflater().inflate(R.layout.marker_menu, null);
-        dialog.setContentView(v);
+        OkHttpClient client = new OkHttpClient();
 
-        ((TextView) v.findViewById(R.id.proName)).setText(name);
+        String url = "https://maps.googleapis.com/maps/api/geocode/json?address="
+                + URLEncoder.encode(fullAddress, StandardCharsets.UTF_8)
+                + "&key=" + BuildConfig.MAPS_API_KEY;
 
-        v.findViewById(R.id.btnViewProfile).setOnClickListener(x -> {
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                Log.e("GEOCODER_API", "Request failed: " + e.getMessage());
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (!response.isSuccessful()) {
+                    Log.e("GEOCODER_API", "HTTP error: " + response.code());
+                    return;
+                }
+
+                String body = response.body().string();
+                Log.d("GEOCODER_RAW", body);
+
+                try {
+                    JSONObject json = new JSONObject(body);
+                    String status = json.optString("status");
+                    Log.d("GEOCODER_STATUS", "Status = " + status);
+
+                    if (!"OK".equals(status)) {
+                        Log.e("GEOCODER_API", "API Error: " + status);
+                        return;
+                    }
+
+                    JSONArray results = json.getJSONArray("results");
+                    Log.d("GEOCODER_RESULTS", "Results length = " + results.length());
+
+                    if (results.length() > 0) {
+                        JSONObject location = results.getJSONObject(0)
+                                .getJSONObject("geometry")
+                                .getJSONObject("location");
+
+                        double lat = location.getDouble("lat");
+                        double lng = location.getDouble("lng");
+
+                        LatLng latLng = new LatLng(lat, lng);
+
+                        new Handler(Looper.getMainLooper())
+                                .post(() -> callback.accept(latLng));
+                    } else {
+                        Log.e("GEOCODER_API", "No results for: " + fullAddress);
+                    }
+
+                } catch (Exception e) {
+                    Log.e("GEOCODER_API", "JSON parse error: " + e.getMessage());
+                }
+            }
+        });
+    }
+
+    // =====================
+    //   FETCH PROFESSIONALS + AUTO-GEOCODE
+    // =====================
+    private void professionalsGeo() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        db.collection("Users")
+                .get()
+                .addOnSuccessListener(query -> {
+
+                    if (query.isEmpty()) return;
+                    if (!isAdded()) return;
+
+                    for (var doc : query.getDocuments()) {
+
+                        if (!"professional".equals(doc.getString("role"))) continue;
+
+                        GeoPoint geo = doc.getGeoPoint("geo");
+
+                        boolean needsGeocoding =
+                                geo == null
+                                        || Math.abs(geo.getLatitude()) < 0.0001
+                                        || Math.abs(geo.getLongitude()) < 0.0001;
+
+                        @SuppressWarnings("unchecked")
+                        Map<String, Object> addressMap = (Map<String, Object>) doc.get("address");
+
+                        if (addressMap == null) {
+                            Log.e("ADDRESS", "User " + doc.getId() + " has no address map.");
+                            // if we do have valid geo somehow, still show them
+                            if (!needsGeocoding && geo != null) {
+                                LatLng pos = new LatLng(geo.getLatitude(), geo.getLongitude());
+                                addMarkerForDoc(doc, pos);
+                            }
+                            continue;
+                        }
+
+                        String street  = (String) addressMap.get("street");
+                        String apt     = (String) addressMap.get("room");
+                        String city    = (String) addressMap.get("city");
+                        String state   = (String) addressMap.get("province");
+                        String postal  = (String) addressMap.get("postalCode");
+                        String country = (String) addressMap.get("country");
+
+                        if (street == null || city == null || state == null || postal == null) {
+                            Log.e("ADDRESS", "Skipping user " + doc.getId() + " — missing address parts");
+                            if (!needsGeocoding && geo != null) {
+                                LatLng pos = new LatLng(geo.getLatitude(), geo.getLongitude());
+                                addMarkerForDoc(doc, pos);
+                            }
+                            continue;
+                        }
+
+                        // Normalize street name
+                        street = street
+                                .replace("Ave.", "Avenue")
+                                .replace("Ave", "Avenue")
+                                .replace("ave.", "Avenue")
+                                .replace("ave", "Avenue");
+
+                        // Normalize postal code
+                        if (postal.length() == 6) {
+                            postal = postal.substring(0, 3) + " " + postal.substring(3);
+                        }
+
+                        if (country == null || country.trim().isEmpty()) {
+                            country = "Canada";
+                        }
+
+                        String fullAddress = street
+                                + (apt != null && !apt.isEmpty() ? " " + apt : "")
+                                + ", " + city
+                                + ", " + state + " " + postal
+                                + ", " + country;
+
+                        if (needsGeocoding) {
+                            Log.d("GEOCODE_REQUEST", "Geocoding: " + fullAddress);
+
+                            geocodeWithGoogleAPI(fullAddress, latLng -> {
+                                if (!isAdded() || googleMap == null) return;
+
+                                Log.d("GEOCODE_RESPONSE", doc.getString("name") +
+                                        " → " + latLng.latitude + ", " + latLng.longitude);
+
+                                db.collection("Users")
+                                        .document(doc.getId())
+                                        .update("geo", new GeoPoint(latLng.latitude, latLng.longitude));
+
+                                addMarkerForDoc(doc, latLng);
+                            });
+
+                        } else {
+                            LatLng pos = new LatLng(geo.getLatitude(), geo.getLongitude());
+                            addMarkerForDoc(doc, pos);
+                        }
+                    }
+                });
+    }
+
+    private void addMarkerForDoc(com.google.firebase.firestore.DocumentSnapshot doc, LatLng pos) {
+        if (!isAdded() || googleMap == null) return;
+
+        String name = doc.getString("name");
+        String profession = doc.getString("profession");
+        String profileUrl = doc.getString("profilepic");
+        String id = doc.getId();
+
+        // ----------------------------------------------------
+        //  SERVICES  (build → freeze into final)
+        // ----------------------------------------------------
+        List<String> serviceNamesTmp = new ArrayList<>();
+        List<Map<String, Object>> servicesList =
+                (List<Map<String, Object>>) doc.get("services");
+
+        if (servicesList != null) {
+            for (Map<String, Object> srv : servicesList) {
+                String s = (String) srv.get("name");
+                if (s != null) serviceNamesTmp.add(s.toLowerCase());
+            }
+        }
+
+        final List<String> serviceNames = serviceNamesTmp;   // FINAL ✔
+
+
+        // ----------------------------------------------------
+        //  TAGS  (normalize → freeze into final)
+        // ----------------------------------------------------
+        List<String> tagsTmp = new ArrayList<>();
+        List<String> rawTags = (List<String>) doc.get("tags");
+
+        if (rawTags != null) {
+            for (String t : rawTags) {
+                if (t != null) tagsTmp.add(t.toLowerCase());
+            }
+        }
+
+        final List<String> tags = tagsTmp;   // FINAL ✔
+
+
+        // ----------------------------------------------------
+        //  GLIDE CALLBACK
+        // ----------------------------------------------------
+        Glide.with(requireActivity())
+                .asBitmap()
+                .load(profileUrl)
+                .into(new CustomTarget<Bitmap>() {
+                    @Override
+                    public void onResourceReady(@NonNull Bitmap resource,
+                                                @Nullable Transition<? super Bitmap> transition) {
+
+                        if (!isAdded() || googleMap == null) return;
+
+                        View markerView = getMarkerView(name, profession, resource);
+                        Bitmap markerBitmap = createBitmapFromView(markerView);
+
+                        Marker m = googleMap.addMarker(
+                                new MarkerOptions()
+                                        .position(pos)
+                                        .title(name)
+                                        .icon(BitmapDescriptorFactory.fromBitmap(markerBitmap))
+                                        .anchor(0.5f, 1.0f)
+                        );
+
+                        if (m != null) {
+                            m.setTag(id);
+
+                            double dist = -1;
+                            if (lastKnownLocation != null) {
+                                LatLng user = new LatLng(
+                                        lastKnownLocation.getLatitude(),
+                                        lastKnownLocation.getLongitude()
+                                );
+                                dist = distanceBetweenKm(user, pos);
+                            }
+
+                            // Now safe because tags + serviceNames are FINAL
+                            proMarkers.add(new ProMarker(
+                                    m, id, name, profession, pos, dist,
+                                    serviceNames, tags
+                            ));
+                        }
+
+                        updateMarkerVisibility();
+                    }
+
+                    @Override
+                    public void onLoadCleared(@Nullable Drawable placeholder) { }
+                });
+    }
+
+
+    // =====================
+    //   UI Helpers
+    // =====================
+    private View getMarkerView(String name, String profession, Bitmap profileBitmap) {
+        View markerView = LayoutInflater.from(getContext())
+                .inflate(R.layout.marker_professional, null);
+
+        ImageView image = markerView.findViewById(R.id.markerImage);
+        TextView tvName = markerView.findViewById(R.id.markerName);
+        TextView tvProfession = markerView.findViewById(R.id.markerProfession);
+
+        image.setImageBitmap(profileBitmap);
+        tvName.setText(name);
+        tvProfession.setText(profession);
+
+        return markerView;
+    }
+
+    private Bitmap createBitmapFromView(View view) {
+        view.measure(
+                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+        );
+        view.layout(0, 0, view.getMeasuredWidth(), view.getMeasuredHeight());
+
+        Bitmap bitmap = Bitmap.createBitmap(
+                view.getMeasuredWidth(),
+                view.getMeasuredHeight(),
+                Bitmap.Config.ARGB_8888
+        );
+
+        Canvas canvas = new Canvas(bitmap);
+        view.draw(canvas);
+        return bitmap;
+    }
+
+    private void openPublicProfile(String proId) {
+        Fragment fragment = new PublicProfileFragment();
+
+        Bundle args = new Bundle();
+        args.putString("professionalId", proId);
+        fragment.setArguments(args);
+
+        requireActivity().getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.appMainView, fragment)
+                .addToBackStack(null)
+                .commit();
+    }
+
+    private void markerPopup(String proId, String proName, LatLng position) {
+        BottomSheetDialog dialog =
+                new BottomSheetDialog(requireContext(), R.style.BottomSheetTheme);
+
+        View view = getLayoutInflater().inflate(R.layout.marker_menu, null);
+        dialog.setContentView(view);
+
+        TextView proNameTextView = view.findViewById(R.id.proName);
+        Button btnViewProfile = view.findViewById(R.id.btnViewProfile);
+        Button btnDirections = view.findViewById(R.id.btnDirections);
+
+        proNameTextView.setText(proName);
+
+        btnViewProfile.setOnClickListener(v -> {
             dialog.dismiss();
-            if (isAdded()) openPublicProfile(id);
+            openPublicProfile(proId);
         });
 
-        v.findViewById(R.id.btnDirections).setOnClickListener(x -> {
+        btnDirections.setOnClickListener(v -> {
             dialog.dismiss();
-            if (isAdded())
-                DirectionsHelper.openExternalGoogleMaps(requireContext(), pos, name);
+            DirectionsHelper.openExternalGoogleMaps(requireContext(), position, proName);
         });
 
         dialog.show();
     }
 
-
-    private void openPublicProfile(String id) {
-        if (!isAdded()) return;
-
-        FragmentActivity act = getActivity();
-        if (act == null || act.isFinishing()) return;
-
-        Fragment fragment = new PublicProfileFragment();
-        Bundle args = new Bundle();
-        args.putString("professionalId", id);
-        fragment.setArguments(args);
-
-        act.getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.appMainView, fragment)
-                .addToBackStack(null)
-                .commitAllowingStateLoss();   // ← prevents crash
-    }
-
-
-    private View getMarkerView(String name, String profession, Bitmap bmp) {
-        View v = LayoutInflater.from(getContext())
-                .inflate(R.layout.marker_professional, null);
-
-        ((ImageView) v.findViewById(R.id.markerImage)).setImageBitmap(bmp);
-        ((TextView) v.findViewById(R.id.markerName)).setText(name);
-        ((TextView) v.findViewById(R.id.markerProfession)).setText(profession);
-
-        return v;
-    }
-
-    private Bitmap createBitmapFromView(View v) {
-        v.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-        v.layout(0, 0, v.getMeasuredWidth(), v.getMeasuredHeight());
-
-        Bitmap b = Bitmap.createBitmap(
-                v.getMeasuredWidth(),
-                v.getMeasuredHeight(),
-                Bitmap.Config.ARGB_8888
-        );
-        Canvas c = new Canvas(b);
-        v.draw(c);
-        return b;
-    }
-
+    // =====================
+    //   MODEL
+    // =====================
     public static class ProMarker {
         public Marker marker;
         public String id;
@@ -543,14 +836,23 @@ public class NearbyFragment extends Fragment implements OnMapReadyCallback {
         public LatLng position;
         public double distanceKm;
 
+        public List<String> serviceNames;   // NEW
+        public List<String> tags;           // NEW
+
         public ProMarker(Marker m, String id, String nm, String prof,
-                         LatLng pos, double dist) {
+                         LatLng pos, double dist,
+                         List<String> serviceNames,
+                         List<String> tags) {
+
             this.marker = m;
             this.id = id;
             this.name = nm;
             this.profession = prof;
             this.position = pos;
             this.distanceKm = dist;
+            this.serviceNames = serviceNames != null ? serviceNames : new ArrayList<>();
+            this.tags = tags != null ? tags : new ArrayList<>();
         }
     }
+
 }

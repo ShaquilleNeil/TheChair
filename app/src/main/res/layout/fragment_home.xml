@@ -11,15 +11,14 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true"
-        android:padding="0dp">
+        android:fillViewport="true">
 
         <LinearLayout
             android:id="@+id/contentContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="20dp">
+            android:padding="10dp">
 
             <!-- PROFILE HEADER -->
             <LinearLayout
@@ -49,16 +48,21 @@
                     android:layout_marginStart="16dp" />
             </LinearLayout>
 
-            <!-- BANNER -->
-            <ImageView
-                android:id="@+id/banner"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="160dp"
-                android:layout_marginBottom="20dp"
-                android:background="@drawable/card_premium_bg"
-                android:clipToOutline="true"
-                android:scaleType="centerCrop"
-                android:src="@drawable/banner" />
+                android:layout_height="wrap_content">
+                <!-- BANNER -->
+                <ImageView
+                    android:id="@+id/banner"
+                    android:layout_width="match_parent"
+                    android:layout_height="160dp"
+                    android:layout_marginBottom="20dp"
+                    android:background="@drawable/card_premium_bg"
+                    android:clipToOutline="true"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/banner" />
+            </LinearLayout>
+
 
             <!-- CATEGORIES TITLE -->
             <LinearLayout
@@ -68,23 +72,19 @@
                 android:layout_marginBottom="12dp"
                 android:gravity="center_vertical">
 
+
+
                 <TextView
                     android:id="@+id/categoriesHeading"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Categories"
+                    android:text="Quick Search"
                     android:textSize="22sp"
                     android:textStyle="bold"
                     android:textColor="@color/text_primary" />
 
-                <TextView
-                    android:id="@+id/seeAll"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="See All"
-                    android:textSize="14sp"
-                    android:textColor="@color/burgundy" />
+
             </LinearLayout>
 
             <!-- CATEGORIES ROW -->
@@ -209,25 +209,29 @@
 
             </LinearLayout>
 
-
-            <!-- PICKS OF THE DAY -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="5 Picks of the Day"
-                android:textColor="@color/text_primary"
-                android:textSize="22sp"
-                android:textStyle="bold"
-                android:layout_marginBottom="16dp" />
-
-            <!-- HORIZONTAL RECYCLER -->
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/serviceProvidersRecyclerView"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:clipToPadding="false"
-                android:paddingStart="8dp"
-                android:paddingEnd="8dp" />
+                android:orientation="vertical">
+                <!-- PICKS OF THE DAY -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="5 Picks of the Day"
+                    android:textColor="@color/text_primary"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="16dp" />
+
+                <!-- HORIZONTAL RECYCLER -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/serviceProvidersRecyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="210dp"
+                    android:clipToPadding="false"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="0dp" />
+            </LinearLayout>
 
         </LinearLayout>
 

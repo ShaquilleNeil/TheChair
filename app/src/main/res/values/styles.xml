@@ -23,5 +23,13 @@
     </style>
 
 
+    <style name="BottomSheetTheme" parent="Theme.MaterialComponents.Light.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/BottomSheet.Rounded</item>
+    </style>
+
+    <style name="BottomSheet.Rounded" parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@drawable/bg_bottomsheet</item>
+    </style>
+
 
 </resources>

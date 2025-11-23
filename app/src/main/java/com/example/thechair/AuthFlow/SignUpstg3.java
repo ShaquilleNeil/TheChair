@@ -3,10 +3,13 @@ package com.example.thechair.AuthFlow;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -31,6 +34,8 @@ public class SignUpstg3 extends AppCompatActivity {
     CheckBox checkBoxTerms;
     RadioGroup radioGroupUserType;
     ImageView imageviewprofile;
+    TextView tvprofession;
+    EditText editTextProfession;
 
     StorageReference storageReference;
     Button btnsignup, btnupload;
@@ -48,6 +53,9 @@ public class SignUpstg3 extends AppCompatActivity {
         checkBoxTerms = findViewById(R.id.checkBoxTerms);
         radioGroupUserType = findViewById(R.id.radioGroupUserType);
         imageviewprofile = findViewById(R.id.imageViewprofile);
+        tvprofession = findViewById(R.id.tvprofession);
+        editTextProfession = findViewById(R.id.editTextProfession);
+
         databaseUsers = FirebaseDatabase.getInstance().getReference("Users");
         storageReference = FirebaseStorage.getInstance().getReference();
 
@@ -57,6 +65,17 @@ public class SignUpstg3 extends AppCompatActivity {
         btnupload = findViewById(R.id.buttonuploadimage);
 
 
+        radioGroupUserType.setOnCheckedChangeListener((group, checkedId) -> {
+            if (checkedId == R.id.radioServiceProvider) {
+                tvprofession.setVisibility(View.VISIBLE);
+                editTextProfession.setVisibility(View.VISIBLE);
+
+            }
+            else {
+                tvprofession.setVisibility(View.GONE);
+                editTextProfession.setVisibility(View.GONE);
+            }
+        });
 
 
 
@@ -101,8 +120,25 @@ public class SignUpstg3 extends AppCompatActivity {
             Toast.makeText(this, "Please select a user type", Toast.LENGTH_SHORT).show();
             return;
         }
+
+        //validate profession field is not empty
+        String profession = editTextProfession.getText().toString();
+        if (selectedId == R.id.radioServiceProvider && profession.isEmpty()) {
+            Toast.makeText(this, "Please enter a profession", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        //add profession to user object
+        if (selectedId == R.id.radioServiceProvider) {
+            user.setProfession(profession);
+        }
+
+
+
         String role = selectedId == R.id.radioCustomer ? "customer" : "professional";
         user.setRole(role);
+
+
 
         mAuth.createUserWithEmailAndPassword(user.getEmail(), pass)
                 .addOnCompleteListener(this, task -> {

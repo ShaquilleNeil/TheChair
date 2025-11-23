@@ -10,6 +10,8 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.thechair.Adapters.ProfessionalsAdapter;
 import com.example.thechair.Professional.PublicProfileFragment;
 import com.example.thechair.R;
@@ -27,6 +30,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -51,11 +56,22 @@ public class HomeFragment extends Fragment {
 
     private FirebaseFirestore db;
     private TextView username, tvprovidername, weaveText,locsText,haircutText,braidsText;
-    private ImageView profileimage, braids, weave,locs,haircut;
+    private ImageView profileimage, braids, weave,locs,haircut,banner;
     private FirebaseAuth mAuth;
     private RecyclerView recyclerView;
     private ProfessionalsAdapter adapter;
     private List<appUsers> professionals = new ArrayList<>();
+
+    private List<String> bannerUrls = new ArrayList<>();
+    private List<String> bannerTitles = new ArrayList<>();
+    private int rotationInterval = 4000;
+
+    private  int currentIndex = 0;
+
+    private Runnable bannerRunnable;
+
+
+    private  Handler bannerHandler = new Handler(Looper.getMainLooper());
 
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -133,6 +149,11 @@ public class HomeFragment extends Fragment {
         weaveText = view.findViewById(R.id.weaveText);
         locsText = view.findViewById(R.id.locsText);
         braidsText = view.findViewById(R.id.braidsText);
+        banner = view.findViewById(R.id.banner);
+
+
+
+
 
         haircut = view.findViewById(R.id.haircut);
         weave = view.findViewById(R.id.weave);
@@ -171,6 +192,8 @@ public class HomeFragment extends Fragment {
 
         loadUser();
         loadProfessionals();
+        loadbanners();
+
 
 
         profileimage.setOnClickListener(v -> {
@@ -187,6 +210,18 @@ public class HomeFragment extends Fragment {
         return view;
     }
 
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        bannerHandler.removeCallbacks(bannerRunnable);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        bannerHandler.removeCallbacks(bannerRunnable);
+    }
 
     private void loadUser() {
         UserManager userManager = UserManager.getInstance();
@@ -314,6 +349,81 @@ public class HomeFragment extends Fragment {
                 .addToBackStack(null)
                 .commit();
     }
+
+
+    private void loadbanners(){
+        db.collection("appConfig")
+                .document("HomePage")
+                .get()
+                .addOnSuccessListener(doc -> {
+                    if(!doc.exists()) {return;}
+
+                    bannerTitles = (List<String>) doc.get("bannerTitles");
+                    if(bannerTitles == null) bannerTitles = new ArrayList<>();
+
+                    rotationInterval = doc.getLong("rotationalInterval").intValue();
+
+                    List<String> gsPaths = (List<String>) doc.get("banners");
+                    if (gsPaths == null || gsPaths.isEmpty()) {
+                        Log.e("BANNERS", "No banners found");
+                        return;
+                    }
+
+                    bannerUrls.clear();
+
+                    for (String gsPath : gsPaths) {
+                        getDownloadUrl(gsPath);
+                    }
+                })
+                .addOnFailureListener(e -> Log.e("BANNERS", "Error: " + e));
+
+    }
+
+    private void startBannerRotation() {
+        if (bannerUrls.isEmpty()) return;
+
+        bannerRunnable = new Runnable() {
+            @Override
+            public void run() {
+                if (bannerUrls.isEmpty()) return;
+
+                Glide.with(requireContext())
+                        .load(bannerUrls.get(currentIndex))
+                        .into(banner);
+
+                // Optional: show title (if your layout has TextView)
+                // bannerTitleView.setText(bannerTitles.get(currentIndex));
+
+                currentIndex = (currentIndex + 1) % bannerUrls.size();
+
+                bannerHandler.postDelayed(this, rotationInterval);
+            }
+        };
+
+        bannerHandler.post(bannerRunnable);
+    }
+
+
+    private void getDownloadUrl(String gsPath) {
+        StorageReference ref = FirebaseStorage.getInstance().getReferenceFromUrl(gsPath);
+
+        ref.getDownloadUrl()
+                .addOnSuccessListener(uri -> {
+                    bannerUrls.add(uri.toString());
+
+                    Log.d("BANNERS", "URL: " + uri);
+
+                    // Start rotation once all banners loaded
+                    if (bannerUrls.size() == bannerTitles.size()
+                            || bannerTitles.isEmpty()) {
+                        startBannerRotation();
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("BANNERS", "Failed: " + gsPath + " → " + e.getMessage());
+                });
+    }
+
 
 
 

@@ -24,6 +24,7 @@
             android:exported="false" />
         <activity
             android:name=".AuthFlow.AuthFlow"
+            android:windowSoftInputMode="adjustPan"
             android:exported="false" />
 
         <meta-data
@@ -52,9 +53,11 @@
             android:exported="false" />
         <activity
             android:name=".AuthFlow.SignUpstg3"
+            android:windowSoftInputMode="adjustPan"
             android:exported="false" />
         <activity
             android:name=".AuthFlow.SignUpstg2"
+            android:windowSoftInputMode="adjustPan"
             android:exported="false" />
         <activity
             android:name=".Customer.CustomerHome"

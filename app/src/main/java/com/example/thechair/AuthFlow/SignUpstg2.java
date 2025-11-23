@@ -15,7 +15,7 @@ import com.example.thechair.Adapters.appUsers;
 
 public class SignUpstg2 extends AppCompatActivity {
 
-    EditText editTextAddress1, editTextAddress2, editTextCity, editTextProvince, editTextPostalCode, editTextPhoneNumber;
+    EditText editTextAddress1, editTextAddress2, editTextCity, editTextProvince, editTextPostalCode, editTextPhoneNumber, editTextCountry;
     Button buttonNext3, btn;
 
 
@@ -34,6 +34,7 @@ public class SignUpstg2 extends AppCompatActivity {
 
         editTextPostalCode = findViewById(R.id.editTextPostalCode);
         editTextPhoneNumber = findViewById(R.id.editTextPhoneNumber);
+        editTextCountry = findViewById(R.id.editTextCountry);
 
         buttonNext3 = findViewById(R.id.buttonnext);
 
@@ -46,6 +47,7 @@ public class SignUpstg2 extends AppCompatActivity {
             String address2 = editTextAddress2.getText().toString();
             String city = editTextCity.getText().toString();
             String province = editTextProvince.getText().toString();
+            String country = editTextCountry.getText().toString();
             String postalCode = editTextPostalCode.getText().toString();
             String phoneNumber = editTextPhoneNumber.getText().toString();
 
@@ -60,6 +62,7 @@ public class SignUpstg2 extends AppCompatActivity {
             address.setRoom(address2);
             address.setCity(city);
             address.setProvince(province);
+            address.setCountry(country);
             address.setPostalCode(postalCode);
             user.setAddress(address);
             user.setPhoneNumber(phoneNumber);

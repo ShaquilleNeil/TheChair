@@ -23,11 +23,10 @@
                 android:id="@+id/profileImage"
                 android:layout_width="110dp"
                 android:layout_height="110dp"
-                android:background="@drawable/profile_ring"
-                android:scaleType="centerCrop"
+                android:background="@drawable/circle_background"
                 android:clipToOutline="true"
-                android:padding="3dp"
-                android:src="@drawable/ic_person" />
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_person"/>
 
             <!-- Name -->
             <TextView
