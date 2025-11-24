@@ -1,6 +1,5 @@
 package com.example.thechair.Adapters;
 
-import com.google.firebase.firestore.GeoPoint;
 
 import java.io.Serializable;
 import java.util.ArrayList;

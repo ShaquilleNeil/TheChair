@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:fillViewport="true"
     android:background="@color/white"
     android:padding="0dp"
@@ -44,7 +45,7 @@
                 android:layout_height="28dp"
                 android:padding="4dp"
                 android:src="@drawable/ic_arrow_drop_down"
-                android:tint="@color/burgundy" />
+                app:tint="@color/burgundy" />
         </LinearLayout>
 
         <!-- TODAY LIST -->
@@ -88,7 +89,7 @@
                 android:layout_height="28dp"
                 android:padding="4dp"
                 android:src="@drawable/ic_arrow_drop_down"
-                android:tint="@color/burgundy" />
+                app:tint="@color/burgundy" />
         </LinearLayout>
 
         <!-- UPCOMING LIST -->
@@ -132,7 +133,7 @@
                 android:layout_height="28dp"
                 android:padding="4dp"
                 android:src="@drawable/ic_arrow_drop_down"
-                android:tint="@color/burgundy" />
+                app:tint="@color/burgundy" />
         </LinearLayout>
 
         <!-- PAST LIST -->

@@ -1,6 +1,5 @@
 package com.example.thechair.Customer;
 
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -18,7 +17,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.thechair.Adapters.ProfessionalsAdapter;
@@ -62,7 +60,7 @@ public class HomeFragment extends Fragment {
     private ProfessionalsAdapter adapter;
     private List<appUsers> professionals = new ArrayList<>();
 
-    private List<String> bannerUrls = new ArrayList<>();
+    private final List<String> bannerUrls = new ArrayList<>();
     private List<String> bannerTitles = new ArrayList<>();
     private int rotationInterval = 4000;
 
@@ -71,7 +69,7 @@ public class HomeFragment extends Fragment {
     private Runnable bannerRunnable;
 
 
-    private  Handler bannerHandler = new Handler(Looper.getMainLooper());
+    private final Handler bannerHandler = new Handler(Looper.getMainLooper());
 
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";

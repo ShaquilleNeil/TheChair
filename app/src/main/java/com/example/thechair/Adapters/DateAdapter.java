@@ -4,7 +4,6 @@ import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.contentcapture.DataRemovalRequest;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -18,9 +17,9 @@ import java.util.List;
 import java.util.Locale;
 
 public class DateAdapter extends RecyclerView.Adapter<DateAdapter.DateViewHolder> {
-    private List<LocalDate> dates;
+    private final List<LocalDate> dates;
     private int selectedPosition;
-    private OnDateClickListener onDateClickListener;
+    private final OnDateClickListener onDateClickListener;
 
     @NonNull
     @Override

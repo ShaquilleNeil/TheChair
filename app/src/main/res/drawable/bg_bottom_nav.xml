@@ -7,10 +7,10 @@
 
     <!-- Curved top corners only -->
     <corners
-        android:topLeftRadius="26dp"
-        android:topRightRadius="26dp"
         android:bottomLeftRadius="0dp"
-        android:bottomRightRadius="0dp" />
+        android:bottomRightRadius="0dp"
+        android:topLeftRadius="26dp"
+        android:topRightRadius="26dp" />
 
     <!-- Soft teal glow -->
     <padding android:top="4dp" />

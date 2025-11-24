@@ -12,16 +12,16 @@
 
     <!-- Inner shadow / highlight (subtle glass depth) -->
     <padding
+        android:bottom="4dp"
         android:left="4dp"
-        android:top="4dp"
         android:right="4dp"
-        android:bottom="4dp"/>
+        android:top="4dp" />
 
     <!-- Slight blur feel -->
     <gradient
-        android:type="radial"
+        android:endColor="#00FFFFFF"
         android:gradientRadius="120dp"
         android:startColor="#26FFFFFF"
-        android:endColor="#00FFFFFF" />
+        android:type="radial" />
 
 </shape>

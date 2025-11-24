@@ -24,7 +24,7 @@ public class MyServices extends AppCompatActivity {
     private RecyclerView rviewServices;
     private Button btnAddService;
     private ServiceAdapter adapter;
-    private ArrayList<Map<String, Object>> servicesList = new ArrayList<>();
+    private final ArrayList<Map<String, Object>> servicesList = new ArrayList<>();
 
     private FirebaseFirestore db;
     private FirebaseAuth auth;

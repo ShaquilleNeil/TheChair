@@ -1,10 +1,10 @@
 package com.example.thechair.Adapters;
 
 public class HairAppointment {
-    private String clientName;
-    private String serviceType;
-    private String time;
-    private String notes; // optional, e.g. "bring extensions"
+    private final String clientName;
+    private final String serviceType;
+    private final String time;
+    private final String notes; // optional, e.g. "bring extensions"
     private boolean isCompleted;
 
     public HairAppointment(String clientName, String serviceType, String time, String notes) {

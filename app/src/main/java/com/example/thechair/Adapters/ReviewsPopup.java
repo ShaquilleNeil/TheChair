@@ -4,10 +4,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.view.LayoutInflater;
 import android.view.Window;
-import android.widget.RatingBar;
-import android.widget.TextView;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -21,8 +18,8 @@ import java.util.Map;
 
 public class ReviewsPopup extends Dialog {
 
-    private RecyclerView recycler;
-    private ReviewsAdapter adapter;
+    private final RecyclerView recycler;
+    private final ReviewsAdapter adapter;
 
     public ReviewsPopup(Context context, String professionalId) {
         super(context);

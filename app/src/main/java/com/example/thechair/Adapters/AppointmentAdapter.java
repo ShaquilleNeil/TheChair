@@ -20,7 +20,7 @@ import java.util.List;
 
 public class AppointmentAdapter extends RecyclerView.Adapter<AppointmentAdapter.AppointmentViewHolder> {
 
-    private List<Booking> bookings;
+    private final List<Booking> bookings;
 
     public AppointmentAdapter(List<Booking> bookings) {
         this.bookings = bookings;

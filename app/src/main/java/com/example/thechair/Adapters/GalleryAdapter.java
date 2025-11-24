@@ -15,8 +15,8 @@ import com.example.thechair.R;
 import java.util.List;
 
 public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.MyViewHolder> {
-    private Context mContext;
-    private List<String> mUploads;
+    private final Context mContext;
+    private final List<String> mUploads;
 
     private OnItemClickListener listener;
 

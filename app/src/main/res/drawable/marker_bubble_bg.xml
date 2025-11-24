@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+    <solid android:color="#FFFFFF"/> <!-- white bubble -->
+    <stroke android:color="#7A0026" android:width="2dp"/> <!-- burgundy border -->
+</shape>

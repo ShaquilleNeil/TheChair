@@ -1,5 +1,6 @@
 package com.example.thechair.Professional;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -16,21 +17,17 @@ import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
 import com.example.thechair.Adapters.GalleryAdapter;
 import com.example.thechair.Adapters.UserManager;
 import com.example.thechair.Adapters.appUsers;
 import com.example.thechair.AuthFlow.AuthFlow;
-import com.example.thechair.Customer.ProfileFragment;
 import com.example.thechair.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.storage.FirebaseStorage;
@@ -40,7 +37,6 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,7 +50,7 @@ public class ProProfileFragment extends Fragment {
     private Uri imageUri;
     private RecyclerView galleryRecyclerView;
     private GalleryAdapter galleryAdapter;
-    private List<String> portfolioImages = new ArrayList<>();
+    private final List<String> portfolioImages = new ArrayList<>();
 
     private FirebaseFirestore db;
     private FirebaseAuth auth;
@@ -62,7 +58,8 @@ public class ProProfileFragment extends Fragment {
     private final ActivityResultLauncher<Intent> editProfileLauncher =
             registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
 
-                if (result.getResultCode() == getActivity().RESULT_OK) {
+                getActivity();
+                if (result.getResultCode() == Activity.RESULT_OK) {
                     // Refresh profile after editing
                     loadUser();
                     loadPortfolio();

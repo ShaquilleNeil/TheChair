@@ -1,6 +1,5 @@
 package com.example.thechair.Customer;
 
-import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,10 +19,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
 public class BookingsFragment extends Fragment {
@@ -31,9 +28,9 @@ public class BookingsFragment extends Fragment {
     private RecyclerView rvToday, rvUpcoming, rvPast;
     private BookingAdapter todayAdapter, upcomingAdapter, pastAdapter;
 
-    private ArrayList<Booking> todayList = new ArrayList<>();
-    private ArrayList<Booking> upcomingList = new ArrayList<>();
-    private ArrayList<Booking> pastList = new ArrayList<>();
+    private final ArrayList<Booking> todayList = new ArrayList<>();
+    private final ArrayList<Booking> upcomingList = new ArrayList<>();
+    private final ArrayList<Booking> pastList = new ArrayList<>();
 
     public BookingsFragment() {}
 

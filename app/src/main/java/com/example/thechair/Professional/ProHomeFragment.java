@@ -2,8 +2,6 @@ package com.example.thechair.Professional;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,7 +28,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.time.LocalDate;
-import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -48,7 +45,7 @@ public class ProHomeFragment extends Fragment {
     private Button btnMyServices, btnMyAvailability;
 
     // Store bookings grouped by display date: "Tuesday, Nov 25"
-    private Map<String, List<Booking>> bookingsByDate = new HashMap<>();
+    private final Map<String, List<Booking>> bookingsByDate = new HashMap<>();
 
     @Nullable
     @Override
@@ -109,7 +106,7 @@ public class ProHomeFragment extends Fragment {
         if (cachedUser != null) {
             username.setText(cachedUser.getName());
             Bitmap cachedBitmap = userManager.getProfileBitmap();
-            profileimage.setImageBitmap(cachedBitmap != null ? cachedBitmap : null);
+            profileimage.setImageBitmap(cachedBitmap);
         }
 
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();

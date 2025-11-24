@@ -3,7 +3,6 @@ package com.example.thechair.Adapters;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -15,8 +14,8 @@ import java.util.List;
 
 public class TimeSlotAdapter extends RecyclerView.Adapter<TimeSlotAdapter.ViewHolder> {
 
-    private List<String> slots;
-    private OnTimeSlotClickListener listener;
+    private final List<String> slots;
+    private final OnTimeSlotClickListener listener;
     private int selectedPosition = RecyclerView.NO_POSITION; // highlight support
 
     public interface OnTimeSlotClickListener {

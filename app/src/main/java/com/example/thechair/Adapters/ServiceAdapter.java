@@ -16,8 +16,8 @@ import java.util.Map;
 
 public class ServiceAdapter extends RecyclerView.Adapter<ServiceAdapter.ViewHolder> {
 
-    private Context context;
-    private List<Map<String, Object>> servicesList;
+    private final Context context;
+    private final List<Map<String, Object>> servicesList;
     private OnServiceClickListener listener;
 
     public interface OnServiceClickListener {

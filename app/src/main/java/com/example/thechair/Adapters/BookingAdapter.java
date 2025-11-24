@@ -17,12 +17,12 @@ import com.bumptech.glide.Glide;
 import com.example.thechair.Customer.BookingDetailsFragment;
 import com.example.thechair.R;
 
-import java.util.ArrayList;
+
 import java.util.List;
 
 public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHolder> {
-    private Context context;
-    private List<Booking> bookingList;
+    private final Context context;
+    private final List<Booking> bookingList;
 
     public BookingAdapter(Context context, List<Booking> bookingList) {
         this.context = context;

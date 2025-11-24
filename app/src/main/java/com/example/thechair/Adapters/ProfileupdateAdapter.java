@@ -12,15 +12,14 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 
 import com.example.thechair.Customer.CustomerEditProfile;
-import com.example.thechair.Customer.ProfileFragment;
 import com.example.thechair.R;
 
 import java.util.List;
 
 public class ProfileupdateAdapter extends ArrayAdapter<appUsers> {
 
-    private Context context;
-    private List<appUsers> appUsersList;
+    private final Context context;
+    private final List<appUsers> appUsersList;
 
     public ProfileupdateAdapter(Context context, List<appUsers> appUsersList) {
         super(context, R.layout.customer_edit_profile_activity, appUsersList);

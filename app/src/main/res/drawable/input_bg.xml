@@ -3,11 +3,11 @@
     android:shape="rectangle">
 
     <!-- Frosted translucent fill -->
-    <solid android:color="#26FFFFFF"/>
+    <solid android:color="#26FFFFFF" />
     <!-- 15% white — strong frosted effect -->
 
     <!-- Rounded corners -->
-    <corners android:radius="14dp"/>
+    <corners android:radius="14dp" />
 
     <!-- Soft white border to separate from dark background -->
     <stroke
@@ -17,9 +17,9 @@
 
     <!-- Slight inner padding to help inputs breathe -->
     <padding
+        android:bottom="6dp"
         android:left="6dp"
-        android:top="6dp"
         android:right="6dp"
-        android:bottom="6dp" />
+        android:top="6dp" />
 
 </shape>
