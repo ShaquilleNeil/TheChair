@@ -4,8 +4,13 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationManager;
@@ -235,9 +240,48 @@ public class NearbyFragment extends Fragment implements OnMapReadyCallback {
             return true; // consume event
         });
 
+
+        googleMap.setOnCameraIdleListener(this::updateMarkerVisibility);
+
+
+        googleMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+            @Override
+            public View getInfoWindow(@NonNull Marker marker) {
+                return null; // use default frame
+            }
+
+            @Override
+            public View getInfoContents(@NonNull Marker marker) {
+                View v = LayoutInflater.from(getContext())
+                        .inflate(R.layout.info_window_professional, null);
+
+                ImageView img = v.findViewById(R.id.infoImage);
+                TextView name = v.findViewById(R.id.infoName);
+                TextView prof = v.findViewById(R.id.infoProfession);
+
+                // get your proMarker by ID
+                ProMarker pm = null;
+                for (ProMarker p : proMarkers) {
+                    if (p.id.equals(marker.getTag())) {
+                        pm = p;
+                        break;
+                    }
+                }
+
+                if (pm != null) {
+                    img.setImageBitmap(pm.profilebitmap);
+                    name.setText(pm.name);
+                    prof.setText(pm.profession);
+                }
+
+                return v;
+            }
+        });
+
         enableLocationAndZoom();
         professionalsGeo();
     }
+
 
 
     private int getNavHeight() {
@@ -706,16 +750,20 @@ public class NearbyFragment extends Fragment implements OnMapReadyCallback {
 
                         if (!isAdded() || googleMap == null) return;
 
-                        View markerView = getMarkerView(name, profession, resource);
-                        Bitmap markerBitmap = createBitmapFromView(markerView);
+                        float initialZoom = googleMap.getCameraPosition().zoom;
+
+                        Bitmap finalMarker = createMarkerBitmap(resource);
+
 
                         Marker m = googleMap.addMarker(
                                 new MarkerOptions()
                                         .position(pos)
                                         .title(name)
-                                        .icon(BitmapDescriptorFactory.fromBitmap(markerBitmap))
+                                        .snippet(profession)   // Optional
+                                        .icon(BitmapDescriptorFactory.fromBitmap(finalMarker))
                                         .anchor(0.5f, 1.0f)
                         );
+
 
                         if (m != null) {
                             m.setTag(id);
@@ -732,7 +780,7 @@ public class NearbyFragment extends Fragment implements OnMapReadyCallback {
                             // Now safe because tags + serviceNames are FINAL
                             proMarkers.add(new ProMarker(
                                     m, id, name, profession, pos, dist,
-                                    serviceNames, tags
+                                    serviceNames, tags, resource
                             ));
                         }
 
@@ -747,39 +795,13 @@ public class NearbyFragment extends Fragment implements OnMapReadyCallback {
 
     // =====================
     //   UI Helpers
-    // =====================
-    private View getMarkerView(String name, String profession, Bitmap profileBitmap) {
-        View markerView = LayoutInflater.from(getContext())
-                .inflate(R.layout.marker_professional, null);
+    // ============
 
-        ImageView image = markerView.findViewById(R.id.markerImage);
-        TextView tvName = markerView.findViewById(R.id.markerName);
-        TextView tvProfession = markerView.findViewById(R.id.markerProfession);
 
-        image.setImageBitmap(profileBitmap);
-        tvName.setText(name);
-        tvProfession.setText(profession);
-
-        return markerView;
+    private int dpToPx(int dp) {
+        return (int) (dp * Resources.getSystem().getDisplayMetrics().density);
     }
 
-    private Bitmap createBitmapFromView(View view) {
-        view.measure(
-                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
-                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
-        );
-        view.layout(0, 0, view.getMeasuredWidth(), view.getMeasuredHeight());
-
-        Bitmap bitmap = Bitmap.createBitmap(
-                view.getMeasuredWidth(),
-                view.getMeasuredHeight(),
-                Bitmap.Config.ARGB_8888
-        );
-
-        Canvas canvas = new Canvas(bitmap);
-        view.draw(canvas);
-        return bitmap;
-    }
 
     private void openPublicProfile(String proId) {
         Fragment fragment = new PublicProfileFragment();
@@ -794,6 +816,66 @@ public class NearbyFragment extends Fragment implements OnMapReadyCallback {
                 .addToBackStack(null)
                 .commit();
     }
+    private Bitmap circleCrop(Bitmap source) {
+        int size = Math.min(source.getWidth(), source.getHeight());
+        int inset = (int) (size * 0.08f); // safe padding
+
+        Bitmap output = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(output);
+        Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+
+        // Slight oval to match pin shape
+        float cx = size / 2f;
+        float cy = size / 2f;
+        float rx = size / 2f - inset;     // radius X
+        float ry = (size / 2f - inset) * 0.88f;  // slightly squashed Y
+
+        canvas.drawOval(cx - rx, cy - ry, cx + rx, cy + ry, paint);
+
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+
+        Rect src = new Rect(0, 0, source.getWidth(), source.getHeight());
+        Rect dst = new Rect(inset, inset, size - inset, size - inset);
+
+        canvas.drawBitmap(source, src, dst, paint);
+        return output;
+    }
+
+
+
+
+    private Bitmap createMarkerBitmap(Bitmap head) {
+
+        int markerWidth = 120;
+        int markerHeight = 150;
+
+        Bitmap bm = Bitmap.createBitmap(markerWidth, markerHeight, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bm);
+
+        Drawable pin = getResources().getDrawable(R.drawable.map_pin);
+        pin.setBounds(0, 0, markerWidth, markerHeight);
+        pin.draw(canvas);
+
+        Bitmap circle = circleCrop(head);
+
+        int size = 68;            // a touch smaller = no border touching
+        int left = (markerWidth - size) / 2;
+        int top = 24;             // sits exactly inside the top bubble
+
+        canvas.drawBitmap(
+                Bitmap.createScaledBitmap(circle, size, size, true),
+                left,
+                top,
+                null
+        );
+
+        return bm;
+    }
+
+
+
+
+
 
     private void markerPopup(String proId, String proName, LatLng position) {
         BottomSheetDialog dialog =
@@ -824,6 +906,8 @@ public class NearbyFragment extends Fragment implements OnMapReadyCallback {
     // =====================
     //   MODEL
     // =====================
+
+    public Bitmap profilebitmap;
     public static class ProMarker {
         public Marker marker;
         public String id;
@@ -833,12 +917,13 @@ public class NearbyFragment extends Fragment implements OnMapReadyCallback {
         public double distanceKm;
 
         public List<String> serviceNames;   // NEW
-        public List<String> tags;           // NEW
+        public List<String> tags;
+        public Bitmap profilebitmap;         // NEW
 
         public ProMarker(Marker m, String id, String nm, String prof,
                          LatLng pos, double dist,
                          List<String> serviceNames,
-                         List<String> tags) {
+                         List<String> tags, Bitmap profileBitmap) {
 
             this.marker = m;
             this.id = id;
@@ -848,7 +933,10 @@ public class NearbyFragment extends Fragment implements OnMapReadyCallback {
             this.distanceKm = dist;
             this.serviceNames = serviceNames != null ? serviceNames : new ArrayList<>();
             this.tags = tags != null ? tags : new ArrayList<>();
+            this.profilebitmap = profileBitmap;
         }
     }
+
+
 
 }
