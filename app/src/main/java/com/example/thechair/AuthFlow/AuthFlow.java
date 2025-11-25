@@ -1,3 +1,16 @@
+// Shaq’s Notes:
+// This activity controls the entire login/signup flow using a segmented-control UI.
+// Two tabs: Login and Signup. Switching tabs hides/shows the correct form.
+// Login authenticates with FirebaseAuth, then checks Firestore to route the user
+// to CustomerHome or ServiceProviderHome depending on role.
+// Signup (step 1) validates input, checks Firestore for duplicate email, then
+// sends partially-built appUsers object + password to SignUpstg2 to complete profile.
+//
+// Key points:
+// - All validation is done BEFORE touching Firebase.
+// - Firestore email check prevents duplicate accounts.
+// - User role determines which home screen loads after login.
+
 package com.example.thechair.AuthFlow;
 
 import android.content.Intent;
@@ -25,10 +38,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 public class AuthFlow extends AppCompatActivity {
 
-    // Tabs
+    // -------------------- UI Elements --------------------
     private TextView tabLogin, tabSignup;
-
-    // Containers
     private LinearLayout loginForm, signupForm;
 
     // Login fields
@@ -39,6 +50,7 @@ public class AuthFlow extends AppCompatActivity {
     private EditText signupName, signupEmail, signupPassword, signupConfirm;
     private Button btnNextSignup;
 
+    // Firebase
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
 
@@ -46,7 +58,7 @@ public class AuthFlow extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.auth_flow_activity); // your merged XML
+        setContentView(R.layout.auth_flow_activity);
 
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
@@ -80,13 +92,13 @@ public class AuthFlow extends AppCompatActivity {
     }
 
     // -------------------------------
-    // Segmented control: tab switching
+    // Segmented control (tab switcher)
     // -------------------------------
     private void setupSegmentedControl() {
         tabLogin.setOnClickListener(v -> showLoginTab());
         tabSignup.setOnClickListener(v -> showSignupTab());
 
-        // Default = Login tab
+        // Default tab = Login
         showLoginTab();
     }
 
@@ -123,33 +135,40 @@ public class AuthFlow extends AppCompatActivity {
         String email = loginEmail.getText().toString().trim();
         String password = loginPassword.getText().toString().trim();
 
+        // Local validation
         if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password)) {
             Toast.makeText(this, "Please fill all the fields", Toast.LENGTH_SHORT).show();
             return;
         }
 
+        // FirebaseAuth sign-in
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, task -> {
+
                     if (!task.isSuccessful()) {
                         Toast.makeText(AuthFlow.this, "Authentication failed", Toast.LENGTH_SHORT).show();
                         return;
                     }
 
+                    // User object from Firebase
                     FirebaseUser user = mAuth.getCurrentUser();
                     if (user == null) {
                         Toast.makeText(AuthFlow.this, "User not found", Toast.LENGTH_SHORT).show();
                         return;
                     }
 
-                    db.collection("Users").document(user.getUid())
+                    // Fetch user role from Firestore
+                    db.collection("Users")
+                            .document(user.getUid())
                             .get()
-                            .addOnSuccessListener(documentSnapshot -> {
-                                if (!documentSnapshot.exists()) {
+                            .addOnSuccessListener(snapshot -> {
+                                if (!snapshot.exists()) {
                                     Toast.makeText(AuthFlow.this, "User data not found", Toast.LENGTH_SHORT).show();
                                     return;
                                 }
 
-                                String role = documentSnapshot.getString("role");
+                                // Route user depending on role
+                                String role = snapshot.getString("role");
                                 if ("customer".equals(role)) {
                                     startActivity(new Intent(AuthFlow.this, CustomerHome.class));
                                     finish();
@@ -175,12 +194,13 @@ public class AuthFlow extends AppCompatActivity {
     }
 
     private void handleSignupNext() {
+
         String name = signupName.getText().toString().trim();
         String email = signupEmail.getText().toString().trim();
         String password = signupPassword.getText().toString().trim();
         String confirm = signupConfirm.getText().toString().trim();
 
-        // 1. Validate *before* Firestore
+        // 1. Validate all fields
         if (TextUtils.isEmpty(name) ||
                 TextUtils.isEmpty(email) ||
                 TextUtils.isEmpty(password) ||
@@ -207,7 +227,7 @@ public class AuthFlow extends AppCompatActivity {
             return;
         }
 
-        // 2. Firestore check → async
+        // 2. Check Firestore for duplicate email
         db.collection("Users")
                 .whereEqualTo("email", email)
                 .get()
@@ -217,19 +237,19 @@ public class AuthFlow extends AppCompatActivity {
                         return;
                     }
 
-                    // 3. NO duplicate found → proceed
+                    // 3. Build a temporary user object for next screen
                     appUsers user = new appUsers();
                     user.setName(name);
                     user.setEmail(email);
 
+                    // Move to step 2 of signup
                     Intent intent = new Intent(AuthFlow.this, SignUpstg2.class);
                     intent.putExtra("user", user);
                     intent.putExtra("password", password);
                     startActivity(intent);
                 })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(AuthFlow.this, "Error checking email", Toast.LENGTH_SHORT).show();
-                });
+                .addOnFailureListener(e ->
+                        Toast.makeText(AuthFlow.this, "Error checking email", Toast.LENGTH_SHORT).show()
+                );
     }
-
 }

@@ -1,66 +1,80 @@
-package com.example.thechair.Adapters;
+// Shaq’s Notes:
+// This class models a user inside The Chair app. It mirrors exactly how user
+// documents are structured in Firestore: role, services, portfolio images,
+// address object, geolocation, tags, and ratings. All nested objects are set
+// up to be Firestore-friendly (must have empty constructors and getters/setters).
+// Professionals and customers both use this model, with extra fields (profession,
+// services, portfolio) only populated for pros.
 
+package com.example.thechair.Adapters;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import com.google.firebase.firestore.GeoPoint;
 
-
 public class appUsers implements Serializable {
 
+    // Basic identity & role
     private String id;
     private String name;
     private String email;
-    private String role;               // "professional" or "customer"
-    private double rating;             // default 0.0
-    private int ratingCount;           // default 0
-    private String profilepic;         // URL
-    private List<String> portfolioImages; // URLs
+    private String role;                // "professional" or "customer"
 
-    private String profession;
-    private List<Service> services;    // nested service objects
-    private List<String> tags;         // service tags
+    // Rating system (for pros)
+    private double rating;              // average rating
+    private int ratingCount;            // number of reviews
 
-    private Address address;           // nested address map
-    private GeoPoint geo;
-    //phone number
+    // Profile and portfolio
+    private String profilepic;          // profile picture URL
+    private List<String> portfolioImages; // images uploaded by professionals
+
+    // Professional-specific fields
+    private String profession;          // ex: barber, braider, makeup artist
+    private List<Service> services;     // list of services they offer
+    private List<String> tags;          // quick filters for search
+
+    // Location information
+    private Address address;            // stored as a nested object
+    private GeoPoint geo;               // Firestore geopoint for map queries
+
+    // Contact info
     private String phoneNumber;
 
-    // nested geo map
-
-    // Default constructor needed for Firestore
+    // Empty constructor required by Firestore’s automatic object mapping
     public appUsers() {}
 
-    // Full constructor (services/portfolio/tags can be empty at signup)
+    // Constructor used at signup (lists start empty)
     public appUsers(String id, String name, String email, String role,
                     Address address, GeoPoint geo, String phoneNumber) {
+
         this.id = id;
         this.name = name;
         this.email = email;
         this.role = role;
+
+        // Default rating on new accounts
         this.rating = 0.0;
         this.ratingCount = 0;
+
         this.profilepic = "";
         this.profession = "";
+
+        // New pros start with empty lists until they fill their profile
         this.portfolioImages = new ArrayList<>();
         this.services = new ArrayList<>();
         this.tags = new ArrayList<>();
+
         this.address = address;
         this.geo = geo;
         this.phoneNumber = phoneNumber;
     }
 
-    // Getters and setters
 
+    // -------------------- Getters & Setters --------------------
 
-    public String getProfession() {
-        return profession;
-    }
-
-    public void setProfession(String profession) {
-        this.profession = profession;
-    }
+    public String getProfession() { return profession; }
+    public void setProfession(String profession) { this.profession = profession; }
 
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
@@ -84,10 +98,14 @@ public class appUsers implements Serializable {
     public void setProfilepic(String profilepic) { this.profilepic = profilepic; }
 
     public List<String> getPortfolioImages() { return portfolioImages; }
-    public void setPortfolioImages(List<String> portfolioImages) { this.portfolioImages = portfolioImages; }
+    public void setPortfolioImages(List<String> portfolioImages) {
+        this.portfolioImages = portfolioImages;
+    }
 
     public List<Service> getServices() { return services; }
-    public void setServices(List<Service> services) { this.services = services; }
+    public void setServices(List<Service> services) {
+        this.services = services;
+    }
 
     public List<String> getTags() { return tags; }
     public void setTags(List<String> tags) { this.tags = tags; }
@@ -99,11 +117,13 @@ public class appUsers implements Serializable {
     public void setGeo(GeoPoint geo) { this.geo = geo; }
 
     public String getPhoneNumber() { return phoneNumber; }
-
     public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
 
 
-    // Nested classes
+    // -------------------- Nested Classes --------------------
+    // These must all be Serializable + have empty constructors for Firestore.
+
+    // Address object stored as a map inside the user doc
     public static class Address implements Serializable {
         private String street;
         private String room;
@@ -114,7 +134,8 @@ public class appUsers implements Serializable {
 
         public Address() {}
 
-        public Address(String street, String room, String city, String province, String country, String postalCode) {
+        public Address(String street, String room, String city,
+                       String province, String country, String postalCode) {
             this.street = street;
             this.room = room;
             this.city = city;
@@ -139,9 +160,12 @@ public class appUsers implements Serializable {
         public void setCountry(String country) { this.country = country; }
 
         public String getPostalCode() { return postalCode; }
-        public void setPostalCode(String postalCode) { this.postalCode = postalCode; }
+        public void setPostalCode(String postalCode) {
+            this.postalCode = postalCode;
+        }
     }
 
+    // A simple lat/lng wrapper class (not used much since GeoPoint exists)
     public static class Geo implements Serializable {
         private double lat;
         private double lng;
@@ -160,10 +184,11 @@ public class appUsers implements Serializable {
         public void setLng(double lng) { this.lng = lng; }
     }
 
+    // Service object for professionals (name, price, duration)
     public static class Service implements Serializable {
         private String name;
         private double price;
-        private int duration;
+        private int duration; // minutes
 
         public Service() {}
 
@@ -182,6 +207,4 @@ public class appUsers implements Serializable {
         public int getDuration() { return duration; }
         public void setDuration(int duration) { this.duration = duration; }
     }
-
-
 }

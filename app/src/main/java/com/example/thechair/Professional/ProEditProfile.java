@@ -1,3 +1,16 @@
+/** ------------------------------------------------------------
+ *  Shaq’s Notes:
+ *  - Professional edit profile screen.
+ *  - Loads the user document from Firestore — name, email,
+ *    profession, phone, address, and profile picture.
+ *  - Allows picking a new image from gallery → saved in
+ *    Firebase Storage → URL saved to Firestore.
+ *  - Address updates trigger a Geocoder lookup in a background
+ *    thread, then geo coordinates are saved under "geo".
+ *  - Uses SetOptions.merge() so only updated fields overwrite.
+ *  - Returns RESULT_OK so parent screen can refresh.
+ * ------------------------------------------------------------- */
+
 package com.example.thechair.Professional;
 
 import android.app.Activity;
@@ -61,6 +74,7 @@ public class ProEditProfile extends AppCompatActivity {
         btnCancel.setOnClickListener(v -> finish());
     }
 
+    /** Bind XML views */
     private void initViews() {
         editProfileImage = findViewById(R.id.editProfileImage);
         btnChangePhoto = findViewById(R.id.btnChangePhoto);
@@ -80,9 +94,9 @@ public class ProEditProfile extends AppCompatActivity {
         btnCancel = findViewById(R.id.btnCancel);
     }
 
-    // -----------------------------
-    // LOAD DATA FROM FIRESTORE
-    // -----------------------------
+    /** ------------------------------------------------------------
+     *  Load user data from Firestore and populate the fields
+     * ------------------------------------------------------------- */
     private void loadUserData() {
         db.collection("Users").document(uid).get()
                 .addOnSuccessListener(doc -> {
@@ -97,20 +111,19 @@ public class ProEditProfile extends AppCompatActivity {
                                 .placeholder(R.drawable.ic_person)
                                 .error(R.drawable.ic_person)
                                 .into(editProfileImage);
-
                     }
                 })
                 .addOnFailureListener(e ->
                         Toast.makeText(this, "Failed to load profile", Toast.LENGTH_SHORT).show());
     }
 
+    /** Fill UI fields with Firestore data */
     private void fillFields(DocumentSnapshot doc) {
         inputName.setText(doc.getString("name"));
         inputProfession.setText(doc.getString("profession"));
         inputPhone.setText(doc.getString("phoneNumber"));
         inputEmail.setText(doc.getString("email"));
 
-        // Address
         Map<String, Object> address = (Map<String, Object>) doc.get("address");
         if (address != null) {
             inputAddressLine1.setText((String) address.get("street"));
@@ -121,9 +134,9 @@ public class ProEditProfile extends AppCompatActivity {
         }
     }
 
-    // -----------------------------
-    // PICK PHOTO
-    // -----------------------------
+    /** ------------------------------------------------------------
+     *  Select image from gallery
+     * ------------------------------------------------------------- */
     private void openGallery() {
         Intent intent = new Intent(Intent.ACTION_PICK,
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
@@ -135,20 +148,29 @@ public class ProEditProfile extends AppCompatActivity {
                                     @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == REQUEST_PICK_IMAGE && resultCode == Activity.RESULT_OK && data != null) {
+        if (requestCode == REQUEST_PICK_IMAGE &&
+                resultCode == Activity.RESULT_OK &&
+                data != null) {
+
             selectedImageUri = data.getData();
+
             try {
-                Bitmap bmp = MediaStore.Images.Media.getBitmap(getContentResolver(), selectedImageUri);
+                Bitmap bmp = MediaStore.Images.Media
+                        .getBitmap(getContentResolver(), selectedImageUri);
+
                 editProfileImage.setImageBitmap(bmp);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+
+            } catch (IOException e) { e.printStackTrace(); }
         }
     }
 
-    // -----------------------------
-    // SAVE PROFILE
-    // -----------------------------
+    /** ------------------------------------------------------------
+     *  Save profile changes:
+     *  - Build user map
+     *  - Geocode address in background
+     *  - Upload image if needed
+     *  - Save to Firestore
+     * ------------------------------------------------------------- */
     private void saveProfile() {
 
         Map<String, Object> userMap = new HashMap<>();
@@ -156,25 +178,24 @@ public class ProEditProfile extends AppCompatActivity {
         userMap.put("profession", inputProfession.getText().toString());
         userMap.put("phoneNumber", inputPhone.getText().toString());
 
-        // Address
+        // Build address map
         Map<String, Object> address = new HashMap<>();
         address.put("street", inputAddressLine1.getText().toString());
         address.put("room", inputAddressLine2.getText().toString());
         address.put("city", inputCity.getText().toString());
         address.put("province", inputProvince.getText().toString());
         address.put("postalCode", inputPostalCode.getText().toString());
+
         userMap.put("address", address);
 
-        // Full address for geocoding
+        // Prepare geocoding input
         String fullAddress =
-                inputAddressLine1.getText().toString() + ", " +
-                        inputCity.getText().toString() + ", " +
-                        inputProvince.getText().toString() + ", " +
-                        inputPostalCode.getText().toString();
+                inputAddressLine1.getText() + ", " +
+                        inputCity.getText() + ", " +
+                        inputProvince.getText() + ", " +
+                        inputPostalCode.getText();
 
-        // ========================================
-        // ⭐ RUN GEOCODER ON BACKGROUND THREAD
-        // ========================================
+        // Run geocoder asynchronously
         new Thread(() -> {
             try {
                 Geocoder geocoder = new Geocoder(ProEditProfile.this);
@@ -184,14 +205,16 @@ public class ProEditProfile extends AppCompatActivity {
                 if (results != null && !results.isEmpty()) {
                     double lat = results.get(0).getLatitude();
                     double lng = results.get(0).getLongitude();
-                    userMap.put("geo", new com.google.firebase.firestore.GeoPoint(lat, lng));
+
+                    userMap.put("geo",
+                            new com.google.firebase.firestore.GeoPoint(lat, lng));
                 }
 
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
-            // Back to main thread to update Firestore
+            // Back to main thread to continue saving
             runOnUiThread(() -> {
                 if (selectedImageUri != null) {
                     uploadImageAndSave(userMap);
@@ -202,37 +225,39 @@ public class ProEditProfile extends AppCompatActivity {
         }).start();
     }
 
-
-
-    // -----------------------------
-    // UPLOAD IMAGE TO FIREBASE
-    // -----------------------------
+    /** ------------------------------------------------------------
+     *  Upload new profile image to Firebase Storage
+     * ------------------------------------------------------------- */
     private void uploadImageAndSave(Map<String, Object> userMap) {
+
         StorageReference ref = FirebaseStorage.getInstance()
                 .getReference("profileImages/" + uid + ".jpg");
 
         ref.putFile(selectedImageUri)
                 .addOnSuccessListener(taskSnapshot ->
-                        ref.getDownloadUrl()
-                                .addOnSuccessListener(uri -> {
-                                    userMap.put("profilepic", uri.toString());
-                                    updateFirestore(userMap);
-                                }))
+                        ref.getDownloadUrl().addOnSuccessListener(uri -> {
+                            userMap.put("profilepic", uri.toString());
+                            updateFirestore(userMap);
+                        }))
                 .addOnFailureListener(e ->
                         Toast.makeText(this, "Image upload failed", Toast.LENGTH_SHORT).show());
     }
 
+    /** Save final data to Firestore */
     private void updateFirestore(Map<String, Object> userMap) {
+
         db.collection("Users").document(uid)
                 .set(userMap, com.google.firebase.firestore.SetOptions.merge())
                 .addOnSuccessListener(aVoid -> {
+
                     Toast.makeText(this, "Profile updated!", Toast.LENGTH_SHORT).show();
+
+                    // Allow parent screen to refresh
                     Intent i = new Intent();
                     i.putExtra("updated", true);
                     setResult(Activity.RESULT_OK, i);
+
                     finish();
-
-
                 })
                 .addOnFailureListener(e ->
                         Toast.makeText(this, "Error saving profile", Toast.LENGTH_SHORT).show());

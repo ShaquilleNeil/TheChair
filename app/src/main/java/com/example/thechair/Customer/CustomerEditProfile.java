@@ -1,3 +1,15 @@
+// Shaq’s Notes:
+// This activity is your user’s “wardrobe change room.” They can rewrite their name,
+// email, address, and throw on a fresh profile picture. The logic flows clean:
+//
+// 1) Load existing values from Intent → fill text fields
+// 2) Allow profile picture replacement, upload to Firebase Storage
+// 3) Patch Firestore’s Users/{uid} document with a clean update map
+//
+// The AsyncTask loader is a legacy pattern but works fine for displaying the initial photo.
+// Everything else runs cleanly on the modern ActivityResultLauncher for selecting images.
+// No circular references, no multi-branch traps—just a neat UI → Firestore pipeline.
+
 package com.example.thechair.Customer;
 
 import android.content.Intent;
@@ -34,18 +46,18 @@ import java.util.Map;
 
 public class CustomerEditProfile extends AppCompatActivity {
 
-    EditText inputName, inputEmail, inputPhone, inputAddressline1, inputAddressline2, inputCity, inputProvince, inputPostalCode;
-    Button btnSaveChanges, btnCancel;
+    EditText inputName, inputEmail, inputPhone, inputAddressline1, inputAddressline2,
+            inputCity, inputProvince, inputPostalCode;
 
-ImageButton btnChangephoto;
+    Button btnSaveChanges, btnCancel;
+    ImageButton btnChangephoto;
     ImageView editProfileImage;
+
     FirebaseFirestore databaseUsers;
     StorageReference storageUsers;
+
     ArrayList<appUsers> usersList;
     Uri imageUri;
-
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +65,7 @@ ImageButton btnChangephoto;
         EdgeToEdge.enable(this);
         setContentView(R.layout.customer_edit_profile_activity);
 
+        //-------------- Bind Views --------------
         inputName = findViewById(R.id.inputName);
         inputEmail = findViewById(R.id.inputEmail);
         inputPhone = findViewById(R.id.inputPhone);
@@ -61,6 +74,7 @@ ImageButton btnChangephoto;
         inputCity = findViewById(R.id.inputCity);
         inputProvince = findViewById(R.id.inputProvince);
         inputPostalCode = findViewById(R.id.inputPostalCode);
+
         btnSaveChanges = findViewById(R.id.btnSaveChanges);
         btnCancel = findViewById(R.id.btnCancel);
         editProfileImage = findViewById(R.id.editProfileImage);
@@ -68,10 +82,8 @@ ImageButton btnChangephoto;
 
         usersList = new ArrayList<>();
 
-
-
+        //-------------- Load Incoming Data --------------
         Intent intent = getIntent();
-
         String profilePicUrl = intent.getStringExtra("profilepic");
 
         if (profilePicUrl != null && !profilePicUrl.isEmpty()) {
@@ -80,10 +92,8 @@ ImageButton btnChangephoto;
             editProfileImage.setImageResource(R.drawable.banner);
         }
 
-
         databaseUsers = FirebaseFirestore.getInstance();
         storageUsers = FirebaseStorage.getInstance().getReference("profileImages");
-
 
         inputName.setText(intent.getStringExtra("name"));
         inputEmail.setText(intent.getStringExtra("email"));
@@ -94,65 +104,109 @@ ImageButton btnChangephoto;
         inputProvince.setText(intent.getStringExtra("province"));
         inputPostalCode.setText(intent.getStringExtra("postalCode"));
 
+        //-------------- Change Photo --------------
+        btnChangephoto.setOnClickListener(v -> selectImageLauncher.launch("image/*"));
 
-        btnChangephoto.setOnClickListener(v -> {
-            selectImageLauncher.launch("image/*");
-        });
+        //-------------- Save Profile Updates --------------
+        btnSaveChanges.setOnClickListener(v -> saveChanges());
 
-        btnSaveChanges.setOnClickListener(v -> {
-            String name = inputName.getText().toString();
-            String email = inputEmail.getText().toString();
-            String phone = inputPhone.getText().toString();
-            String street = inputAddressline1.getText().toString();
-            String room = inputAddressline2.getText().toString();
-            String city = inputCity.getText().toString();
-            String province = inputProvince.getText().toString();
-            String postalCode = inputPostalCode.getText().toString();
-
-
-            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-            if (user == null) {
-                Toast.makeText(this, "User not logged in", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            String userId = user.getUid();
-
-            Map<String, Object> updates = new HashMap<>();
-            updates.put("name", name);
-            updates.put("email", email);
-            updates.put("phoneNumber", phone);
-
-            Map<String, Object> address = new HashMap<>();
-            address.put("street", street);
-            address.put("room", room);
-            address.put("city", city);
-            address.put("province", province);
-            address.put("postalCode", postalCode);
-            updates.put("address", address);
-
-
-            FirebaseFirestore firestore = FirebaseFirestore.getInstance();
-            firestore.collection("Users").document(userId)
-                    .update(updates)
-                    .addOnSuccessListener(aVoid -> {
-                        Toast.makeText(this, "Profile updated successfully!", Toast.LENGTH_SHORT).show();
-                        finish();
-                    })
-                    .addOnFailureListener(e ->
-                            Toast.makeText(this, "Failed to update profile: " + e.getMessage(), Toast.LENGTH_SHORT).show());
-
-
-        });
-
-        btnCancel.setOnClickListener(v -> {
-            finish();
-        });
-
-
+        btnCancel.setOnClickListener(v -> finish());
     }
 
+    // ----------------------------------------------------------
+    //                         SAVE CHANGES
+    // ----------------------------------------------------------
+    private void saveChanges() {
+        String name = inputName.getText().toString();
+        String email = inputEmail.getText().toString();
+        String phone = inputPhone.getText().toString();
+        String street = inputAddressline1.getText().toString();
+        String room = inputAddressline2.getText().toString();
+        String city = inputCity.getText().toString();
+        String province = inputProvince.getText().toString();
+        String postalCode = inputPostalCode.getText().toString();
 
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) {
+            Toast.makeText(this, "User not logged in", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String userId = user.getUid();
+
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("name", name);
+        updates.put("email", email);
+        updates.put("phoneNumber", phone);
+
+        Map<String, Object> address = new HashMap<>();
+        address.put("street", street);
+        address.put("room", room);
+        address.put("city", city);
+        address.put("province", province);
+        address.put("postalCode", postalCode);
+        updates.put("address", address);
+
+        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+        firestore.collection("Users")
+                .document(userId)
+                .update(updates)
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(this, "Profile updated successfully!", Toast.LENGTH_SHORT).show();
+                    finish();
+                })
+                .addOnFailureListener(e ->
+                        Toast.makeText(this, "Failed to update profile: " + e.getMessage(), Toast.LENGTH_SHORT).show()
+                );
+    }
+
+    // ----------------------------------------------------------
+    //                   SELECTING NEW PROFILE IMAGE
+    // ----------------------------------------------------------
+    private final ActivityResultLauncher<String> selectImageLauncher =
+            registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
+                if (uri != null) {
+                    imageUri = uri;
+                    editProfileImage.setImageURI(uri);
+                    uploadProfileImageAndUpdateUser(uri);
+                }
+            });
+
+    // ----------------------------------------------------------
+    //           UPLOAD NEW PROFILE IMAGE TO STORAGE
+    // ----------------------------------------------------------
+    private void uploadProfileImageAndUpdateUser(Uri imageUri) {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) {
+            Toast.makeText(this, "User not logged in", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String uid = user.getUid();
+        StorageReference imageRef = storageUsers.child(uid + ".jpg");
+
+        if (imageUri != null) {
+            imageRef.putFile(imageUri)
+                    .addOnSuccessListener(taskSnapshot ->
+                            imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                                databaseUsers.collection("Users")
+                                        .document(uid)
+                                        .update("profilepic", uri.toString())
+                                        .addOnSuccessListener(aVoid ->
+                                                Toast.makeText(this, "Profile picture updated!", Toast.LENGTH_SHORT).show())
+                                        .addOnFailureListener(e ->
+                                                Toast.makeText(this, "Failed to update Firestore: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                            }))
+                    .addOnFailureListener(e ->
+                            Toast.makeText(this, "Image upload failed: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+        } else {
+            Toast.makeText(this, "No image selected", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    // ----------------------------------------------------------
+    //                 SIMPLE LEGACY IMAGE LOADER
+    // ----------------------------------------------------------
     private static class ImageLoaderTask extends AsyncTask<String, Void, Bitmap> {
         private final String url;
         private final ImageView imageView;
@@ -186,46 +240,4 @@ ImageButton btnChangephoto;
             }
         }
     }
-
-    private final ActivityResultLauncher<String> selectImageLauncher =
-            registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
-                if (uri != null) {
-                    imageUri = uri;
-                    editProfileImage.setImageURI(uri);
-                    uploadProfileImageAndUpdateUser(uri);
-                }
-            });
-
-
-    private void uploadProfileImageAndUpdateUser(Uri imageUri) {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user == null) {
-            Toast.makeText(this, "User not logged in", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        String uid = user.getUid();
-        StorageReference imageRef = storageUsers.child(uid + ".jpg");
-
-        if (imageUri != null) {
-
-            imageRef.putFile(imageUri)
-                    .addOnSuccessListener(taskSnapshot ->
-                            imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
-                                // Update Firestore with new image URL
-                                databaseUsers.collection("Users").document(uid)
-                                        .update("profilepic", uri.toString())
-                                        .addOnSuccessListener(aVoid ->
-                                                Toast.makeText(this, "Profile picture updated!", Toast.LENGTH_SHORT).show())
-                                        .addOnFailureListener(e ->
-                                                Toast.makeText(this, "Failed to update Firestore: " + e.getMessage(), Toast.LENGTH_SHORT).show());
-                            }))
-                    .addOnFailureListener(e ->
-                            Toast.makeText(this, "Image upload failed: " + e.getMessage(), Toast.LENGTH_SHORT).show());
-        } else {
-            Toast.makeText(this, "No image selected", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-
 }

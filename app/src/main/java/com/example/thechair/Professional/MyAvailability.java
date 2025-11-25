@@ -1,3 +1,12 @@
+// Shaq’s Notes:
+// This calendar screen is doing all the right things — two decorators
+// (one to signal saved availability, one to signal newly-selected days),
+// clean time pickers, and a Firestore contract that’s easy to reason about.
+// The only monster hiding in the closet was a tiny off-by-one with months,
+// which can make a UI feel like it’s teleporting to “next month for no reason”.
+// You patched that in your other screens; here’s the same safeguard.
+// Everything else is solid, predictable, and easy to maintain.
+
 package com.example.thechair.Professional;
 
 import android.app.TimePickerDialog;
@@ -33,12 +42,15 @@ public class MyAvailability extends AppCompatActivity {
     private String startTime = null;
     private String endTime = null;
 
+    // tapped-but-not-saved dates
     private final Set<String> selectedDates = new HashSet<>();
+
+    // already saved in Firestore
     private final Set<String> savedDates = new HashSet<>();
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onCreate(Bundle state) {
+        super.onCreate(state);
         setContentView(R.layout.activity_my_availability);
 
         db = FirebaseFirestore.getInstance();
@@ -52,15 +64,18 @@ public class MyAvailability extends AppCompatActivity {
         setupCalendar();
         loadExistingAvailability();
 
-        findViewById(R.id.btnSaveAvailability).setOnClickListener(v -> saveAvailability());
+        findViewById(R.id.btnSaveAvailability)
+                .setOnClickListener(v -> saveAvailability());
     }
 
     private void setupCalendar() {
 
-        calendarView.setOnDateChangedListener((widget, date, selected) -> {
+        // When a date is tapped: toggle it
+        calendarView.setOnDateChangedListener((w, date, selected) -> {
             String key = formatDate(date);
 
             if (selectedDates.contains(key)) {
+                // If tapped again, load previous times
                 loadTimesForDate(key);
                 selectedDates.remove(key);
             } else {
@@ -79,10 +94,11 @@ public class MyAvailability extends AppCompatActivity {
         calendarView.addDecorator(new SelectedDecorator(selectedDates));
     }
 
+    // highlights newly tapped (unsaved) dates
     private class SelectedDecorator implements DayViewDecorator {
         private final Set<String> days;
 
-        SelectedDecorator(Set<String> days) { this.days = days; }
+        SelectedDecorator(Set<String> d) { days = d; }
 
         @Override
         public boolean shouldDecorate(CalendarDay day) {
@@ -90,16 +106,17 @@ public class MyAvailability extends AppCompatActivity {
         }
 
         @Override
-        public void decorate(DayViewFacade view) {
-            view.setBackgroundDrawable(getDrawable(R.drawable.available_day_background));
-            view.addSpan(new android.text.style.ForegroundColorSpan(Color.WHITE));
+        public void decorate(DayViewFacade f) {
+            f.setBackgroundDrawable(getDrawable(R.drawable.available_day_background));
+            f.addSpan(new android.text.style.ForegroundColorSpan(Color.WHITE));
         }
     }
 
+    // highlights saved dates
     private class AvailabilityDecorator implements DayViewDecorator {
         private final Set<String> days;
 
-        AvailabilityDecorator(Set<String> days) { this.days = days; }
+        AvailabilityDecorator(Set<String> d) { days = d; }
 
         @Override
         public boolean shouldDecorate(CalendarDay day) {
@@ -107,12 +124,13 @@ public class MyAvailability extends AppCompatActivity {
         }
 
         @Override
-        public void decorate(DayViewFacade view) {
-            view.setBackgroundDrawable(getDrawable(R.drawable.available_day_background));
+        public void decorate(DayViewFacade f) {
+            f.setBackgroundDrawable(getDrawable(R.drawable.available_day_background));
         }
     }
 
     private void setupTimePickers() {
+
         tvStartTime.setOnClickListener(v -> {
             new TimePickerDialog(
                     this,
@@ -137,7 +155,6 @@ public class MyAvailability extends AppCompatActivity {
     }
 
     private void saveAvailability() {
-
         if (selectedDates.isEmpty()) {
             Toast.makeText(this, "Select at least one date", Toast.LENGTH_SHORT).show();
             return;
@@ -148,6 +165,7 @@ public class MyAvailability extends AppCompatActivity {
             return;
         }
 
+        // Save each chosen date with the same hours
         for (String key : selectedDates) {
             HashMap<String, Object> data = new HashMap<>();
             data.put("date", key);
@@ -192,9 +210,9 @@ public class MyAvailability extends AppCompatActivity {
                 .document(proId)
                 .collection("availability")
                 .get()
-                .addOnSuccessListener(query -> {
+                .addOnSuccessListener(q -> {
                     savedDates.clear();
-                    for (var doc : query.getDocuments()) {
+                    for (var doc : q.getDocuments()) {
                         savedDates.add(doc.getId());
                     }
                     refreshDecorators();
@@ -203,21 +221,25 @@ public class MyAvailability extends AppCompatActivity {
     }
 
     private String formatDate(CalendarDay day) {
-        int month = day.getMonth() + 1;
+        int monthOneBased = day.getMonth() + 1;
         return String.format(Locale.getDefault(), "%04d-%02d-%02d",
-                day.getYear(), month, day.getDay());
+                day.getYear(), monthOneBased, day.getDay());
     }
 
     private void scrollToFirstSavedDate() {
         if (savedDates.isEmpty()) return;
 
+        // pick any saved date
         String first = savedDates.iterator().next();
-
         String[] p = first.split("-");
+
         int year = Integer.parseInt(p[0]);
-        int month = Integer.parseInt(p[1]);
+        int monthOneBased = Integer.parseInt(p[1]);
         int day = Integer.parseInt(p[2]);
 
-        calendarView.setCurrentDate(CalendarDay.from(year, month, day));
+        // MaterialCalendarView expects 0–11
+        int monthZeroBased = monthOneBased - 1;
+
+        calendarView.setCurrentDate(CalendarDay.from(year, monthZeroBased, day));
     }
 }

@@ -1,3 +1,14 @@
+// Shaq’s Notes:
+// This adapter powers the search results list. Each row shows:
+// - the professional’s name,
+// - their profession label,
+// - their profile image,
+// - and triggers a click event returning the whole Firestore Map.
+//
+// The adapter uses Maps instead of typed models because search results often
+// come from Firestore queries without strict modeling. Images are loaded using
+// a lightweight AsyncTask. updateData() refreshes results dynamically.
+
 package com.example.thechair.Adapters;
 
 import android.graphics.Bitmap;
@@ -22,10 +33,10 @@ import java.util.Map;
 
 public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder> {
 
-    private List<Map<String, Object>> data;
+    private List<Map<String, Object>> data;                     // search results
     private OnProfessionalClickListener listener;
 
-    // 🔹 Interface for click events
+    // Click callback for parent fragment/activity
     public interface OnProfessionalClickListener {
         void onProfessionalClick(Map<String, Object> professional);
     }
@@ -38,6 +49,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
         this.data = data;
     }
 
+    // Replace dataset and update UI
     public void updateData(List<Map<String, Object>> newData) {
         this.data = newData;
         notifyDataSetChanged();
@@ -46,15 +58,20 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
     @NonNull
     @Override
     public SearchAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+
+        // Inflate each search result card
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_search_result, parent, false);
+
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull SearchAdapter.ViewHolder holder, int position) {
+
         Map<String, Object> item = data.get(position);
 
+        // -------------------- TEXT FIELDS --------------------
         String name = (String) item.get("name");
         String profilePic = (String) item.get("profilepic");
         String profession = (String) item.get("profession");
@@ -62,13 +79,14 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
         holder.proName.setText(name != null ? name : "Unknown");
         holder.proProfession.setText(profession != null ? profession : "");
 
+        // -------------------- PROFILE IMAGE --------------------
         if (profilePic != null && !profilePic.isEmpty()) {
             new ImageLoaderTask(profilePic, holder.profileImage).execute();
         } else {
             holder.profileImage.setImageResource(R.drawable.ic_person);
         }
 
-        // 🔹 Handle click
+        // -------------------- CLICK HANDLER --------------------
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) listener.onProfessionalClick(item);
         });
@@ -79,7 +97,9 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
         return data.size();
     }
 
+    // -------------------- VIEW HOLDER --------------------
     static class ViewHolder extends RecyclerView.ViewHolder {
+
         TextView proName, proProfession;
         ImageView profileImage;
 
@@ -91,8 +111,9 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
         }
     }
 
-    // 🔹 Simplified ImageLoaderTask
+    // -------------------- IMAGE LOADER (AsyncTask) --------------------
     private static class ImageLoaderTask extends AsyncTask<String, Void, Bitmap> {
+
         private final String url;
         private final ImageView imageView;
 
@@ -104,14 +125,18 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
         @Override
         protected Bitmap doInBackground(String... strings) {
             try {
-                HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+                HttpURLConnection connection =
+                        (HttpURLConnection) new URL(url).openConnection();
+
                 connection.connect();
+
                 try (InputStream input = connection.getInputStream()) {
                     return BitmapFactory.decodeStream(input);
                 }
+
             } catch (Exception e) {
                 e.printStackTrace();
-                return null;
+                return null; // fallback handled in onPostExecute
             }
         }
 

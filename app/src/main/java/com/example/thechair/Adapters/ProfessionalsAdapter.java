@@ -1,3 +1,15 @@
+// Shaq’s Notes:
+// This adapter displays a list of professionals (providers/barbers/stylists).
+// Each item shows:
+// - the professional’s name,
+// - their profile image,
+// - and triggers a click callback when tapped.
+//
+// The adapter supports dynamic updates through updateList(). Profile images are
+// loaded using a lightweight AsyncTask (a simplified alternative to Glide).
+// When a professional is clicked, the parent fragment/activity receives the
+// selected appUsers object via the ProfessionalClickListener.
+
 package com.example.thechair.Adapters;
 
 import android.content.Context;
@@ -25,7 +37,7 @@ public class ProfessionalsAdapter extends RecyclerView.Adapter<ProfessionalsAdap
     private final Context mContext;
     private List<appUsers> mProfessionals;
 
-    // CLICK LISTENER
+    // ---------- CLICK LISTENER: Parent handles what happens on click ----------
     public interface ProfessionalClickListener {
         void onProfessionalClick(appUsers professional);
     }
@@ -36,12 +48,13 @@ public class ProfessionalsAdapter extends RecyclerView.Adapter<ProfessionalsAdap
         this.clickListener = listener;
     }
 
+    // Constructor
     public ProfessionalsAdapter(Context context, List<appUsers> professionals) {
         this.mContext = context;
         this.mProfessionals = professionals;
     }
 
-    // ---- NEW: Proper updateList method ----
+    // Replace the current list and refresh UI
     public void updateList(List<appUsers> newList) {
         this.mProfessionals = newList;
         notifyDataSetChanged();
@@ -50,6 +63,7 @@ public class ProfessionalsAdapter extends RecyclerView.Adapter<ProfessionalsAdap
     @NonNull
     @Override
     public ProfessionalsAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        // Inflate provider row layout
         View view = LayoutInflater.from(mContext)
                 .inflate(R.layout.prof_info_adapter_item, parent, false);
         return new ViewHolder(view);
@@ -57,15 +71,18 @@ public class ProfessionalsAdapter extends RecyclerView.Adapter<ProfessionalsAdap
 
     @Override
     public void onBindViewHolder(@NonNull ProfessionalsAdapter.ViewHolder holder, int position) {
+
         appUsers professional = mProfessionals.get(position);
 
+        // Name display
         holder.tvprovidername.setText(professional.getName());
 
+        // Profile picture loading
         String imageUrl = professional.getProfilepic();
         if (imageUrl != null && !imageUrl.isEmpty()) {
             new ImageLoaderTask(imageUrl, holder.ivprovider).execute();
         } else {
-            holder.ivprovider.setImageResource(R.drawable.banner);
+            holder.ivprovider.setImageResource(R.drawable.banner); // fallback
         }
     }
 
@@ -74,6 +91,7 @@ public class ProfessionalsAdapter extends RecyclerView.Adapter<ProfessionalsAdap
         return mProfessionals.size();
     }
 
+    // -------------------- VIEW HOLDER --------------------
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         ImageView ivprovider;
@@ -85,6 +103,7 @@ public class ProfessionalsAdapter extends RecyclerView.Adapter<ProfessionalsAdap
             ivprovider = itemView.findViewById(R.id.ivprovider);
             tvprovidername = itemView.findViewById(R.id.tvprovidername);
 
+            // Handle click → send selected professional object to parent
             itemView.setOnClickListener(v -> {
                 int pos = getAdapterPosition();
                 if (pos != RecyclerView.NO_POSITION && clickListener != null) {
@@ -94,9 +113,11 @@ public class ProfessionalsAdapter extends RecyclerView.Adapter<ProfessionalsAdap
         }
     }
 
-    // ----------------- IMAGE LOADER -----------------
+    // -------------------- IMAGE LOADER (AsyncTask) --------------------
+    // Downloads an image in the background and sets it into the ImageView.
 
     private static class ImageLoaderTask extends AsyncTask<String, Void, Bitmap> {
+
         private final String url;
         private final ImageView imageView;
 
@@ -118,7 +139,7 @@ public class ProfessionalsAdapter extends RecyclerView.Adapter<ProfessionalsAdap
 
             } catch (Exception e) {
                 e.printStackTrace();
-                return null;
+                return null; // fail → null
             }
         }
 
@@ -127,7 +148,7 @@ public class ProfessionalsAdapter extends RecyclerView.Adapter<ProfessionalsAdap
             if (bitmap != null) {
                 imageView.setImageBitmap(bitmap);
             } else {
-                imageView.setImageResource(R.drawable.banner);
+                imageView.setImageResource(R.drawable.banner); // fallback image
             }
         }
     }

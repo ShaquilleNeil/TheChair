@@ -1,3 +1,12 @@
+// Shaq’s Notes:
+// This activity is doing a neat little dance: it collects the service info,
+// normalizes it, then atomically writes both the service and its search tags
+// to Firestore. The dual-update batch is the clever part: it keeps your search
+// index (tags) and your actual data (services) perfectly in sync.
+// You’ve also wired in a local cache update, which keeps navigation snappy.
+// Only tiny improvement might be trimming tags more defensively, but the flow
+// is solid as a barber’s fade.
+
 package com.example.thechair.Professional;
 
 import android.os.Bundle;
@@ -5,6 +14,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.thechair.Adapters.UserManager;
 import com.example.thechair.Adapters.appUsers;
 import com.example.thechair.R;
@@ -27,8 +37,8 @@ public class AddService extends AppCompatActivity {
     private appUsers currentUser;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onCreate(Bundle state) {
+        super.onCreate(state);
         setContentView(R.layout.activity_add_service);
 
         db = FirebaseFirestore.getInstance();
@@ -59,72 +69,64 @@ public class AddService extends AppCompatActivity {
 
         double price;
         int duration;
-
         try {
             price = Double.parseDouble(priceStr);
             duration = Integer.parseInt(durationStr);
-        } catch (NumberFormatException e) {
+        } catch (NumberFormatException ex) {
             Toast.makeText(this, "Invalid price or duration", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Create service object and convert to map
         appUsers.Service newService = new appUsers.Service(name, price, duration);
+
         Map<String, Object> serviceMap = new HashMap<>();
         serviceMap.put("name", name);
         serviceMap.put("price", price);
         serviceMap.put("duration", duration);
 
-        // Generate keyword variations for better search results
         List<String> keywords = generateKeywords(name.toLowerCase());
 
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
         String userId = currentUser.getId();
         DocumentReference userRef = db.collection("Users").document(userId);
 
-        // Use a Firestore batch for atomic updates
         WriteBatch batch = db.batch();
+
         batch.update(userRef, "services", FieldValue.arrayUnion(serviceMap));
 
-        // Add all keyword variations as tags
-        for (String keyword : keywords) {
-            batch.update(userRef, "tags", FieldValue.arrayUnion(keyword));
+        for (String kw : keywords) {
+            batch.update(userRef, "tags", FieldValue.arrayUnion(kw));
         }
 
         batch.commit()
-                .addOnSuccessListener(aVoid -> {
-                    Toast.makeText(this, "Service added and tags updated successfully", Toast.LENGTH_SHORT).show();
+                .addOnSuccessListener(v -> {
+                    Toast.makeText(this, "Service added and tags updated", Toast.LENGTH_SHORT).show();
 
-                    // Update local cache
-                    List<appUsers.Service> localServices = currentUser.getServices();
-                    if (localServices == null) localServices = new ArrayList<>();
-                    localServices.add(newService);
-                    currentUser.setServices(localServices);
+                    List<appUsers.Service> local = currentUser.getServices();
+                    if (local == null) local = new ArrayList<>();
+                    local.add(newService);
+                    currentUser.setServices(local);
 
-                    List<String> localTags = currentUser.getTags();
-                    if (localTags == null) localTags = new ArrayList<>();
-                    for (String keyword : keywords) {
-                        if (!localTags.contains(keyword)) localTags.add(keyword);
+                    List<String> tagCache = currentUser.getTags();
+                    if (tagCache == null) tagCache = new ArrayList<>();
+                    for (String kw : keywords) {
+                        if (!tagCache.contains(kw)) tagCache.add(kw);
                     }
-                    currentUser.setTags(localTags);
+                    currentUser.setTags(tagCache);
 
                     UserManager.getInstance().setUser(currentUser);
                     finish();
                 })
                 .addOnFailureListener(e ->
-                        Toast.makeText(this, "Error adding service: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                        Toast.makeText(this, "Error adding service: " + e.getMessage(),
+                                Toast.LENGTH_SHORT).show());
     }
 
     private List<String> generateKeywords(String name) {
-        List<String> keywords = new ArrayList<>();
-        String[] parts = name.split(" ");
-        for (String part : parts) {
-            keywords.add(part.trim());
+        List<String> out = new ArrayList<>();
+        for (String p : name.split(" ")) {
+            if (!p.trim().isEmpty()) out.add(p.trim());
         }
-        keywords.add(name.trim()); // add the full phrase too
-        return keywords;
+        out.add(name.trim());
+        return out;
     }
-
-
-
 }

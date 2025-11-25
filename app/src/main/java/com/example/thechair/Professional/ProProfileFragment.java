@@ -1,3 +1,31 @@
+/** ------------------------------------------------------------
+ *  Shaq’s Notes:
+ *
+ *  - This is the professional profile screen.
+ *  - Shows:
+ *        • Profile picture
+ *        • Name + profession
+ *        • Portfolio gallery (grid)
+ *        • Buttons: Edit Profile, Upload Work, Sign Out
+ *
+ *  - Editing profile launches ProEditProfile via ActivityResultLauncher.
+ *    When coming back → reload profile + portfolio.
+ *
+ *  - Portfolio images live in Firestore field: "portfolioImages"
+ *        • Each upload:
+ *              1) Upload image to Firebase Storage
+ *              2) Save the download URL in Firestore
+ *              3) Push into RecyclerView list instantly
+ *
+ *  - Profile picture is cached via UserManager to prevent re-downloading.
+ *
+ *  - GalleryAdapter handles displaying images in a clean 3-column grid.
+ *
+ *  - ImageLoaderTask handles manual bitmap fetching for the profile image.
+ *
+ *  - Everything is Firestore-backed, and UI reacts immediately to updates.
+ * ------------------------------------------------------------- */
+
 package com.example.thechair.Professional;
 
 import android.app.Activity;
@@ -81,7 +109,6 @@ public class ProProfileFragment extends Fragment {
         galleryRecyclerView = view.findViewById(R.id.galleryRecyclerView);
         btnEditProfile = view.findViewById(R.id.btnEditProfile);
 
-
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
 
@@ -96,11 +123,8 @@ public class ProProfileFragment extends Fragment {
 
         btnworkUpload.setOnClickListener(v -> selectImageLauncher.launch("image/*"));
 
-        btnEditProfile.setOnClickListener(v -> {
-                editProfileLauncher.launch(new Intent(getActivity(), ProEditProfile.class));
-
-
-        });
+        btnEditProfile.setOnClickListener(v ->
+                editProfileLauncher.launch(new Intent(getActivity(), ProEditProfile.class)));
 
         btnSignout.setOnClickListener(v -> {
             FirebaseAuth.getInstance().signOut();

@@ -1,3 +1,41 @@
+/** ------------------------------------------------------------
+ * Shaq’s Notes:
+ *
+ *  - This screen shows the PUBLIC version of a professional's profile.
+ *    Clients land here after tapping a stylist in search/home.
+ *
+ *  - Displays:
+ *        • Profile picture
+ *        • Name + profession
+ *        • Rating + review count
+ *        • Services (collapsible section)
+ *        • Portfolio images (collapsible section)
+ *        • Directions button (opens Google Maps to stylist location)
+ *        • Book Now → navigates to PickServiceActivity
+ *
+ *  - Data sources:
+ *        • Firestore → Users/{id}
+ *              - name, profession
+ *              - profilepic
+ *              - rating, ratingCount
+ *              - geo (GeoPoint → converted to LatLng)
+ *              - services[]
+ *              - portfolioImages[]
+ *
+ *  - Gallery images use the same GalleryAdapter as Pro profile.
+ *    Tapping an image opens ImageViewer (full-screen preview).
+ *
+ *  - “Services” and “Portfolio” sections expand/collapse smoothly
+ *    through arrow rotation + content visibility toggles.
+ *
+ *  - DirectionsHelper opens external Google Maps with destination.
+ *
+ *  - ReviewsPopup shows all reviews stored in Firestore under
+ *        Users/{id}/reviews.
+ *
+ *  - This fragment is fully client-facing: no editing allowed here.
+ * ------------------------------------------------------------- */
+
 package com.example.thechair.Professional;
 
 import android.content.Intent;
@@ -50,12 +88,9 @@ public class PublicProfileFragment extends Fragment {
     private Double rating;
 
     private boolean servicesExpanded = false;
-
     private boolean portfolioExpanded = false;
 
-
     private LatLng proLatLng;
-
 
     @Nullable
     @Override
@@ -73,10 +108,6 @@ public class PublicProfileFragment extends Fragment {
         reviewCount = view.findViewById(R.id.reviewCount);
         ratingBar = view.findViewById(R.id.ratingBar);
 
-
-
-
-
         setupCollapsibles(view);
 
         db = FirebaseFirestore.getInstance();
@@ -89,17 +120,13 @@ public class PublicProfileFragment extends Fragment {
             loadProfessionalData(professionalId);
         }
 
-
-
         bookNowButton.setOnClickListener(v -> {
             Intent intent = new Intent(getActivity(), PickServiceActivity.class);
             intent.putExtra("professionalId", professionalId);
             intent.putExtra("professionalName", proName.getText().toString());
             intent.putExtra("professionalProfession", proProfession.getText().toString());
             intent.putExtra("professionalProfilePic", profilePicUrl);
-
             startActivity(intent);
-
         });
 
         btnDirections.setOnClickListener(v -> {
@@ -119,9 +146,6 @@ public class PublicProfileFragment extends Fragment {
             popup.show();
         });
 
-
-
-
         return view;
     }
 
@@ -132,7 +156,7 @@ public class PublicProfileFragment extends Fragment {
 
                     String name = doc.getString("name");
                     String profession = doc.getString("profession");
-                    String profilePic = doc.getString("profilepic");
+                    profilePicUrl = doc.getString("profilepic");
                     rating = doc.getDouble("rating");
 
                     if (rating != null) {
@@ -142,23 +166,15 @@ public class PublicProfileFragment extends Fragment {
                     }
 
                     Long count = doc.getLong("ratingCount");
-                    if (count != null)
-                        reviewCount.setText("(" + count + " reviews)");
-                    else
-                        reviewCount.setText("(0 reviews)");
-
+                    reviewCount.setText(count != null ? "(" + count + " reviews)" : "(0 reviews)");
 
                     proName.setText(name != null ? name : "Unknown");
                     proProfession.setText(profession != null ? profession : "Professional");
 
-                    profilePicUrl = doc.getString("profilepic");
-
                     GeoPoint geo = doc.getGeoPoint("geo");
-
                     if (geo != null) {
                         proLatLng = new LatLng(geo.getLatitude(), geo.getLongitude());
                     }
-
 
                     if (profilePicUrl != null && !profilePicUrl.isEmpty()) {
                         Glide.with(this)
@@ -167,16 +183,14 @@ public class PublicProfileFragment extends Fragment {
                                 .into(profileImage);
                     }
 
-
                     Object servicesObj = doc.get("services");
                     if (servicesObj instanceof List) {
                         List<Map<String, Object>> services = (List<Map<String, Object>>) servicesObj;
                         ServiceAdapter adapter = new ServiceAdapter(requireContext(), services);
-                        adapter.setOnServiceClickListener(service -> {
-                            Toast.makeText(requireContext(),
-                                    "Selected " + service.get("name"),
-                                    Toast.LENGTH_SHORT).show();
-                        });
+                        adapter.setOnServiceClickListener(service ->
+                                Toast.makeText(requireContext(),
+                                        "Selected " + service.get("name"),
+                                        Toast.LENGTH_SHORT).show());
                         servicesRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
                         servicesRecyclerView.setAdapter(adapter);
                     }
@@ -219,7 +233,6 @@ public class PublicProfileFragment extends Fragment {
                 servicesArrow.animate().rotation(0f).setDuration(200).start();
             }
         });
-
 
         /* -------------------- PORTFOLIO SECTION -------------------- */
 

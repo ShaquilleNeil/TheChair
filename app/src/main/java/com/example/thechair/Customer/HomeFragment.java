@@ -1,3 +1,13 @@
+// Shaq’s Notes:
+// This fragment is the customer’s home screen—your dashboard of beauty mayhem.
+// It pulls your profile, showcases categories (braids, locs, weave, haircut),
+// displays a rotating banner fetched from Firebase Storage, and loads a curated,
+// daily-shuffled list of professionals.
+//
+// Under the hood: cached user data, background image loading, Firestore querying,
+// banner rotation using a Handler loop, and fragment navigation for category taps.
+// It's a kitchen-sink fragment, but it's organized and predictable.
+
 package com.example.thechair.Customer;
 
 import android.graphics.Bitmap;
@@ -42,21 +52,15 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link HomeFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class HomeFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-
     private FirebaseFirestore db;
-    private TextView username, tvprovidername, weaveText,locsText,haircutText,braidsText;
-    private ImageView profileimage, braids, weave,locs,haircut,banner;
+    private TextView username, tvprovidername, weaveText, locsText, haircutText, braidsText;
+    private ImageView profileimage, braids, weave, locs, haircut, banner;
+
     private FirebaseAuth mAuth;
     private RecyclerView recyclerView;
+
     private ProfessionalsAdapter adapter;
     private List<appUsers> professionals = new ArrayList<>();
 
@@ -64,33 +68,18 @@ public class HomeFragment extends Fragment {
     private List<String> bannerTitles = new ArrayList<>();
     private int rotationInterval = 4000;
 
-    private  int currentIndex = 0;
-
+    private int currentIndex = 0;
     private Runnable bannerRunnable;
-
-
     private final Handler bannerHandler = new Handler(Looper.getMainLooper());
 
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
 
-    public HomeFragment() {
-        // Required empty public constructor
-    }
+    public HomeFragment() {}
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment HomeFragment.
-     */
-    // TODO: Rename and change types and number of parameters
     public static HomeFragment newInstance(String param1, String param2) {
         HomeFragment fragment = new HomeFragment();
         Bundle args = new Bundle();
@@ -106,16 +95,16 @@ public class HomeFragment extends Fragment {
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
-
-
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
+        // Horizontal list of pros
         recyclerView = view.findViewById(R.id.serviceProvidersRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
 
@@ -123,7 +112,6 @@ public class HomeFragment extends Fragment {
         recyclerView.setAdapter(adapter);
 
         adapter.setOnProfessionalClickListener(pro -> {
-
             PublicProfileFragment fragment = new PublicProfileFragment();
             Bundle args = new Bundle();
             args.putString("professionalId", pro.getId());
@@ -137,10 +125,7 @@ public class HomeFragment extends Fragment {
                     .commit();
         });
 
-
-
-
-
+        // Bind UI
         username = view.findViewById(R.id.username);
         profileimage = view.findViewById(R.id.profileImage);
         haircutText = view.findViewById(R.id.haircutText);
@@ -149,65 +134,35 @@ public class HomeFragment extends Fragment {
         braidsText = view.findViewById(R.id.braidsText);
         banner = view.findViewById(R.id.banner);
 
-
-
-
-
         haircut = view.findViewById(R.id.haircut);
         weave = view.findViewById(R.id.weave);
         locs = view.findViewById(R.id.locs);
         braids = view.findViewById(R.id.braids);
 
-
-        locs.setOnClickListener(v -> {
-            String search = locsText.getText().toString();
-            openSearch(search);
-        });
-        weave.setOnClickListener(v -> {
-            String search = weaveText.getText().toString();
-            openSearch(search);
-        });
-        haircut.setOnClickListener(v -> {
-            String search = haircutText.getText().toString();
-            openSearch(search);
-        });
-        braids.setOnClickListener(v -> {
-                    String search = braidsText.getText().toString();
-                    openSearch(search);
-                });
-
-
-
-
-
-
-
+        // Category shortcuts → open SearchFragment prefilled
+        locs.setOnClickListener(v -> openSearch(locsText.getText().toString()));
+        weave.setOnClickListener(v -> openSearch(weaveText.getText().toString()));
+        haircut.setOnClickListener(v -> openSearch(haircutText.getText().toString()));
+        braids.setOnClickListener(v -> openSearch(braidsText.getText().toString()));
 
         db = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
 
-
-
         loadUser();
         loadProfessionals();
         loadbanners();
-
-
 
         profileimage.setOnClickListener(v -> {
             ProfileFragment profileFragment = new ProfileFragment();
             getParentFragmentManager()
                     .beginTransaction()
                     .replace(R.id.appMainView, profileFragment)
-                    .addToBackStack(null) // optional, allows back navigation
+                    .addToBackStack(null)
                     .commit();
         });
 
-
-        // Inflate the layout for this fragment
         return view;
     }
-
 
     @Override
     public void onPause() {
@@ -221,6 +176,7 @@ public class HomeFragment extends Fragment {
         bannerHandler.removeCallbacks(bannerRunnable);
     }
 
+    // Load and cache logged-in user
     private void loadUser() {
         UserManager userManager = UserManager.getInstance();
         appUsers cachedUser = userManager.getUser();
@@ -228,16 +184,11 @@ public class HomeFragment extends Fragment {
         if (cachedUser != null) {
             username.setText(cachedUser.getName());
 
-            // Show cached image immediately if available
             Bitmap cachedBitmap = userManager.getProfileBitmap();
-            if (cachedBitmap != null) {
-                profileimage.setImageBitmap(cachedBitmap);
-            } else {
-                profileimage.setImageResource(R.drawable.banner);
-            }
+            if (cachedBitmap != null) profileimage.setImageBitmap(cachedBitmap);
+            else profileimage.setImageResource(R.drawable.banner);
         }
 
-        // Fetch latest from Firebase
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         if (firebaseUser != null) {
             String userId = firebaseUser.getUid();
@@ -246,15 +197,14 @@ public class HomeFragment extends Fragment {
                     .addOnSuccessListener(documentSnapshot -> {
                         if (documentSnapshot.exists()) {
                             appUsers firebaseUserData = documentSnapshot.toObject(appUsers.class);
+
                             if (firebaseUserData != null) {
                                 username.setText(firebaseUserData.getName());
 
                                 String profilePic = firebaseUserData.getProfilepic();
                                 if (profilePic != null) {
                                     new ImageLoaderTask(profilePic, profileimage, userManager).execute();
-                                } else {
-                                    profileimage.setImageResource(R.drawable.banner);
-                                }
+                                } else profileimage.setImageResource(R.drawable.banner);
 
                                 userManager.setUser(firebaseUserData);
                             }
@@ -263,40 +213,35 @@ public class HomeFragment extends Fragment {
         }
     }
 
+    // Make randomness stable for the day
     private Random getDailyRandom() {
         String today = new SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(new Date());
         return new Random(today.hashCode());
     }
 
-
+    // Load first five professionals (random order per day)
     private void loadProfessionals() {
         db.collection("Users")
                 .whereEqualTo("role", "professional")
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
-
                     professionals.clear();
 
-                    if (!queryDocumentSnapshots.isEmpty()) {
-                        for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                            appUsers user = document.toObject(appUsers.class);
-                            professionals.add(user);
-                        }
-
-                        // Shuffle list randomly
-                        Collections.shuffle(professionals, getDailyRandom());
-
-                        // Keep only first 5
-                        if (professionals.size() > 5) {
-                            professionals = professionals.subList(0, 5);
-                        }
-
-                        adapter.updateList(professionals); // adapter should accept updated list
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        appUsers user = document.toObject(appUsers.class);
+                        professionals.add(user);
                     }
+
+                    Collections.shuffle(professionals, getDailyRandom());
+
+                    if (professionals.size() > 5)
+                        professionals = professionals.subList(0, 5);
+
+                    adapter.updateList(professionals);
                 });
     }
 
-
+    // Background bitmap fetch
     private static class ImageLoaderTask extends AsyncTask<String, Void, Bitmap> {
         private final String url;
         private final ImageView imageView;
@@ -311,15 +256,14 @@ public class HomeFragment extends Fragment {
         @Override
         protected Bitmap doInBackground(String... strings) {
             try {
-                URL urlConnection = new URL(url);
-                HttpURLConnection connection = (HttpURLConnection) urlConnection.openConnection();
+                HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
                 connection.setDoInput(true);
                 connection.connect();
-                InputStream input = connection.getInputStream();
-                return BitmapFactory.decodeStream(input);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+
+                try (InputStream input = connection.getInputStream()) {
+                    return BitmapFactory.decodeStream(input);
+                }
+            } catch (Exception ignored) {}
             return null;
         }
 
@@ -327,14 +271,14 @@ public class HomeFragment extends Fragment {
         protected void onPostExecute(Bitmap bitmap) {
             if (bitmap != null) {
                 imageView.setImageBitmap(bitmap);
-                userManager.setProfileBitmap(bitmap); // cache the bitmap
+                userManager.setProfileBitmap(bitmap);
             } else {
                 imageView.setImageResource(R.drawable.banner);
             }
         }
     }
 
-    private void openSearch(String search){
+    private void openSearch(String search) {
         SearchFragment fragment = new SearchFragment();
         Bundle args = new Bundle();
         args.putString("search", search);
@@ -348,24 +292,20 @@ public class HomeFragment extends Fragment {
                 .commit();
     }
 
-
-    private void loadbanners(){
-        db.collection("appConfig")
-                .document("HomePage")
+    // Load banner config from Firestore
+    private void loadbanners() {
+        db.collection("appConfig").document("HomePage")
                 .get()
                 .addOnSuccessListener(doc -> {
-                    if(!doc.exists()) {return;}
+                    if (!doc.exists()) return;
 
                     bannerTitles = (List<String>) doc.get("bannerTitles");
-                    if(bannerTitles == null) bannerTitles = new ArrayList<>();
+                    if (bannerTitles == null) bannerTitles = new ArrayList<>();
 
                     rotationInterval = doc.getLong("rotationalInterval").intValue();
 
                     List<String> gsPaths = (List<String>) doc.get("banners");
-                    if (gsPaths == null || gsPaths.isEmpty()) {
-                        Log.e("BANNERS", "No banners found");
-                        return;
-                    }
+                    if (gsPaths == null || gsPaths.isEmpty()) return;
 
                     bannerUrls.clear();
 
@@ -374,23 +314,18 @@ public class HomeFragment extends Fragment {
                     }
                 })
                 .addOnFailureListener(e -> Log.e("BANNERS", "Error: " + e));
-
     }
 
+    // Start rotation once URLs are loaded
     private void startBannerRotation() {
         if (bannerUrls.isEmpty()) return;
 
         bannerRunnable = new Runnable() {
             @Override
             public void run() {
-                if (bannerUrls.isEmpty()) return;
-
                 Glide.with(requireContext())
                         .load(bannerUrls.get(currentIndex))
                         .into(banner);
-
-                // Optional: show title (if your layout has TextView)
-                // bannerTitleView.setText(bannerTitles.get(currentIndex));
 
                 currentIndex = (currentIndex + 1) % bannerUrls.size();
 
@@ -401,7 +336,7 @@ public class HomeFragment extends Fragment {
         bannerHandler.post(bannerRunnable);
     }
 
-
+    // Convert gs:// paths to HTTPS URLs
     private void getDownloadUrl(String gsPath) {
         StorageReference ref = FirebaseStorage.getInstance().getReferenceFromUrl(gsPath);
 
@@ -409,20 +344,12 @@ public class HomeFragment extends Fragment {
                 .addOnSuccessListener(uri -> {
                     bannerUrls.add(uri.toString());
 
-                    Log.d("BANNERS", "URL: " + uri);
-
-                    // Start rotation once all banners loaded
-                    if (bannerUrls.size() == bannerTitles.size()
-                            || bannerTitles.isEmpty()) {
+                    if (bannerUrls.size() == bannerTitles.size() || bannerTitles.isEmpty()) {
                         startBannerRotation();
                     }
                 })
-                .addOnFailureListener(e -> {
-                    Log.e("BANNERS", "Failed: " + gsPath + " → " + e.getMessage());
-                });
+                .addOnFailureListener(e ->
+                        Log.e("BANNERS", "Failed: " + gsPath + " → " + e.getMessage())
+                );
     }
-
-
-
-
 }

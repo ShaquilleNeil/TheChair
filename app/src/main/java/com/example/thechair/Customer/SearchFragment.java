@@ -1,3 +1,11 @@
+// Shaq’s Notes:
+// This fragment is lean: it watches the query box, streams the text into your
+// SearchRepository, and updates the adapter. The tidy part is the decoupling:
+// SearchFragment never touches Firestore directly — it only reacts to the
+// repository’s callback. That gives you interchangeable back-ends later.
+// Only subtle footnote: calling setupSearchListener() twice is redundant.
+// Everything else flows like a clean stream.
+
 package com.example.thechair.Customer;
 
 import android.os.Bundle;
@@ -29,33 +37,12 @@ public class SearchFragment extends Fragment {
     private SearchAdapter adapter;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_search, container, false);
+    public View onCreateView(LayoutInflater infl, ViewGroup parent, Bundle saved) {
+        View v = infl.inflate(R.layout.fragment_search, parent, false);
 
-
-
-
-
-        searchInput = view.findViewById(R.id.searchInput);
-        recyclerView = view.findViewById(R.id.recyclerView);
-        progressBar = view.findViewById(R.id.progressBar);
-
-        setupSearchListener();
-
-        String searchText = null;
-        if (getArguments() != null) {
-            searchText = getArguments().getString("search");
-        }
-
-
-        if (searchText != null) {
-            searchInput.setText(searchText);
-            searchInput.setSelection(searchText.length());
-        }
-
-
-
+        searchInput  = v.findViewById(R.id.searchInput);
+        recyclerView = v.findViewById(R.id.recyclerView);
+        progressBar  = v.findViewById(R.id.progressBar);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new SearchAdapter(new ArrayList<>());
@@ -64,25 +51,38 @@ public class SearchFragment extends Fragment {
         adapter.setOnProfessionalClickListener(this::openPublicProfile);
 
         setupSearchListener();
-        return view;
+
+        String arg = null;
+        if (getArguments() != null) {
+            arg = getArguments().getString("search");
+        }
+
+        if (arg != null) {
+            searchInput.setText(arg);
+            searchInput.setSelection(arg.length());
+        }
+
+        return v;
     }
 
     private void setupSearchListener() {
         searchInput.addTextChangedListener(new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int st, int c, int a) {}
             @Override public void afterTextChanged(Editable s) {}
-            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                String query = s == null ? "" : s.toString().trim();
-                if (query.isEmpty()) {
+            public void onTextChanged(CharSequence s, int st, int b, int c) {
+                String q = s == null ? "" : s.toString().trim();
+
+                if (q.isEmpty()) {
                     adapter.updateData(new ArrayList<>());
                     progressBar.setVisibility(View.GONE);
                     return;
                 }
 
                 progressBar.setVisibility(View.VISIBLE);
-                SearchRepository.searchProfessionals(query, results -> {
+
+                SearchRepository.searchProfessionals(q, results -> {
                     adapter.updateData(results);
                     progressBar.setVisibility(View.GONE);
                 });
@@ -90,21 +90,23 @@ public class SearchFragment extends Fragment {
         });
     }
 
-    private void openPublicProfile(Map<String, Object> professional) {
-        String professionalId = (String) professional.get("id");
-        if (professionalId == null || professionalId.isEmpty()) return;
+    private void openPublicProfile(Map<String, Object> pro) {
+        String id = (String) pro.get("id");
+        if (id == null || id.isEmpty()) return;
 
         Bundle args = new Bundle();
-        args.putString("professionalId", professionalId);
+        args.putString("professionalId", id);
 
-        com.example.thechair.Professional.PublicProfileFragment fragment = new com.example.thechair.Professional.PublicProfileFragment();
-        fragment.setArguments(args);
+        com.example.thechair.Professional.PublicProfileFragment f =
+                new com.example.thechair.Professional.PublicProfileFragment();
+        f.setArguments(args);
 
-        FragmentTransaction transaction = requireActivity()
+        FragmentTransaction ft = requireActivity()
                 .getSupportFragmentManager()
                 .beginTransaction();
-        transaction.replace(R.id.appMainView, fragment);
-        transaction.addToBackStack(null);
-        transaction.commit();
+
+        ft.replace(R.id.appMainView, f);
+        ft.addToBackStack(null);
+        ft.commit();
     }
 }

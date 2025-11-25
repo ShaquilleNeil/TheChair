@@ -1,3 +1,21 @@
+// Shaq’s Notes:
+// This fragment splits a customer’s bookings into TODAY, UPCOMING, and PAST groups.
+// It pulls booking documents from Firestore under:
+//     Users/{customerID}/bookings
+//
+// Logic:
+// • Convert Firestore timestamps to dates using a yyyy-MM-dd format
+// • Compare each booking’s date with "today’s" date
+// • Skip cancelled bookings for Today + Upcoming (you only want active sessions)
+// • Everything else falls into Past, including cancelled or completed sessions
+//
+// UI behavior:
+// • Each section is collapsible with animated arrow rotation
+// • Each section holds its own RecyclerView + BookingAdapter
+// • Lists start collapsed for clean display
+//
+// This is your "booking history hub": clean, modular, and easy to evolve.
+
 package com.example.thechair.Customer;
 
 import android.os.Bundle;
@@ -25,9 +43,13 @@ import java.util.Locale;
 
 public class BookingsFragment extends Fragment {
 
+    // RecyclerViews for the 3 sections
     private RecyclerView rvToday, rvUpcoming, rvPast;
+
+    // Adapters
     private BookingAdapter todayAdapter, upcomingAdapter, pastAdapter;
 
+    // Lists
     private final ArrayList<Booking> todayList = new ArrayList<>();
     private final ArrayList<Booking> upcomingList = new ArrayList<>();
     private final ArrayList<Booking> pastList = new ArrayList<>();
@@ -35,17 +57,18 @@ public class BookingsFragment extends Fragment {
     public BookingsFragment() {}
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             ViewGroup container,
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_bookings, container, false);
 
-        // Init RecyclerViews
+        // -------------------- Init Rvs --------------------
         rvToday = view.findViewById(R.id.rvToday);
         rvUpcoming = view.findViewById(R.id.rvUpcoming);
         rvPast = view.findViewById(R.id.rvPast);
 
-        // collapse default
+        // Default collapsed
         rvToday.setVisibility(View.GONE);
         rvUpcoming.setVisibility(View.GONE);
         rvPast.setVisibility(View.GONE);
@@ -54,7 +77,7 @@ public class BookingsFragment extends Fragment {
         rvUpcoming.setLayoutManager(new LinearLayoutManager(getContext()));
         rvPast.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        // Attach adapters
+        // Setup adapters
         todayAdapter = new BookingAdapter(getContext(), todayList);
         upcomingAdapter = new BookingAdapter(getContext(), upcomingList);
         pastAdapter = new BookingAdapter(getContext(), pastList);
@@ -63,13 +86,18 @@ public class BookingsFragment extends Fragment {
         rvUpcoming.setAdapter(upcomingAdapter);
         rvPast.setAdapter(pastAdapter);
 
+        // Load Firestore bookings
         loadBookings();
+
+        // Setup expandable headers
         setupCollapsible(view);
 
         return view;
     }
 
+    // -------------------- Expand / Collapse Logic --------------------
     private void setupCollapsible(View view) {
+
         LinearLayout sectionToday = view.findViewById(R.id.sectionToday);
         ImageView ivTodayArrow = view.findViewById(R.id.ivTodayArrow);
         sectionToday.setOnClickListener(v -> toggle(rvToday, ivTodayArrow));
@@ -86,13 +114,14 @@ public class BookingsFragment extends Fragment {
     private void toggle(RecyclerView recyclerView, ImageView arrow) {
         if (recyclerView.getVisibility() == View.VISIBLE) {
             recyclerView.setVisibility(View.GONE);
-            arrow.setRotation(180);
+            arrow.setRotation(180); // flipped arrow
         } else {
             recyclerView.setVisibility(View.VISIBLE);
-            arrow.setRotation(0);
+            arrow.setRotation(0);   // default arrow
         }
     }
 
+    // -------------------- Load Bookings from Firestore --------------------
     private void loadBookings() {
 
         String customerID = FirebaseAuth.getInstance().getUid();
@@ -109,7 +138,8 @@ public class BookingsFragment extends Fragment {
                 .get()
                 .addOnSuccessListener(query -> {
 
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+                    SimpleDateFormat sdf =
+                            new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
 
                     String todayStr = sdf.format(new Date());
                     Date todayDate = null;
@@ -121,28 +151,38 @@ public class BookingsFragment extends Fragment {
                     for (var doc : query) {
 
                         Booking booking = doc.toObject(Booking.class);
-                        Date bookingDate;
 
+                        Date bookingDate;
                         try {
                             bookingDate = sdf.parse(booking.getSelectedDate());
                         } catch (Exception e) {
-                            continue;
+                            continue; // skip malformed dates
                         }
 
-                        if (bookingDate.equals(todayDate) && !booking.getStatus().equalsIgnoreCase("Cancelled")) {
+                        boolean isCancelled =
+                                booking.getStatus().equalsIgnoreCase("Cancelled");
+
+                        // -------------------- Categorization --------------------
+
+                        if (bookingDate.equals(todayDate) && !isCancelled) {
                             todayList.add(booking);
-                        } else if (bookingDate.after(todayDate) && !booking.getStatus().equalsIgnoreCase("Cancelled")) {
+                        }
+                        else if (bookingDate.after(todayDate) && !isCancelled) {
                             upcomingList.add(booking);
-                        } else {
+                        }
+                        else {
+                            // Past includes:
+                            // • completed
+                            // • cancelled
+                            // • anything before today
                             pastList.add(booking);
                         }
-
                     }
 
+                    // Update lists
                     todayAdapter.notifyDataSetChanged();
                     upcomingAdapter.notifyDataSetChanged();
                     pastAdapter.notifyDataSetChanged();
-
                 });
     }
 }

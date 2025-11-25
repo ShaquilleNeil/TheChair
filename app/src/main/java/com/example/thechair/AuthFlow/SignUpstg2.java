@@ -1,3 +1,11 @@
+// Shaq’s Notes:
+// This is Signup Step 2 — the screen where the user enters their address and phone.
+// It receives the partially-built appUsers object + password from step 1,
+// then attaches full address info and phone number to the user model.
+// After validation, it moves the user to SignUpstg3 to complete the signup flow.
+//
+// No Firebase calls happen here — just data collection and passing the user object forward.
+
 package com.example.thechair.AuthFlow;
 
 import android.content.Intent;
@@ -14,9 +22,10 @@ import com.example.thechair.Adapters.appUsers;
 
 public class SignUpstg2 extends AppCompatActivity {
 
-    EditText editTextAddress1, editTextAddress2, editTextCity, editTextProvince, editTextPostalCode, editTextPhoneNumber, editTextCountry;
-    Button buttonNext3, btn;
-
+    // UI fields
+    EditText editTextAddress1, editTextAddress2, editTextCity, editTextProvince,
+            editTextPostalCode, editTextPhoneNumber, editTextCountry;
+    Button buttonNext3; // next button
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,24 +33,25 @@ public class SignUpstg2 extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.authflow_sign_upstg2_activity);
 
+        // -------------------- Bind Views --------------------
         editTextAddress1 = findViewById(R.id.editTextAddress1);
         editTextAddress2 = findViewById(R.id.editTextAddress2);
-
         editTextCity = findViewById(R.id.editTextCity);
-
         editTextProvince = findViewById(R.id.editTextProvince);
-
         editTextPostalCode = findViewById(R.id.editTextPostalCode);
         editTextPhoneNumber = findViewById(R.id.editTextPhoneNumber);
         editTextCountry = findViewById(R.id.editTextCountry);
 
         buttonNext3 = findViewById(R.id.buttonnext);
 
-        //receive information from step 1
+        // -------------------- Retrieve data from Step 1 --------------------
         appUsers user = (appUsers) getIntent().getSerializableExtra("user");
         String pass = getIntent().getStringExtra("password");
 
+        // -------------------- Next button logic --------------------
         buttonNext3.setOnClickListener(v -> {
+
+            // Pull text from inputs
             String address1 = editTextAddress1.getText().toString();
             String address2 = editTextAddress2.getText().toString();
             String city = editTextCity.getText().toString();
@@ -50,12 +60,18 @@ public class SignUpstg2 extends AppCompatActivity {
             String postalCode = editTextPostalCode.getText().toString();
             String phoneNumber = editTextPhoneNumber.getText().toString();
 
-            if (address1.isEmpty() || city.isEmpty() || province.isEmpty() || postalCode.isEmpty() || phoneNumber.isEmpty()) {
+            // Basic validation
+            if (address1.isEmpty() ||
+                    city.isEmpty() ||
+                    province.isEmpty() ||
+                    postalCode.isEmpty() ||
+                    phoneNumber.isEmpty()) {
+
                 Toast.makeText(SignUpstg2.this, "Fill all fields", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            //update user object
+            // -------------------- Update appUsers object --------------------
             appUsers.Address address = new appUsers.Address();
             address.setStreet(address1);
             address.setRoom(address2);
@@ -63,18 +79,15 @@ public class SignUpstg2 extends AppCompatActivity {
             address.setProvince(province);
             address.setCountry(country);
             address.setPostalCode(postalCode);
+
             user.setAddress(address);
             user.setPhoneNumber(phoneNumber);
 
+            // -------------------- Move to Signup Step 3 --------------------
             Intent intent = new Intent(SignUpstg2.this, SignUpstg3.class);
             intent.putExtra("user", user);
             intent.putExtra("password", pass);
             startActivity(intent);
-
-
         });
-
-
-
     }
 }

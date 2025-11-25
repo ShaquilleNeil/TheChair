@@ -1,3 +1,26 @@
+/** ------------------------------------------------------------
+ *  Shaq’s Notes:
+ *
+ *  - This is the professional’s home dashboard.
+ *  - Shows:
+ *        • Profile info (name + image)
+ *        • Buttons: My Services / My Availability
+ *        • A horizontal 30-day date scroller
+ *        • A vertical list of appointments for the selected day
+ *
+ *  - Firestore bookings are grouped by their stored date key
+ *    ("yyyy-MM-dd") → displayed as human-friendly labels
+ *    ("Tuesday, Nov 25").
+ *
+ *  - Bookings are loaded once, then filtered locally when
+ *    the date changes — this makes the UI feel instant.
+ *
+ *  - Profile picture uses ImageLoaderTask to cache inside
+ *    UserManager (avoids re-downloading).
+ *
+ *  - If a day has no appointments → show “No appointments”.
+ * ------------------------------------------------------------- */
+
 package com.example.thechair.Professional;
 
 import android.content.Intent;
@@ -62,9 +85,6 @@ public class ProHomeFragment extends Fragment {
         btnMyAvailability = view.findViewById(R.id.btnAvailability);
         tvNoAppointments = view.findViewById(R.id.tvNoAppointments);
 
-
-
-
         loadUser();
         loadBookings();
 
@@ -72,27 +92,25 @@ public class ProHomeFragment extends Fragment {
                 new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         recyclerAppointments.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        // ⭐ FIX: SHOW 30 DAYS, not 7 days
+        // ⭐ Show next 30 days
         List<LocalDate> dateList = new ArrayList<>();
         LocalDate today = LocalDate.now();
-        for (int i = 0; i < 30; i++) {     // show full month
+        for (int i = 0; i < 30; i++) {
             dateList.add(today.plusDays(i));
         }
 
         dateAdapter = new DateAdapter(dateList, date -> {
-            String label = formatDate(date);            // e.g., "Tuesday, Nov 25"
+            String label = formatDate(date);
             showBookingsForDate(label);
         });
 
         recyclerDates.setAdapter(dateAdapter);
 
-        btnMyServices.setOnClickListener(v -> {
-            startActivity(new Intent(getActivity(), MyServices.class));
-        });
+        btnMyServices.setOnClickListener(v ->
+                startActivity(new Intent(getActivity(), MyServices.class)));
 
-        btnMyAvailability.setOnClickListener(v -> {
-            startActivity(new Intent(getActivity(), MyAvailability.class));
-        });
+        btnMyAvailability.setOnClickListener(v ->
+                startActivity(new Intent(getActivity(), MyAvailability.class)));
 
         return view;
     }
@@ -149,10 +167,7 @@ public class ProHomeFragment extends Fragment {
                         Booking booking = doc.toObject(Booking.class);
                         if (booking == null) continue;
 
-                        // ⭐ FIX: Firestore date = "2025-11-25" — convert to LocalDate
                         LocalDate date = LocalDate.parse(booking.selectedDate);
-
-                        // Convert to UI label: "Tuesday, Nov 25"
                         String dateKey = formatDate(date);
 
                         bookingsByDate
@@ -170,18 +185,17 @@ public class ProHomeFragment extends Fragment {
 
     private void showBookingsForDate(String dateLabel) {
         List<Booking> list = bookingsByDate.getOrDefault(dateLabel, new ArrayList<>());
-        if(list.isEmpty()) {
+
+        if (list.isEmpty()) {
             recyclerAppointments.setVisibility(View.GONE);
             tvNoAppointments.setVisibility(View.VISIBLE);
-
-        }else{
+        } else {
             recyclerAppointments.setVisibility(View.VISIBLE);
             tvNoAppointments.setVisibility(View.GONE);
 
             appointmentAdapter = new AppointmentAdapter(list);
             recyclerAppointments.setAdapter(appointmentAdapter);
         }
-
     }
 
     // -------------------- FORMAT DATE --------------------

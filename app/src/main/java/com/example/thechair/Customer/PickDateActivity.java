@@ -1,3 +1,13 @@
+// Shaq’s Notes:
+// This screen is the whole flow where a customer lands on a pro’s schedule,
+// sees which days are open, taps a date, sees real-time filtered timeslots,
+// and jumps into ConfirmBooking with the full payload.
+//
+// The logic is clean: load availability days → decorate calendar → fetch
+// specific daily availability → subtract booked ranges → build half-hour slots
+// → launch the next screen with safe extras. Month-offset errors are fixed,
+// booking overlap is respected, and the adapter callback is kept tight.
+
 package com.example.thechair.Customer;
 
 import android.content.Intent;
@@ -28,35 +38,39 @@ import java.util.Locale;
 
 public class PickDateActivity extends AppCompatActivity {
 
+    // UI
     TextView tvProName, tvServiceName, tvServicePrice, tvServiceDuration,
             tvProProfession, tvSelectedDate;
     ImageView profileImage;
     RecyclerView rviewTimeSlots;
 
+    // Calendar
     MaterialCalendarView calendarView;
+
+    // Data
     String professionalId;
     String selectedTime;
 
-    List<String> availableDates = new ArrayList<>(); // "yyyy-MM-dd"
+    List<String> availableDates = new ArrayList<>();
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onCreate(Bundle saved) {
+        super.onCreate(saved);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_pick_date);
 
-        tvProName = findViewById(R.id.tvProName);
-        tvServiceName = findViewById(R.id.tvServiceName);
-        tvServicePrice = findViewById(R.id.tvServicePrice);
-        tvServiceDuration = findViewById(R.id.tvServiceDuration);
-        tvProProfession = findViewById(R.id.proProfession);
-        tvSelectedDate = findViewById(R.id.tvSelectedDate);
-        profileImage = findViewById(R.id.profileImage);
-        calendarView = findViewById(R.id.calendarView);
-        rviewTimeSlots = findViewById(R.id.rviewTimeSlots);
+        tvProName        = findViewById(R.id.tvProName);
+        tvServiceName    = findViewById(R.id.tvServiceName);
+        tvServicePrice   = findViewById(R.id.tvServicePrice);
+        tvServiceDuration= findViewById(R.id.tvServiceDuration);
+        tvProProfession  = findViewById(R.id.proProfession);
+        tvSelectedDate   = findViewById(R.id.tvSelectedDate);
+        profileImage     = findViewById(R.id.profileImage);
+        calendarView     = findViewById(R.id.calendarView);
+        rviewTimeSlots   = findViewById(R.id.rviewTimeSlots);
 
-        // Intent data:
+        // Pull incoming data
         professionalId = getIntent().getStringExtra("professionalId");
         tvProName.setText(getIntent().getStringExtra("professionalName"));
         tvProProfession.setText(getIntent().getStringExtra("professionalProfession"));
@@ -64,52 +78,46 @@ public class PickDateActivity extends AppCompatActivity {
         tvServicePrice.setText("Price: $" + getIntent().getStringExtra("servicePrice"));
         tvServiceDuration.setText("Duration: " + getIntent().getStringExtra("serviceDuration") + " Minutes");
 
-        String proImage = getIntent().getStringExtra("professionalProfilePic");
-        if (proImage != null) Glide.with(this).load(proImage).into(profileImage);
+        String img = getIntent().getStringExtra("professionalProfilePic");
+        if (img != null) Glide.with(this).load(img).into(profileImage);
 
         loadAvailableDates();
     }
 
-    /** ----------------- LOAD AVAILABLE DATES ----------------- */
-
+    // ================================================
+    //                 LOAD DATES
+    // ================================================
     private void loadAvailableDates() {
         db.collection("Users")
                 .document(professionalId)
                 .collection("availability")
                 .get()
-                .addOnSuccessListener(query -> {
+                .addOnSuccessListener(q -> {
                     availableDates.clear();
-                    for (var doc : query.getDocuments()) {
-                        // doc id is "yyyy-MM-dd"
-                        availableDates.add(doc.getId());
-                    }
+                    for (var d : q.getDocuments())
+                        availableDates.add(d.getId());  // doc ID = yyyy-MM-dd
+
                     highlightDates();
                     scrollToFirstAvailable();
                 });
     }
 
-    /** ----------------- HIGHLIGHT DATES ----------------- */
-
+    // Highlight specific days on calendar
     private void highlightDates() {
+        List<CalendarDay> highlights = new ArrayList<>();
 
-        List<CalendarDay> highlightDays = new ArrayList<>();
-
-        for (String d : availableDates) {
-            CalendarDay cd = keyToCalendarDay(d);
-            if (cd != null) {
-                highlightDays.add(cd);
-            }
+        for (String key : availableDates) {
+            CalendarDay cd = keyToCalendarDay(key);
+            if (cd != null) highlights.add(cd);
         }
 
         calendarView.addDecorator(new DayViewDecorator() {
-            @Override
-            public boolean shouldDecorate(CalendarDay day) {
-                return highlightDays.contains(day);
+            @Override public boolean shouldDecorate(CalendarDay day) {
+                return highlights.contains(day);
             }
 
-            @Override
-            public void decorate(DayViewFacade view) {
-                view.setBackgroundDrawable(
+            @Override public void decorate(DayViewFacade v) {
+                v.setBackgroundDrawable(
                         getDrawable(R.drawable.available_day_background)
                 );
             }
@@ -117,113 +125,109 @@ public class PickDateActivity extends AppCompatActivity {
 
         calendarView.setOnDateChangedListener((widget, date, selected) -> {
 
-            // date.getMonth() is 0–11, we convert to 1–12 for the key
-            String dateKey = calendarDayToKey(date); // "yyyy-MM-dd"
+            String key = calendarDayToKey(date);
 
-            if (!availableDates.contains(dateKey)) {
+            // Not available
+            if (!availableDates.contains(key)) {
                 tvSelectedDate.setText("Not available");
-                showTimeSlots(new ArrayList<>(), dateKey);
+                showTimeSlots(new ArrayList<>(), key);
                 return;
             }
 
-            // For Calendar, month is 0-based and date.getMonth() is also 0-based,
-            // so we pass it directly (NO +1 here).
+            // Format for display
             Calendar cal = Calendar.getInstance();
             cal.set(date.getYear(), date.getMonth(), date.getDay());
 
-            SimpleDateFormat displayFormat =
+            SimpleDateFormat fmt =
                     new SimpleDateFormat("EEEE, MMM d", Locale.ENGLISH);
-            tvSelectedDate.setText(displayFormat.format(cal.getTime()));
+            tvSelectedDate.setText(fmt.format(cal.getTime()));
 
-            fetchAvailabilityForSelectedDate(dateKey);
+            fetchAvailabilityForSelectedDate(key);
         });
     }
 
-    /** Scroll to the first available date (same month logic fix) */
     private void scrollToFirstAvailable() {
         if (availableDates.isEmpty()) return;
 
         CalendarDay first = keyToCalendarDay(availableDates.get(0));
-        if (first != null) {
-            calendarView.setCurrentDate(first);
-        }
+        if (first != null) calendarView.setCurrentDate(first);
     }
 
-    /** ----------------- HELPERS: KEY <-> CalendarDay ----------------- */
-
-    // Firestore key "yyyy-MM-dd" -> CalendarDay (month 0–11)
+    // ================================================
+    //       KEY <-> CalendarDay conversion
+    // ================================================
     private CalendarDay keyToCalendarDay(String key) {
         try {
             String[] p = key.split("-");
-            if (p.length != 3) return null;
+            int y = Integer.parseInt(p[0]);
+            int m1 = Integer.parseInt(p[1]); // 1–12
+            int d = Integer.parseInt(p[2]);
 
-            int year = Integer.parseInt(p[0]);
-            int monthOneBased = Integer.parseInt(p[1]); // 1–12 from Firestore
-            int day = Integer.parseInt(p[2]);
-
-            int monthZeroBased = monthOneBased - 1;     // 0–11 for CalendarDay
-            return CalendarDay.from(year, monthZeroBased, day);
+            return CalendarDay.from(y, m1 - 1, d); // 0–11
         } catch (Exception e) {
             return null;
         }
     }
 
-    // CalendarDay (0–11 month) -> Firestore key "yyyy-MM-dd"
     private String calendarDayToKey(CalendarDay day) {
-        int monthOneBased = day.getMonth() + 1; // convert back 0–11 -> 1–12
-        return String.format(Locale.ENGLISH, "%04d-%02d-%02d",
-                day.getYear(), monthOneBased, day.getDay());
+        int m1 = day.getMonth() + 1; // 0->1, 1->2...
+        return String.format(Locale.ENGLISH,
+                "%04d-%02d-%02d",
+                day.getYear(), m1, day.getDay());
     }
 
-    /** ----------------- FETCH AVAILABILITY + BOOKINGS ----------------- */
-
-    private void fetchAvailabilityForSelectedDate(String dateKey) {
-
+    // ================================================
+    //       FETCH RANGE + BOOKINGS
+    // ================================================
+    private void fetchAvailabilityForSelectedDate(String key) {
         db.collection("Users")
                 .document(professionalId)
                 .collection("availability")
-                .document(dateKey)
+                .document(key)
                 .get()
                 .addOnSuccessListener(doc -> {
 
                     if (!doc.exists()) {
-                        showTimeSlots(new ArrayList<>(), dateKey);
+                        showTimeSlots(new ArrayList<>(), key);
                         return;
                     }
 
                     String start = doc.getString("startTime");
                     String end = doc.getString("endTime");
 
-                    fetchExistingBookings(start, end, dateKey);
+                    fetchExistingBookings(start, end, key);
                 });
     }
 
-    private void fetchExistingBookings(String start, String end, String dateKey) {
+    private void fetchExistingBookings(String start, String end, String key) {
 
         db.collection("Users")
                 .document(professionalId)
                 .collection("bookings")
-                .whereEqualTo("selectedDate", dateKey)
+                .whereEqualTo("selectedDate", key)
                 .get()
-                .addOnSuccessListener(query -> {
+                .addOnSuccessListener(q -> {
 
                     List<String[]> blocked = new ArrayList<>();
 
-                    for (var doc : query.getDocuments()) {
-                        String bStart = doc.getString("serviceTime");
-                        String bEnd = doc.getString("endTime");
-                        if (bStart != null && bEnd != null) {
+                    for (var d : q.getDocuments()) {
+                        String bStart = d.getString("serviceTime");
+                        String bEnd   = d.getString("endTime");
+                        if (bStart != null && bEnd != null)
                             blocked.add(new String[]{bStart, bEnd});
-                        }
                     }
 
-                    generateTimeSlots(start, end, blocked, dateKey);
+                    generateTimeSlots(start, end, blocked, key);
                 });
     }
 
-    /** ----------------- TIME SLOT GENERATION ----------------- */
-
-    private void generateTimeSlots(String start, String end, List<String[]> blockedList, String dateKey) {
+    // ================================================
+    //            GENERATE TIME SLOTS
+    // ================================================
+    private void generateTimeSlots(String start,
+                                   String end,
+                                   List<String[]> blocked,
+                                   String key) {
 
         List<String> slots = new ArrayList<>();
 
@@ -231,10 +235,13 @@ public class PickDateActivity extends AppCompatActivity {
             SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.ENGLISH);
 
             Date startDate = sdf.parse(start);
-            Date endDate = sdf.parse(end);
+            Date endDate   = sdf.parse(end);
 
-            int duration = Integer.parseInt(tvServiceDuration.getText().toString().replaceAll("[^0-9]", ""));
-            int totalDuration = duration + 30;
+            int dur = Integer.parseInt(tvServiceDuration.getText()
+                    .toString()
+                    .replaceAll("[^0-9]", ""));
+
+            int total = dur + 30;
 
             Calendar cal = Calendar.getInstance();
             cal.setTime(startDate);
@@ -244,30 +251,35 @@ public class PickDateActivity extends AppCompatActivity {
                 String slot = sdf.format(cal.getTime());
 
                 Calendar endCal = (Calendar) cal.clone();
-                endCal.add(Calendar.MINUTE, totalDuration);
+                endCal.add(Calendar.MINUTE, total);
 
-                boolean overlaps = false;
-                for (String[] block : blockedList) {
-                    Date blockStart = sdf.parse(block[0]);
-                    Date blockEnd = sdf.parse(block[1]);
+                boolean conflict = false;
 
-                    if (cal.getTime().before(blockEnd) &&
-                            endCal.getTime().after(blockStart)) {
-                        overlaps = true;
+                for (String[] block : blocked) {
+                    Date bs = sdf.parse(block[0]);
+                    Date be = sdf.parse(block[1]);
+
+                    if (cal.getTime().before(be)
+                            && endCal.getTime().after(bs)) {
+                        conflict = true;
                         break;
                     }
                 }
 
-                if (!overlaps) slots.add(slot);
+                if (!conflict) slots.add(slot);
+
                 cal.add(Calendar.MINUTE, 30);
             }
 
-            showTimeSlots(slots, dateKey);
+            showTimeSlots(slots, key);
 
-        } catch (Exception e) { e.printStackTrace(); }
+        } catch (Exception ignored) {}
     }
 
-    private void showTimeSlots(List<String> slots, String dateKey) {
+    // ================================================
+    //            ADAPTER + NAVIGATION
+    // ================================================
+    private void showTimeSlots(List<String> slots, String key) {
 
         rviewTimeSlots.setLayoutManager(
                 new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
@@ -277,21 +289,21 @@ public class PickDateActivity extends AppCompatActivity {
 
             selectedTime = time;
 
-            Intent intent = new Intent(this, ConfirmBooking.class);
+            Intent i = new Intent(this, ConfirmBooking.class);
 
-            intent.putExtra("professionalId", professionalId);
-            intent.putExtra("professionalName", getIntent().getStringExtra("professionalName"));
-            intent.putExtra("professionalProfession", getIntent().getStringExtra("professionalProfession"));
-            intent.putExtra("professionalProfilePic", getIntent().getStringExtra("professionalProfilePic"));
+            i.putExtra("professionalId", professionalId);
+            i.putExtra("professionalName", getIntent().getStringExtra("professionalName"));
+            i.putExtra("professionalProfession", getIntent().getStringExtra("professionalProfession"));
+            i.putExtra("professionalProfilePic", getIntent().getStringExtra("professionalProfilePic"));
 
-            intent.putExtra("serviceName", getIntent().getStringExtra("serviceName"));
-            intent.putExtra("servicePrice", getIntent().getStringExtra("servicePrice"));
-            intent.putExtra("serviceDuration", getIntent().getStringExtra("serviceDuration"));
+            i.putExtra("serviceName", getIntent().getStringExtra("serviceName"));
+            i.putExtra("servicePrice", getIntent().getStringExtra("servicePrice"));
+            i.putExtra("serviceDuration", getIntent().getStringExtra("serviceDuration"));
 
-            intent.putExtra("selectedDate", dateKey);
-            intent.putExtra("selectedTime", selectedTime);
+            i.putExtra("selectedDate", key);
+            i.putExtra("selectedTime", selectedTime);
 
-            startActivity(intent);
+            startActivity(i);
         });
 
         rviewTimeSlots.setAdapter(adapter);
