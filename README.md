@@ -274,5 +274,6 @@ service cloud.firestore {
 ---
 
 # 📄 License  
-Copyright, All rights Reserve, property of Shaquille O Neil
+© 2025 Shaquille Neil. All rights reserved.
+
 
