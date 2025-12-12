@@ -26,8 +26,10 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.thechair.Customer.BookingDetailsFragment;
 import com.example.thechair.R;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.List;
 
@@ -56,10 +58,33 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
 
         // Bind main booking details to text fields
         holder.tvServiceName.setText(booking.getServiceName());
-        holder.tvProName.setText(booking.getProfessionalName());
+//        holder.tvProName.setText(booking.getProfessionalName());
         holder.tvDate.setText(booking.getSelectedDate());
         holder.tvTime.setText(booking.getServiceTime());
 
+
+        String proId = booking.getProfessionalId();
+
+        FirebaseFirestore.getInstance()
+                .collection("Users")
+                .document(proId)
+                .get()
+                .addOnSuccessListener(doc -> {
+
+                    if (!doc.exists()) return;
+
+                    String liveName = doc.getString("name");
+                    String livePic  = doc.getString("profilepic");
+
+                    holder.tvProName.setText(liveName);
+
+                    Glide.with(context)
+                            .load(livePic)
+                            .diskCacheStrategy(DiskCacheStrategy.ALL)
+                            .placeholder(R.drawable.ic_person)
+                            .into(holder.imgProPic);
+
+                });
         // -------------------- CLICK → OPEN BOOKING DETAILS SCREEN --------------------
         holder.itemView.setOnClickListener(v -> {
 
@@ -105,14 +130,14 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.ViewHold
         });
 
         // -------------------- LOAD PROFILE IMAGE USING GLIDE --------------------
-        if (booking.getProPic() != null && !booking.getProPic().isEmpty()) {
-            Glide.with(context)
-                    .load(booking.getProPic())
-                    .placeholder(R.drawable.ic_person)
-                    .into(holder.imgProPic);
-        } else {
-            holder.imgProPic.setImageResource(R.drawable.ic_person);
-        }
+//        if (booking.getProPic() != null && !booking.getProPic().isEmpty()) {
+//            Glide.with(context)
+//                    .load(booking.getProPic())
+//                    .placeholder(R.drawable.ic_person)
+//                    .into(holder.imgProPic);
+//        } else {
+//            holder.imgProPic.setImageResource(R.drawable.ic_person);
+//        }
 
         // -------------------- STATUS BADGE --------------------
         String status = booking.getStatus();

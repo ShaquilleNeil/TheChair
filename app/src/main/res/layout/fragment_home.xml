@@ -201,7 +201,7 @@
                         android:id="@+id/braidsText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Braiding"
+                        android:text="Braids"
                         android:textColor="@color/text_primary"
                         android:textSize="13sp"
                         android:layout_marginTop="6dp" />

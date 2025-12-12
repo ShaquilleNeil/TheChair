@@ -5,12 +5,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp"
-    android:background="@color/white">
+    android:background="@color/white"
+    android:fitsSystemWindows="true">
 
     <!-- Search Input -->
     <EditText
         android:id="@+id/searchInput"
-        android:layout_marginTop="40dp"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:hint="Search for hairstyles or services"

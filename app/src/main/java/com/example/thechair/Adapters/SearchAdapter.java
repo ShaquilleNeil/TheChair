@@ -23,6 +23,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.thechair.R;
 
 import java.io.InputStream;
@@ -80,11 +82,13 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
         holder.proProfession.setText(profession != null ? profession : "");
 
         // -------------------- PROFILE IMAGE --------------------
-        if (profilePic != null && !profilePic.isEmpty()) {
-            new ImageLoaderTask(profilePic, holder.profileImage).execute();
-        } else {
-            holder.profileImage.setImageResource(R.drawable.ic_person);
-        }
+        Glide.with(holder.itemView.getContext())
+                .load(profilePic)
+                .diskCacheStrategy(DiskCacheStrategy.ALL) // memory + disk cache
+                .placeholder(R.drawable.ic_person)
+                .error(R.drawable.ic_person)
+                .circleCrop()
+                .into(holder.profileImage);
 
         // -------------------- CLICK HANDLER --------------------
         holder.itemView.setOnClickListener(v -> {

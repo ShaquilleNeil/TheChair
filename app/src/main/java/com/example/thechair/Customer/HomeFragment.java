@@ -29,6 +29,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.thechair.Adapters.ProfessionalsAdapter;
 import com.example.thechair.Professional.PublicProfileFragment;
 import com.example.thechair.R;
@@ -202,9 +203,18 @@ public class HomeFragment extends Fragment {
                                 username.setText(firebaseUserData.getName());
 
                                 String profilePic = firebaseUserData.getProfilepic();
-                                if (profilePic != null) {
-                                    new ImageLoaderTask(profilePic, profileimage, userManager).execute();
-                                } else profileimage.setImageResource(R.drawable.banner);
+
+                                if (profilePic != null && !profilePic.isEmpty()) {
+                                    Glide.with(requireContext())
+                                            .load(profilePic)
+                                            .diskCacheStrategy(DiskCacheStrategy.ALL)
+                                            .placeholder(R.drawable.banner)
+                                            .error(R.drawable.banner)
+                                            .into(profileimage);
+                                } else {
+                                    profileimage.setImageResource(R.drawable.banner);
+                                }
+
 
                                 userManager.setUser(firebaseUserData);
                             }
@@ -309,8 +319,10 @@ public class HomeFragment extends Fragment {
 
                     bannerUrls.clear();
 
+                    int total = gsPaths.size();
+
                     for (String gsPath : gsPaths) {
-                        getDownloadUrl(gsPath);
+                        getDownloadUrl(gsPath, total);
                     }
                 })
                 .addOnFailureListener(e -> Log.e("BANNERS", "Error: " + e));
@@ -337,14 +349,15 @@ public class HomeFragment extends Fragment {
     }
 
     // Convert gs:// paths to HTTPS URLs
-    private void getDownloadUrl(String gsPath) {
+    private void getDownloadUrl(String gsPath, int total) {
         StorageReference ref = FirebaseStorage.getInstance().getReferenceFromUrl(gsPath);
 
         ref.getDownloadUrl()
                 .addOnSuccessListener(uri -> {
                     bannerUrls.add(uri.toString());
 
-                    if (bannerUrls.size() == bannerTitles.size() || bannerTitles.isEmpty()) {
+                    if (bannerUrls.size() == total) {
+                        currentIndex = 0;
                         startBannerRotation();
                     }
                 })
@@ -352,4 +365,5 @@ public class HomeFragment extends Fragment {
                         Log.e("BANNERS", "Failed: " + gsPath + " → " + e.getMessage())
                 );
     }
+
 }

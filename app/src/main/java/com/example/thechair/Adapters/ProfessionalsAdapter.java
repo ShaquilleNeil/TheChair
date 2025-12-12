@@ -25,6 +25,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.thechair.R;
 
 import java.io.InputStream;
@@ -79,11 +81,14 @@ public class ProfessionalsAdapter extends RecyclerView.Adapter<ProfessionalsAdap
 
         // Profile picture loading
         String imageUrl = professional.getProfilepic();
-        if (imageUrl != null && !imageUrl.isEmpty()) {
-            new ImageLoaderTask(imageUrl, holder.ivprovider).execute();
-        } else {
-            holder.ivprovider.setImageResource(R.drawable.banner); // fallback
-        }
+
+        Glide.with(holder.itemView.getContext())
+                .load(imageUrl)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .placeholder(R.drawable.banner)
+                .error(R.drawable.banner)
+                .into(holder.ivprovider);
+
     }
 
     @Override

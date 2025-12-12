@@ -74,19 +74,42 @@ public class MyAvailability extends AppCompatActivity {
         calendarView.setOnDateChangedListener((w, date, selected) -> {
             String key = formatDate(date);
 
-            if (selectedDates.contains(key)) {
-                // If tapped again, load previous times
-                loadTimesForDate(key);
+            if (savedDates.contains(key)) {
+                // ✔ This is a saved date — user wants to REMOVE it
+                deleteAvailability(key);
+            }
+            else if (selectedDates.contains(key)) {
+                // ✔ User untaps a newly-selected unsaved date
                 selectedDates.remove(key);
-            } else {
+            }
+            else {
+                // ✔ User selects a new date to add later
                 selectedDates.add(key);
             }
 
             refreshDecorators();
         });
 
+
         refreshDecorators();
     }
+
+    private void deleteAvailability(String key) {
+        db.collection("Users")
+                .document(proId)
+                .collection("availability")
+                .document(key)
+                .delete()
+                .addOnSuccessListener(a -> {
+                    savedDates.remove(key);
+                    Toast.makeText(this, "Removed: " + key, Toast.LENGTH_SHORT).show();
+                    refreshDecorators();
+                })
+                .addOnFailureListener(e ->
+                        Toast.makeText(this, "Failed to remove date", Toast.LENGTH_SHORT).show()
+                );
+    }
+
 
     private void refreshDecorators() {
         calendarView.removeDecorators();

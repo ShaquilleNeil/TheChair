@@ -59,6 +59,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.thechair.Adapters.DirectionsHelper;
 import com.example.thechair.Adapters.GalleryAdapter;
 import com.example.thechair.Adapters.ReviewsPopup;
@@ -179,6 +180,7 @@ public class PublicProfileFragment extends Fragment {
                     if (profilePicUrl != null && !profilePicUrl.isEmpty()) {
                         Glide.with(this)
                                 .load(profilePicUrl)
+                                .diskCacheStrategy(DiskCacheStrategy.ALL)
                                 .placeholder(R.drawable.ic_person)
                                 .into(profileImage);
                     }

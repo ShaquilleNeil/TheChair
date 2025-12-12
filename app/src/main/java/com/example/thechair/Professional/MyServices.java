@@ -22,6 +22,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.thechair.Adapters.ProServiceAdapter;
 import com.example.thechair.Adapters.ServiceAdapter;
 import com.example.thechair.R;
 import com.google.firebase.auth.FirebaseAuth;
@@ -35,10 +36,10 @@ public class MyServices extends AppCompatActivity {
 
     // RecyclerView + button
     private RecyclerView rviewServices;
-    private Button btnAddService;
+    private Button btnAddService, btnDeleteService;
 
     // Adapter + local storage for services
-    private ServiceAdapter adapter;
+    private ProServiceAdapter adapter;
     private final ArrayList<Map<String, Object>> servicesList = new ArrayList<>();
 
     // Firebase
@@ -55,14 +56,17 @@ public class MyServices extends AppCompatActivity {
         rviewServices = findViewById(R.id.rviewServices);
         btnAddService = findViewById(R.id.btnAddService);
 
+
         // Setup Firebase
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
 
         // RecyclerView setup
-        adapter = new ServiceAdapter(this, servicesList);
+        adapter = new ProServiceAdapter(this, servicesList);
         rviewServices.setLayoutManager(new LinearLayoutManager(this));
         rviewServices.setAdapter(adapter);
+
+        adapter.setOnDeleteClickListener((position, service) -> deleteService(position));
 
         // Load current services once
         loadServices();
@@ -108,6 +112,27 @@ public class MyServices extends AppCompatActivity {
                         Toast.makeText(this,
                                 "Failed to load services: " + e.getMessage(),
                                 Toast.LENGTH_SHORT).show());
+    }
+
+    private void deleteService(int position) {
+        String uid = auth.getCurrentUser().getUid();
+
+        // Remove from array first (UI feels instant)
+        servicesList.remove(position);
+        adapter.notifyItemRemoved(position);
+
+        // Update Firestore array
+        db.collection("Users")
+                .document(uid)
+                .update("services", servicesList)
+                .addOnSuccessListener(a ->
+                        Toast.makeText(this, "Service deleted", Toast.LENGTH_SHORT).show()
+                )
+                .addOnFailureListener(e ->
+                        Toast.makeText(this,
+                                "Failed to delete: " + e.getMessage(),
+                                Toast.LENGTH_SHORT).show()
+                );
     }
 
     /** ------------------------------------------------------------

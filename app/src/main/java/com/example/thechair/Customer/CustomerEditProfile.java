@@ -29,6 +29,8 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.thechair.Adapters.appUsers;
 import com.example.thechair.R;
 import com.google.firebase.auth.FirebaseAuth;
@@ -87,10 +89,15 @@ public class CustomerEditProfile extends AppCompatActivity {
         String profilePicUrl = intent.getStringExtra("profilepic");
 
         if (profilePicUrl != null && !profilePicUrl.isEmpty()) {
-            new ImageLoaderTask(profilePicUrl, editProfileImage).execute();
+            Glide.with(this)
+                    .load(profilePicUrl)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .placeholder(R.drawable.banner)
+                    .into(editProfileImage);
         } else {
             editProfileImage.setImageResource(R.drawable.banner);
         }
+
 
         databaseUsers = FirebaseFirestore.getInstance();
         storageUsers = FirebaseStorage.getInstance().getReference("profileImages");

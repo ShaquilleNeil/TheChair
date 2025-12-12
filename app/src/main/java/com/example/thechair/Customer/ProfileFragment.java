@@ -26,6 +26,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.thechair.AuthFlow.AuthFlow;
 import com.example.thechair.R;
 import com.example.thechair.Adapters.UserManager;
@@ -123,33 +125,46 @@ public class ProfileFragment extends Fragment {
         UserManager um = UserManager.getInstance();
         appUsers cached = um.getUser();
 
+        // -------------------- 1. SHOW CACHED USER INFO --------------------
         if (cached != null) {
             name.setText(cached.getName());
             email.setText(cached.getEmail());
             phone.setText(cached.getPhoneNumber());
 
+            // Address
             appUsers.Address a = cached.getAddress();
             if (a != null) {
                 StringBuilder sb = new StringBuilder();
-                if (a.getStreet() != null && !a.getStreet().isEmpty()) sb.append(a.getStreet());
-                if (a.getRoom() != null && !a.getRoom().isEmpty()) sb.append(", ").append(a.getRoom());
-                if (a.getCity() != null && !a.getCity().isEmpty()) sb.append(", ").append(a.getCity());
-                if (a.getProvince() != null && !a.getProvince().isEmpty()) sb.append(", ").append(a.getProvince());
-                if (a.getCountry() != null && !a.getCountry().isEmpty()) sb.append(", ").append(a.getCountry());
-                if (a.getPostalCode() != null && !a.getPostalCode().isEmpty()) sb.append(", ").append(a.getPostalCode());
+                if (!isEmpty(a.getStreet())) sb.append(a.getStreet());
+                if (!isEmpty(a.getRoom())) sb.append(", ").append(a.getRoom());
+                if (!isEmpty(a.getCity())) sb.append(", ").append(a.getCity());
+                if (!isEmpty(a.getProvince())) sb.append(", ").append(a.getProvince());
+                if (!isEmpty(a.getCountry())) sb.append(", ").append(a.getCountry());
+                if (!isEmpty(a.getPostalCode())) sb.append(", ").append(a.getPostalCode());
                 profileaddress.setText(sb.toString());
             } else {
                 profileaddress.setText("Address not provided");
             }
 
-            Bitmap bm = um.getProfileBitmap();
-            profileimage.setImageBitmap(bm != null ? bm : BitmapFactory.decodeResource(getResources(), R.drawable.banner));
+            // Load cached profile image through Glide (instant if cached)
+            if (cached.getProfilepic() != null) {
+                Glide.with(requireContext())
+                        .load(cached.getProfilepic())
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .placeholder(R.drawable.banner)
+                        .into(profileimage);
+            } else {
+                profileimage.setImageResource(R.drawable.banner);
+            }
         }
 
+        // No Firebase user → stop
         FirebaseUser fUser = FirebaseAuth.getInstance().getCurrentUser();
         if (fUser == null) return;
 
-        FirebaseFirestore.getInstance().collection("Users")
+        // -------------------- 2. LOAD FRESH USER DATA FROM FIRESTORE --------------------
+        FirebaseFirestore.getInstance()
+                .collection("Users")
                 .document(fUser.getUid())
                 .get()
                 .addOnSuccessListener(doc -> {
@@ -158,34 +173,48 @@ public class ProfileFragment extends Fragment {
                     appUsers fresh = doc.toObject(appUsers.class);
                     if (fresh == null) return;
 
+                    // Update UI
                     name.setText(fresh.getName());
                     email.setText(fresh.getEmail());
                     phone.setText(fresh.getPhoneNumber());
 
+                    // Address
                     appUsers.Address a = fresh.getAddress();
                     if (a != null) {
                         StringBuilder sb = new StringBuilder();
-                        if (a.getStreet() != null && !a.getStreet().isEmpty()) sb.append(a.getStreet());
-                        if (a.getRoom() != null && !a.getRoom().isEmpty()) sb.append(", ").append(a.getRoom());
-                        if (a.getCity() != null && !a.getCity().isEmpty()) sb.append(", ").append(a.getCity());
-                        if (a.getProvince() != null && !a.getProvince().isEmpty()) sb.append(", ").append(a.getProvince());
-                        if (a.getCountry() != null && !a.getCountry().isEmpty()) sb.append(", ").append(a.getCountry());
-                        if (a.getPostalCode() != null && !a.getPostalCode().isEmpty()) sb.append(", ").append(a.getPostalCode());
+                        if (!isEmpty(a.getStreet())) sb.append(a.getStreet());
+                        if (!isEmpty(a.getRoom())) sb.append(", ").append(a.getRoom());
+                        if (!isEmpty(a.getCity())) sb.append(", ").append(a.getCity());
+                        if (!isEmpty(a.getProvince())) sb.append(", ").append(a.getProvince());
+                        if (!isEmpty(a.getCountry())) sb.append(", ").append(a.getCountry());
+                        if (!isEmpty(a.getPostalCode())) sb.append(", ").append(a.getPostalCode());
                         profileaddress.setText(sb.toString());
                     } else {
                         profileaddress.setText("Address not provided");
                     }
 
+                    // Profile image — ALWAYS Glide
                     String p = fresh.getProfilepic();
-                    if (p != null) {
-                        new ImageLoaderTask(p, profileimage, um).execute();
+                    if (p != null && !p.isEmpty()) {
+                        Glide.with(requireContext())
+                                .load(p)
+                                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                                .placeholder(R.drawable.banner)
+                                .into(profileimage);
                     } else {
                         profileimage.setImageResource(R.drawable.banner);
                     }
 
+                    // Save fresh user (no bitmap)
                     um.setUser(fresh);
                 });
     }
+
+    // Helper
+    private boolean isEmpty(String s) {
+        return s == null || s.trim().isEmpty();
+    }
+
 
     public static class ImageLoaderTask extends AsyncTask<String, Void, Bitmap> {
         private final String url;

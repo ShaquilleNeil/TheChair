@@ -36,7 +36,8 @@
                 android:layout_height="56dp"
                 android:background="@drawable/fab_circle_premium"
                 android:padding="14dp"
-                android:elevation="20dp"
+                android:elevation="2dp"
+                android:backgroundTint="@color/cream"
                 android:src="@drawable/ic_search_burgundy" />
 
             <!-- Expanding Search Bar -->

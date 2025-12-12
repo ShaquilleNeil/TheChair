@@ -26,7 +26,6 @@
             android:scaleType="centerCrop"
             android:clipToOutline="true"
             android:background="@drawable/profile_ring"
-            android:padding="3dp"
             android:src="@drawable/ic_person" />
 
         <!-- Name + Profession -->

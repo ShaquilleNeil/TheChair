@@ -84,9 +84,26 @@ public class BookingDetailsFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_booking_details, container, false);
 
+        // Load fallbacks first
+        professionalName = getArguments().getString("professionalName");
+        profilePic = getArguments().getString("profilePic");
+
+
         // -------------------- Bind UI --------------------
         proImage = view.findViewById(R.id.proImage);
         proName = view.findViewById(R.id.proName);
+        // ---- FALLBACK DISPLAY BEFORE FIRESTORE RETURNS ----
+        if (professionalName != null) {
+            proName.setText(professionalName);
+        }
+
+        if (profilePic != null && !profilePic.isEmpty()) {
+            Glide.with(requireContext())
+                    .load(profilePic)
+                    .placeholder(R.drawable.ic_person)
+                    .into(proImage);
+        }
+
         proProfession = view.findViewById(R.id.proProfession);
         serviceName = view.findViewById(R.id.serviceName);
         appointmentDate = view.findViewById(R.id.appointmentDate);
@@ -107,8 +124,9 @@ public class BookingDetailsFragment extends Fragment {
         if (getArguments() != null) {
             bookingId = getArguments().getString("bookingId");
             professionalId = getArguments().getString("professionalId");
-            professionalName = getArguments().getString("professionalName");
-            profilePic = getArguments().getString("profilePic");
+//            professionalName = getArguments().getString("professionalName");
+//            profilePic = getArguments().getString("profilePic");
+            fetchLiveProfessionalInfo();
 
             service = getArguments().getString("serviceName");
             date = getArguments().getString("selectedDate");
@@ -131,7 +149,7 @@ public class BookingDetailsFragment extends Fragment {
         }
 
         // -------------------- Populate UI --------------------
-        proName.setText(professionalName);
+//        proName.setText(professionalName);
         serviceName.setText("Service: " + service);
         appointmentDate.setText("Date: " + date);
         appointmentTime.setText("Time: " + time);
@@ -140,10 +158,10 @@ public class BookingDetailsFragment extends Fragment {
         appointmentStatus.setText("Status: " + status);
         address.setText(fullAddress);
 
-        Glide.with(this)
-                .load(profilePic)
-                .placeholder(R.drawable.ic_person)
-                .into(proImage);
+//        Glide.with(this)
+//                .load(profilePic)
+//                .placeholder(R.drawable.ic_person)
+//                .into(proImage);
 
         fetchProfessionalAddress();
 
@@ -207,6 +225,31 @@ public class BookingDetailsFragment extends Fragment {
 
         return view;
     }
+
+    private void fetchLiveProfessionalInfo() {
+        FirebaseFirestore.getInstance()
+                .collection("Users")
+                .document(professionalId)
+                .get()
+                .addOnSuccessListener(doc -> {
+
+                    if (!doc.exists()) return;
+
+                    professionalName = doc.getString("name");
+                    profilePic = doc.getString("profilepic");
+                    String liveProfession = doc.getString("profession");
+
+                    // update UI
+                    proName.setText(professionalName);
+                    proProfession.setText(liveProfession);
+
+                    Glide.with(requireContext())
+                            .load(profilePic)
+                            .placeholder(R.drawable.ic_person)
+                            .into(proImage);
+                });
+    }
+
 
     // -------------------- Rebooking logic --------------------
     private void startRebook() {
